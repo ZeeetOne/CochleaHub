@@ -43,3 +43,8 @@ docker compose -f infra/docker-compose.yml --env-file .env up -d
   crop to `SegmentN_Extent` where possible.
 - `05_Registred_Slicer_Volumes/*.nrrd`: CBCT in the same 0.125 mm space (LPS header).
 - `07_3D_Models/*.ply`: per-structure meshes; `Bone.ply` is 135 MB.
+- The "Scala Vestibuli" label (152 mm³, 18 mm long) appears to include vestibule and
+  semicircular canals; cochlear dimensions use scala tympani only (D5).
+- Chorda tympani branches off the facial nerve, so their minimum distance is 0 mm (D6).
+- CBCT DICOM files lack the DICM preamble (read with `force=True`); X/Y/Z folders are the same
+  scan resliced sagittal/coronal/axial.

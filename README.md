@@ -84,7 +84,7 @@ Carotis Interna.
 ## Roadmap
 
 - [x] **1. Data & exploration** — dataset loader, `cochleahub inspect`, manifest
-- [ ] **2. Processing & measurement** — volume, dimensions, surface area per structure; `.glb` meshes; min distance facial nerve ↔ cochlea / chorda tympani
+- [x] **2. Processing & measurement** — `cochleahub measure`: volume, dimensions, surface area per structure; cochlear A/B/height; `.glb` meshes; min distances between facial nerve, chorda tympani and cochlea
 - [ ] **3. Validation & QC** — compare with 3D Slicer Segment Statistics; out-of-range / broken-mesh flags
 - [ ] **4. Cloud storage** — CBCT → Orthanc (DICOMweb) on EC2, meshes → S3, results → PostgreSQL
 - [ ] **5. Backend API** — specimens, measurements, distances, compare, pipeline runs (versioned)
