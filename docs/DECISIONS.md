@@ -69,13 +69,20 @@ says so.
   facial nerve. The minimum gap is therefore **not** the facial recess width; measuring the width
   needs a reference level (landmarks) and is left as future work.
 
-## D7 — Validation against 3D Slicer + automatic QC flags (planned, stage 3)
+## D7 — Validation against two independent references (accepted, stage 3)
 
-- **Decision:** compare pipeline volumes with 3D Slicer Segment Statistics, report relative error
-  per structure; flag out-of-range values and broken meshes.
-- **Basis:** Nautilus reports per-stage accuracy and flags failures so faulty cases can be
-  excluded from analysis [Margeta2022]. The dataset's own CBCT-vs-histology error report
-  (`Accuracy Analysis`) gives the reference error level [Sieber2019].
+- **Decision:** `cochleahub validate` compares every structure with (1) 3D Slicer Segment
+  Statistics on the same segmentation, run headless from a script, and (2) the surface meshes
+  published with the dataset (`07_3D_Models`, RAS → LPS), reporting volume and area differences
+  and symmetric surface distances. The dataset's own CBCT-vs-histology report is included as the
+  error floor of the segmentation itself. A Markdown report is written to `docs/validation/`.
+- **Basis:** Nautilus reports the accuracy of each pipeline stage [Margeta2022]; 3D Slicer is
+  the reference platform for quantitative imaging [Fedorov2012]; the published meshes and the
+  accuracy report come with the dataset [Sieber2019].
+- **Finding:** volumes equal Slicer's for all 13 structures (identical voxel counts). Surface
+  areas are 3–15% above Slicer's. On synthetic spheres both methods are within 1.5% of the true
+  area, so the gap on anatomy is a smoothing effect on thin, curved structures (stapes, chorda
+  tympani), not an error of either tool: area is reported as method-dependent.
 
 ## D8 — Storage: Orthanc (DICOMweb) + S3 + PostgreSQL (planned, stage 4)
 
@@ -124,6 +131,32 @@ says so.
   [Taubin1995], reduced the error to < 1% with volume unchanged (`tests/test_measure.py`).
   glTF binary is an engineering choice for three.js, not paper-based.
 - **Check on ZETA:** mesh volumes agree with voxel volumes within 1% for every structure.
+
+## D14 — Automatic QC flags with severities (accepted, stage 3)
+
+- **Decision:** every run gets flags with severity `error` (do not use the number), `warning`
+  (usable with care) or `info`, and an overall status pass / pass_with_warnings / fail.
+
+  | Code | Severity | Rule |
+  | --- | --- | --- |
+  | RUN_NOT_COMPLETED, STRUCTURE_FAILED | error | pipeline status / per-structure exception |
+  | MESH_NOT_WATERTIGHT | error | full-resolution mesh not closed |
+  | SLICER_VOXEL_MISMATCH, SLICER_VOLUME_MISMATCH | error | voxel count differs, or volume > 1% |
+  | AREA_METHOD_SENSITIVE | warning | area differs from Slicer by > 10% (D7 finding) |
+  | MESH_VOLUME_MISMATCH | warning | mesh vs voxel volume > 2% |
+  | FRAGMENTED | warning / info | > 1 component; warning if the largest holds < 99% |
+  | SURFACE_DEVIATES_FROM_DATASET_MESH | warning | mean distance > 1 voxel per meshing step |
+  | OUT_OF_PUBLISHED_RANGE | warning | outside a published range, source cited |
+
+- **Basis:** failure flags that let faulty cases be excluded [Margeta2022]. Published ranges:
+  scala tympani volume 23–50 µL from 30 micro-CT temporal bones [Dhanasingh2021]; cochlear
+  A 8.17–9.33, B 5.73–7.50, H 2.80–3.72 mm from HRCT of 36 ears of implant candidates aged 2–17
+  [Zahara2019]. Range flags are warnings because each source covers one population and one
+  measurement definition. Numeric tolerances (1%, 2%, 10%, one voxel) are engineering choices,
+  set from the validation results in D7, not from a paper.
+- **Finding:** the landmark-free cochlear height proxy (4.36 mm) exceeds the published H range;
+  the bounding box spans the outer envelope of the scala, while H is measured from the basal
+  turn to the apex. The flag surfaces this limitation of D5 instead of hiding it.
 
 ## D12 — Evaluation (planned, stage 8)
 

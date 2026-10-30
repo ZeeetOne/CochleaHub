@@ -22,6 +22,13 @@ Keys (e.g. `[Margeta2022]`) are used in `docs/DECISIONS.md` and in code comments
 - **[Schurzig2018]** Schurzig D, et al. A novel method for clinical cochlear duct length
   estimation toward patient-specific cochlear implant selection. *OTO Open*, 2018.
   doi:10.1177/2473974X18800238
+- **[Dhanasingh2021]** Dhanasingh A, Swords C, Bance M, Van Rompaey V, Van de Heyning P.
+  Cochlear size assessment predicts scala tympani volume and electrode insertion force:
+  implications in robotic assisted cochlear implant surgery. *Front Surg* 8:723897, 2021.
+  doi:10.3389/fsurg.2021.723897
+- **[Zahara2019]** Zahara D, Dewi RD, Aboet A, Putranto FM, Lubis ND, Ashar T. Variations in
+  cochlear size of cochlear implant candidates. *Int Arch Otorhinolaryngol* 23(2):184–190, 2019.
+  doi:10.1055/s-0038-1661360
 - **[Dowding2015]** Dowding D, et al. Dashboards for improving patient care: review of the
   literature. *Int J Med Inform* 84(2):87–100, 2015.
 
