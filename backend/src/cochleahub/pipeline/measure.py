@@ -11,6 +11,7 @@ def shape_metrics(mask: Mask) -> dict:
     stats.ComputeOrientedBoundingBoxOn()
     stats.Execute(sitk.ConnectedComponent(mask.to_sitk()))
     components = len(stats.GetLabels())
+    sizes = [stats.GetNumberOfPixels(label) for label in stats.GetLabels()]
 
     stats.Execute(mask.to_sitk())
     voxels = int(stats.GetNumberOfPixels(1))
@@ -24,6 +25,7 @@ def shape_metrics(mask: Mask) -> dict:
         "thickness_mm": dims[2],
         "centroid_lps_mm": list(stats.GetCentroid(1)),
         "connected_components": components,
+        "largest_component_fraction": max(sizes) / voxels,
     }
 
 

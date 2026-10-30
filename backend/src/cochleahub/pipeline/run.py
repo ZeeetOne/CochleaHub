@@ -44,6 +44,7 @@ def measure_specimen(files: SpecimenFiles, output_dir: Path) -> dict:
     structures, meshes = {}, {}
     try:
         seg = Segmentation(files.segmentation)
+        run["voxel_size_mm"] = min(seg.image.GetSpacing())
         mesh_dir = output_dir / "meshes" / files.specimen_id
         for s in seg.segments:
             try:
@@ -58,7 +59,10 @@ def measure_specimen(files: SpecimenFiles, output_dir: Path) -> dict:
                     # surface area only on full-resolution meshes
                     "surface_area_mm2": float(mesh.area) if step == 1 else None,
                     "mesh_volume_mm3": float(mesh.volume) if mesh.is_watertight else None,
-                    "mesh": export_display_mesh(mesh, mesh_dir / f"{slug(s.name)}.glb"),
+                    "mesh": {
+                        "step_voxels": step,
+                        **export_display_mesh(mesh, mesh_dir / f"{slug(s.name)}.glb"),
+                    },
                 }
             except Exception as e:  # noqa: BLE001 - record and keep measuring the others
                 run["errors"].append({"structure": s.name, "error": repr(e)})
