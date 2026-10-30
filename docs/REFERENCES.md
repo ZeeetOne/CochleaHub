@@ -47,6 +47,13 @@ Keys (e.g. `[Margeta2022]`) are used in `docs/DECISIONS.md` and in code comments
 - **[Neves2021]** Neves CA, et al. Fully automated preoperative segmentation of temporal bone
   structures from clinical CT scans. *Scientific Reports*, 2021. doi:10.1038/s41598-020-80619-0
 
+## Surface reconstruction
+
+- **[Lorensen1987]** Lorensen WE, Cline HE. Marching cubes: a high resolution 3D surface
+  construction algorithm. *Computer Graphics (SIGGRAPH '87)* 21(4):163–169, 1987.
+- **[Taubin1995]** Taubin G. A signal processing approach to fair surface design.
+  *SIGGRAPH '95*, 351–358, 1995.
+
 ## Imaging infrastructure
 
 - **[Yaniv2018]** Yaniv Z, et al. SimpleITK image-analysis notebooks: a collaborative environment
