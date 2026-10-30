@@ -2,9 +2,12 @@ import argparse
 import json
 import sys
 
-from cochleahub.config import settings
+from cochleahub.config import REPO_ROOT, settings
 from cochleahub.pipeline.dataset import find_specimen, manifest
+from cochleahub.pipeline.qc import quality_flags, summarize
+from cochleahub.pipeline.report import validation_markdown
 from cochleahub.pipeline.run import measure_specimen
+from cochleahub.pipeline.validate import validate_specimen
 
 
 def cmd_inspect(args: argparse.Namespace) -> int:
@@ -57,6 +60,29 @@ def cmd_measure(args: argparse.Namespace) -> int:
     return 0 if run["status"] != "failed" else 1
 
 
+def cmd_validate(args: argparse.Namespace) -> int:
+    files = find_specimen(settings.dataset_path, args.specimen)
+    outputs = settings.output_path / "outputs"
+    measurements = json.loads((outputs / f"{args.specimen}_measurements.json").read_text())
+
+    validation = validate_specimen(files, settings.output_path, settings.slicer_exe)
+    flags = quality_flags(measurements, validation)
+    validation["qc"] = {"summary": summarize(flags), "flags": flags}
+    (outputs / f"{args.specimen}_validation.json").write_text(json.dumps(validation, indent=2))
+
+    report = REPO_ROOT / "docs" / "validation" / f"{args.specimen}.md"
+    report.parent.mkdir(parents=True, exist_ok=True)
+    report.write_text(validation_markdown(measurements, validation), encoding="utf-8")
+
+    s = validation["qc"]["summary"]
+    print(f"QC {s['status']}: {s['error']} errors, {s['warning']} warnings, {s['info']} info")
+    for f in flags:
+        if f["severity"] != "info":
+            print(f"  {f['severity']:<7} {f['code']:<34} {f['structure'] or '-':<24} {f['message']}")
+    print(f"\nWrote {report}")
+    return 1 if s["status"] == "fail" else 0
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(prog="cochleahub")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -66,6 +92,9 @@ def main() -> None:
     p = sub.add_parser("measure", help="Measure structures, export meshes, compute distances")
     p.add_argument("--specimen", default=settings.specimen_id)
     p.set_defaults(func=cmd_measure)
+    p = sub.add_parser("validate", help="Compare with Slicer and dataset meshes, raise QC flags")
+    p.add_argument("--specimen", default=settings.specimen_id)
+    p.set_defaults(func=cmd_validate)
 
     args = parser.parse_args()
     sys.exit(args.func(args))
