@@ -1,0 +1,33 @@
+# Local development stack: PostgreSQL (measurements, specimens, pipeline runs)
+# and Orthanc with DICOMweb (CBCT archive). Run from repo root:
+#   docker compose -f infra/docker-compose.yml --env-file .env up -d
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-cochleahub}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cochleahub}
+      POSTGRES_DB: ${POSTGRES_DB:-cochleahub}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  orthanc:
+    image: orthancteam/orthanc:latest
+    environment:
+      ORTHANC__NAME: CochleaHub
+      ORTHANC__AUTHENTICATION_ENABLED: "false"
+      ORTHANC__DICOM_WEB__ENABLE: "true"
+      ORTHANC__DICOM_WEB__ROOT: /dicom-web/
+      # Allow the React dev server / OHIF to call DICOMweb from the browser
+      ORTHANC__HTTP_HEADERS: '{"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*", "Access-Control-Allow-Methods": "GET, POST, OPTIONS"}'
+    ports:
+      - "8042:8042"
+      - "4242:4242"
+    volumes:
+      - orthanc-db:/var/lib/orthanc/db
+
+volumes:
+  pgdata:
+  orthanc-db:
