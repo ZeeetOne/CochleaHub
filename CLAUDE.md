@@ -30,6 +30,8 @@ in Indonesian; code, comments, commits and docs are in English.
 
 ```bash
 backend/.venv/Scripts/cochleahub inspect          # dataset check + manifest
+backend/.venv/Scripts/cochleahub measure          # stage 2 metrics, meshes, distances
+backend/.venv/Scripts/cochleahub validate         # stage 3 validation + QC report
 backend/.venv/Scripts/python -m pytest backend    # tests
 cd backend && .venv/Scripts/uvicorn cochleahub.api.main:app --reload
 cd frontend && npm run dev | npm run build
@@ -46,5 +48,7 @@ docker compose -f infra/docker-compose.yml --env-file .env up -d
 - The "Scala Vestibuli" label (152 mm³, 18 mm long) appears to include vestibule and
   semicircular canals; cochlear dimensions use scala tympani only (D5).
 - Chorda tympani branches off the facial nerve, so their minimum distance is 0 mm (D6).
+- Headless Slicer: never call CreateClosedSurfaceRepresentation up front on the full
+  segmentation (hours instead of ~20 s); the stats script only falls back to it when needed.
 - CBCT DICOM files lack the DICM preamble (read with `force=True`); X/Y/Z folders are the same
   scan resliced sagittal/coronal/axial.

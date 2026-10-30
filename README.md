@@ -55,6 +55,8 @@ python -m venv .venv
 .venv/Scripts/activate                     # Windows; use .venv/bin/activate on Linux/macOS
 pip install -e ".[dev]"
 cochleahub inspect                         # verifies the dataset, writes data/outputs/zeta_manifest.json
+cochleahub measure                         # stage 2: metrics, meshes, distances
+cochleahub validate                        # stage 3: Slicer + dataset-mesh comparison, QC report (SLICER_EXE optional)
 pytest
 uvicorn cochleahub.api.main:app --reload   # http://localhost:8000/docs
 
@@ -85,7 +87,7 @@ Carotis Interna.
 
 - [x] **1. Data & exploration** — dataset loader, `cochleahub inspect`, manifest
 - [x] **2. Processing & measurement** — `cochleahub measure`: volume, dimensions, surface area per structure; cochlear A/B/height; `.glb` meshes; min distances between facial nerve, chorda tympani and cochlea
-- [ ] **3. Validation & QC** — compare with 3D Slicer Segment Statistics; out-of-range / broken-mesh flags
+- [x] **3. Validation & QC** — `cochleahub validate`: against headless 3D Slicer Segment Statistics and the dataset's published meshes; QC flags with severities and published ranges → [`docs/validation/zeta.md`](docs/validation/zeta.md)
 - [ ] **4. Cloud storage** — CBCT → Orthanc (DICOMweb) on EC2, meshes → S3, results → PostgreSQL
 - [ ] **5. Backend API** — specimens, measurements, distances, compare, pipeline runs (versioned)
 - [ ] **6. Dashboard & viewer** — Overview, Specimen detail (3D + table), Compare, Operations; OHIF/Cornerstone3D slice viewer
