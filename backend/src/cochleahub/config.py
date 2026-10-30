@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     dataset_root: Path = REPO_ROOT / "Dataset"
     specimen_id: str = "zeta"
     output_dir: Path = REPO_ROOT / "data"
+    # Optional: 3D Slicer executable for reference Segment Statistics (stage 3)
+    slicer_exe: Path | None = None
 
     database_url: str = "postgresql+psycopg://cochleahub:cochleahub@localhost:5432/cochleahub"
     orthanc_url: str = "http://localhost:8042"
