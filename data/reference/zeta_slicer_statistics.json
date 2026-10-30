@@ -1,0 +1,111 @@
+{
+  "tool": "3D Slicer Segment Statistics",
+  "slicer_version": "5.12.4",
+  "closed_surface_smoothing": "0.5",
+  "segments": [
+    {
+      "segment_id": "Segment_1",
+      "name": "Scala Tympani",
+      "voxel_count": 17741,
+      "volume_mm3": 34.650390625,
+      "surface_volume_mm3": 34.114871763962064,
+      "surface_area_mm2": 111.54449671443071
+    },
+    {
+      "segment_id": "Segment_2",
+      "name": "Scala Vestibuli",
+      "voxel_count": 77828,
+      "volume_mm3": 152.0078125,
+      "surface_volume_mm3": 150.9113009981603,
+      "surface_area_mm2": 373.91412555980094
+    },
+    {
+      "segment_id": "Segment_3",
+      "name": "Malleus",
+      "voxel_count": 8118,
+      "volume_mm3": 15.85546875,
+      "surface_volume_mm3": 15.667174507127214,
+      "surface_area_mm2": 43.384579785096854
+    },
+    {
+      "segment_id": "Segment_4",
+      "name": "Incus",
+      "voxel_count": 8633,
+      "volume_mm3": 16.861328125,
+      "surface_volume_mm3": 16.715789947385232,
+      "surface_area_mm2": 45.18300893340929
+    },
+    {
+      "segment_id": "Segment_5",
+      "name": "Stapes",
+      "voxel_count": 1722,
+      "volume_mm3": 3.36328125,
+      "surface_volume_mm3": 3.0932499484873706,
+      "surface_area_mm2": 23.98524461923176
+    },
+    {
+      "segment_id": "Segment_6",
+      "name": "Cochleovestibular nerve",
+      "voxel_count": 116773,
+      "volume_mm3": 228.072265625,
+      "surface_volume_mm3": 227.23413185124107,
+      "surface_area_mm2": 314.43394384291526
+    },
+    {
+      "segment_id": "Segment_7",
+      "name": "Facial Nerve",
+      "voxel_count": 24286,
+      "volume_mm3": 47.43359375,
+      "surface_volume_mm3": 46.94475941917144,
+      "surface_area_mm2": 136.991120052283
+    },
+    {
+      "segment_id": "Segment_8",
+      "name": "Chorda Tympani",
+      "voxel_count": 3035,
+      "volume_mm3": 5.927734375,
+      "surface_volume_mm3": 5.299293707927256,
+      "surface_area_mm2": 37.181622242154
+    },
+    {
+      "segment_id": "Segment_9",
+      "name": "Bone",
+      "voxel_count": 18179684,
+      "volume_mm3": 35507.1953125,
+      "surface_volume_mm3": 35538.97346915324,
+      "surface_area_mm2": 35044.510795184426
+    },
+    {
+      "segment_id": "Segment_11",
+      "name": "Tympanic Membrane",
+      "voxel_count": 21497,
+      "volume_mm3": 41.986328125,
+      "surface_volume_mm3": 41.462659132092526,
+      "surface_area_mm2": 185.47552922122756
+    },
+    {
+      "segment_id": "Segment_12",
+      "name": "External Auditory Canal",
+      "voxel_count": 376893,
+      "volume_mm3": 736.119140625,
+      "surface_volume_mm3": 735.5978759184973,
+      "surface_area_mm2": 578.0250915383918
+    },
+    {
+      "segment_id": "Segment_13",
+      "name": "Sinus Dura",
+      "voxel_count": 11926270,
+      "volume_mm3": 23293.49609375,
+      "surface_volume_mm3": 23291.44851697769,
+      "surface_area_mm2": 7656.373704177111
+    },
+    {
+      "segment_id": "Segment_10",
+      "name": "Carotis Interna",
+      "voxel_count": 187688,
+      "volume_mm3": 366.578125,
+      "surface_volume_mm3": 366.4139703410235,
+      "surface_area_mm2": 319.49591472443547
+    }
+  ]
+}
