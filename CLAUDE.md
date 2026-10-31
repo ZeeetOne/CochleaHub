@@ -38,7 +38,8 @@ cd backend && .venv/Scripts/alembic upgrade head  # schema migrations
 backend/.venv/Scripts/cochleahub load             # stage 4: run -> Postgres, meshes -> S3
 backend/.venv/Scripts/cochleahub upload-dicom     # stage 4: CBCT -> Orthanc
 backend/.venv/Scripts/python -m pytest backend    # tests
-cd backend && .venv/Scripts/uvicorn cochleahub.api.main:app --reload
+cd backend && .venv/Scripts/uvicorn cochleahub.api.main:app --reload   # stage 5, /api/v1
+backend/.venv/Scripts/cochleahub openapi          # docs/api/openapi.json (frontend types)
 cd frontend && npm run dev | npm run build
 docker compose -f infra/docker-compose.yml --env-file .env up -d
 ```

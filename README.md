@@ -58,7 +58,6 @@ cochleahub inspect                         # verifies the dataset, writes data/o
 cochleahub measure                         # stage 2: metrics, meshes, distances
 cochleahub validate                        # stage 3: Slicer + dataset-mesh comparison, QC report (SLICER_EXE optional)
 pytest
-uvicorn cochleahub.api.main:app --reload   # http://localhost:8000/docs
 
 # infra (Postgres :5432, Orthanc :8042, S3 API :8333)
 docker compose -f infra/docker-compose.yml --env-file .env up -d
@@ -66,12 +65,34 @@ cd backend
 alembic upgrade head                       # create / migrate the schema
 cochleahub load                            # stage 4: run + QC -> PostgreSQL, meshes -> S3
 cochleahub upload-dicom                    # stage 4: CBCT -> DICOM Part 10 -> Orthanc
+uvicorn cochleahub.api.main:app --reload   # stage 5: http://localhost:8000/docs
+cochleahub openapi                         # API schema -> docs/api/openapi.json
 
 # frontend
 cd frontend
 npm install
 npm run dev                                # http://localhost:5173
 ```
+
+## API
+
+Read-only, under `/api/v1` (OpenAPI: `http://localhost:8000/docs`, exported to
+[`docs/api/openapi.json`](docs/api/openapi.json)). Results come from a specimen's latest
+completed run unless `run_id` pins another one; each carries a `provenance` block (run id,
+pipeline version, QC status). Missing data return 404 saying what is missing.
+
+| Route | Content |
+|---|---|
+| `GET /health`, `/health/ready` | liveness; readiness of PostgreSQL, S3, Orthanc |
+| `GET /specimens`, `/specimens/{id}` | specimens with latest run and CT series |
+| `GET /specimens/{id}/measurements` | per-structure volume, area, dimensions, connectivity |
+| `GET /specimens/{id}/cochlea` | A, B, height with the published range and source |
+| `GET /specimens/{id}/distances` | minimum distances between critical structures |
+| `GET /specimens/{id}/meshes` | presigned glTF URLs (LPS) |
+| `GET /specimens/{id}/imaging` | DICOMweb root + series UIDs for the slice viewer |
+| `GET /runs`, `/runs/{id}`, `/runs/{id}/qc`, `/runs/{id}/validation` | operations view |
+| `GET /compare?metric=…&structure=…` | one metric across specimens + published range |
+| `GET /reference-ranges` | published ranges and their reference keys |
 
 ## Dataset: ZETA
 
@@ -93,7 +114,7 @@ Carotis Interna.
 - [x] **2. Processing & measurement** — `cochleahub measure`: volume, dimensions, surface area per structure; cochlear A/B/height; `.glb` meshes; min distances between facial nerve, chorda tympani and cochlea
 - [x] **3. Validation & QC** — `cochleahub validate`: against headless 3D Slicer Segment Statistics and the dataset's published meshes; QC flags with severities and published ranges → [`docs/validation/zeta.md`](docs/validation/zeta.md)
 - [x] **4. Storage (local, AWS-compatible)** — CBCT rewritten as DICOM Part 10 → Orthanc (DICOMweb); meshes → S3 API; runs, measurements, QC and validation → PostgreSQL (Alembic). AWS provisioning in stage 8
-- [ ] **5. Backend API** — specimens, measurements, distances, compare, pipeline runs (versioned)
+- [x] **5. Backend API** — read-only `/api/v1`: specimens, measurements, cochlea vs. published ranges, distances, compare, runs, QC, validation, presigned mesh URLs, DICOMweb series; every result carries its run and pipeline version → [API](#api)
 - [ ] **6. Dashboard & viewer** — Overview, Specimen detail (3D + table), Compare, Operations; OHIF/Cornerstone3D slice viewer
 - [ ] **7. AI assistant** — tool calling to the API, RAG over docs/literature, refuses clinical advice, abstains when data is missing
 - [ ] **8. Evaluation & deploy** — measurement validation table, 25-question assistant eval, AWS deploy, React vs. Power BI vs. Grafana comparison

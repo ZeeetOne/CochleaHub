@@ -100,11 +100,13 @@ says so.
 - **Checks on ZETA:** DICOMweb QIDO-RS lists both studies, WADO-RS returns series metadata and a
   rendered frame; mesh objects are downloadable through presigned URLs.
 
-## D9 — Read-only API, results tagged with pipeline version (accepted, stage 5 in progress)
+## D9 — Read-only API, results tagged with pipeline version (accepted, stage 5)
 
-- **Decision:** FastAPI, GET-only; every result carries `pipeline_version`.
+- **Decision:** FastAPI, GET-only; every run-derived result carries `pipeline_version` (in a
+  `provenance` block, D17).
 - **Basis:** Nautilus tags each analysis result with the version of the pipeline that produced it
   for traceability [Margeta2022].
+- **Check:** a test asserts the OpenAPI schema contains only GET operations.
 
 ## D10 — React + TypeScript dashboard, web 3D + DICOMweb slice viewer (planned, stage 6)
 
@@ -193,3 +195,35 @@ says so.
   questions that must be refused/abstained, scored for accuracy.
 - **Basis:** abstention evaluation follows [Lee2022]; per-stage accuracy reporting follows
   [Margeta2022].
+
+## D17 — API contract: versioned routes, run selection, explicit missing data (accepted, stage 5)
+
+- **Decision:**
+  - Routes live under `/api/v1`. Results come from the specimen's latest *completed* run, so a
+    newer failed run never replaces good results; `run_id` pins any run.
+  - Every run-derived response has a `provenance` block: run id, specimen, pipeline version,
+    start time, QC status.
+  - Missing data return 404 with a message naming what is missing (unknown specimen, no completed
+    run, run of another specimen, no cochlear dimensions). Comparisons keep specimens without a
+    value as `null` instead of dropping them.
+  - Cochlear dimensions and scala tympani volume are returned with the published range, its
+    population and its reference key, plus `in_range`.
+  - Meshes are served as short-lived (1 h) presigned S3 URLs; the bucket stays private.
+  - The CT viewer gets a same-origin DICOMweb root (`/dicom-web`), proxied to Orthanc by the dev
+    server now and by the edge in production, so Orthanc is never exposed directly.
+  - `/health` (liveness) and `/health/ready` (PostgreSQL, S3, Orthanc) for the operations page
+    and the load balancer.
+  - Pydantic response models define the OpenAPI schema (`docs/api/openapi.json`) that the
+    frontend types are generated from.
+- **Basis:** provenance per result [Margeta2022]. Telling answerable from unanswerable questions
+  [Lee2022] needs the data layer to say *what* is missing; the assistant (D11) relies on these
+  messages to abstain. Reference ranges as in D14 [Dhanasingh2021, Zahara2019]. DICOMweb as the
+  viewer protocol [Jodogne2018, Ziegler2020].
+- **No paper:** latest-completed-run selection, URL versioning, presigned URLs, readiness probes
+  and OpenAPI-generated types are engineering choices.
+- **Checks on ZETA:** readiness reports all three dependencies ok; 13 presigned mesh URLs
+  download (200) and the local S3 gateway answers CORS for the dev origin; QC returns 0 errors,
+  5 warnings, 10 info, errors first.
+- **Consequences:** the API is the single read path for both the dashboard and the assistant, so
+  every number either one shows can be traced to a run. Run lookups are per specimen (N+1 over
+  specimens): fine for a handful of specimens, to revisit if the dataset grows.
