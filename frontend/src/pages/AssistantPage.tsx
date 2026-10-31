@@ -20,6 +20,7 @@ type Turn = {
   answer?: Answer
   done?: Extract<AssistantEvent, { type: 'done' }>
   error?: string
+  guard?: number[]
 }
 
 const SUGGESTIONS = [
@@ -119,6 +120,12 @@ function TurnView({ turn, backend }: { turn: Turn; backend?: AssistantBackend })
           pending && <p className="prov">Thinking…</p>
         )}
         {turn.answer && <SourceList sources={turn.answer.sources} />}
+        {turn.guard && (
+          <p className="prov">
+            A first draft contained numbers not found in any source ({turn.guard.join(', ')}); it
+            was rewritten.
+          </p>
+        )}
         {turn.error && (
           <div className="notice error" role="status">
             {turn.error}
@@ -171,6 +178,8 @@ export function AssistantPage() {
               ),
             }))
           else if (e.type === 'text') update((t) => ({ ...t, streaming: t.streaming + e.text }))
+          // the draft had numbers no source backs: it is discarded and rewritten
+          else if (e.type === 'guard') update((t) => ({ ...t, streaming: '', guard: e.ungrounded }))
           else if (e.type === 'answer') update((t) => ({ ...t, answer: e }))
           else if (e.type === 'done') update((t) => ({ ...t, done: e }))
           else if (e.type === 'error') update((t) => ({ ...t, error: e.message }))

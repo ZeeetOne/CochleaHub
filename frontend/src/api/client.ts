@@ -168,6 +168,7 @@ export type AssistantEvent =
       usage: Record<string, number>
       rounds: number
     }
+  | { type: 'guard'; ungrounded: number[] }
   | { type: 'error'; message: string }
 
 /** POST + Server-Sent Events: EventSource only does GET, so the stream is read by hand. */
