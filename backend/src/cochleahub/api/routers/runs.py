@@ -11,6 +11,7 @@ from cochleahub.api import schemas
 from cochleahub.api.deps import get_session
 from cochleahub.api.queries import get_run, provenance
 from cochleahub.db.models import PipelineRun, QcFlag
+from cochleahub.pipeline import qc as checks
 
 router = APIRouter(prefix="/runs", tags=["runs"])
 
@@ -57,6 +58,12 @@ def qc(
         status=run.qc_status,
         counts={"error": run.qc_errors, "warning": run.qc_warnings, "info": run.qc_info},
         flags=flags,
+        tolerances={
+            "volume_rel_diff_vs_slicer": checks.VOLUME_TOLERANCE,
+            "surface_area_rel_diff_vs_slicer": checks.AREA_TOLERANCE,
+            "mesh_volume_rel_diff": checks.MESH_VOLUME_TOLERANCE,
+            "largest_component_fraction": checks.FRAGMENT_THRESHOLD,
+        },
     )
 
 

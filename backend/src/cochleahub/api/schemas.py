@@ -69,6 +69,10 @@ class QcReport(BaseModel):
     status: str | None
     counts: dict[str, int]
     flags: list[QcFlag]
+    tolerances: dict[str, float] = Field(
+        description="Limits the checks use in the current pipeline version (D14); the "
+        "surface-distance limit is one voxel per meshing step."
+    )
 
 
 class ValidationRow(Orm):

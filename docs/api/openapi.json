@@ -1375,6 +1375,14 @@
             },
             "type": "array",
             "title": "Flags"
+          },
+          "tolerances": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Tolerances",
+            "description": "Limits the checks use in the current pipeline version (D14); the surface-distance limit is one voxel per meshing step."
           }
         },
         "type": "object",
@@ -1382,7 +1390,8 @@
           "provenance",
           "status",
           "counts",
-          "flags"
+          "flags",
+          "tolerances"
         ],
         "title": "QcReport"
       },

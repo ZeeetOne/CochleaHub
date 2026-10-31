@@ -101,6 +101,7 @@ def test_qc_flags_and_filter(client):
     rid = client.run_ids["completed"]
     body = client.get(f"{V1}/runs/{rid}/qc").json()
     assert body["counts"] == {"error": 0, "warning": 1, "info": 0}
+    assert body["tolerances"]["volume_rel_diff_vs_slicer"] == 0.01
     assert client.get(f"{V1}/runs/{rid}/qc", params={"severity": "error"}).json()["flags"] == []
 
 
