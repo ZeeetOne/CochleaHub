@@ -60,8 +60,12 @@ cochleahub validate                        # stage 3: Slicer + dataset-mesh comp
 pytest
 uvicorn cochleahub.api.main:app --reload   # http://localhost:8000/docs
 
-# infra
-docker compose -f infra/docker-compose.yml --env-file .env up -d   # Postgres :5432, Orthanc :8042
+# infra (Postgres :5432, Orthanc :8042, S3 API :8333)
+docker compose -f infra/docker-compose.yml --env-file .env up -d
+cd backend
+alembic upgrade head                       # create / migrate the schema
+cochleahub load                            # stage 4: run + QC -> PostgreSQL, meshes -> S3
+cochleahub upload-dicom                    # stage 4: CBCT -> DICOM Part 10 -> Orthanc
 
 # frontend
 cd frontend
@@ -88,7 +92,7 @@ Carotis Interna.
 - [x] **1. Data & exploration** — dataset loader, `cochleahub inspect`, manifest
 - [x] **2. Processing & measurement** — `cochleahub measure`: volume, dimensions, surface area per structure; cochlear A/B/height; `.glb` meshes; min distances between facial nerve, chorda tympani and cochlea
 - [x] **3. Validation & QC** — `cochleahub validate`: against headless 3D Slicer Segment Statistics and the dataset's published meshes; QC flags with severities and published ranges → [`docs/validation/zeta.md`](docs/validation/zeta.md)
-- [ ] **4. Cloud storage** — CBCT → Orthanc (DICOMweb) on EC2, meshes → S3, results → PostgreSQL
+- [x] **4. Storage (local, AWS-compatible)** — CBCT rewritten as DICOM Part 10 → Orthanc (DICOMweb); meshes → S3 API; runs, measurements, QC and validation → PostgreSQL (Alembic). AWS provisioning in stage 8
 - [ ] **5. Backend API** — specimens, measurements, distances, compare, pipeline runs (versioned)
 - [ ] **6. Dashboard & viewer** — Overview, Specimen detail (3D + table), Compare, Operations; OHIF/Cornerstone3D slice viewer
 - [ ] **7. AI assistant** — tool calling to the API, RAG over docs/literature, refuses clinical advice, abstains when data is missing

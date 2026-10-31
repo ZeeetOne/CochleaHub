@@ -23,7 +23,9 @@ in Indonesian; code, comments, commits and docs are in English.
 - `backend/src/cochleahub/db` — SQLAlchemy models (stage 4)
 - `backend/src/cochleahub/assistant` — LLM tool calling + RAG (stage 7)
 - `frontend/` — Vite + React + TypeScript dashboard (stage 6)
-- `infra/` — docker-compose (Postgres, Orthanc DICOMweb); AWS deploy later (stage 8)
+- `backend/src/cochleahub/storage` — S3 object store, DICOM Part 10 rewrite + Orthanc upload (stage 4)
+- `backend/alembic` — schema migrations
+- `infra/` — docker-compose (Postgres, Orthanc DICOMweb, SeaweedFS S3); AWS deploy later (stage 8)
 - `data/` — generated outputs, git-ignored
 
 ## Commands
@@ -32,6 +34,9 @@ in Indonesian; code, comments, commits and docs are in English.
 backend/.venv/Scripts/cochleahub inspect          # dataset check + manifest
 backend/.venv/Scripts/cochleahub measure          # stage 2 metrics, meshes, distances
 backend/.venv/Scripts/cochleahub validate         # stage 3 validation + QC report
+cd backend && .venv/Scripts/alembic upgrade head  # schema migrations
+backend/.venv/Scripts/cochleahub load             # stage 4: run -> Postgres, meshes -> S3
+backend/.venv/Scripts/cochleahub upload-dicom     # stage 4: CBCT -> Orthanc
 backend/.venv/Scripts/python -m pytest backend    # tests
 cd backend && .venv/Scripts/uvicorn cochleahub.api.main:app --reload
 cd frontend && npm run dev | npm run build
