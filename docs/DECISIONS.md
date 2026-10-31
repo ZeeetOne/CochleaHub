@@ -84,13 +84,21 @@ says so.
   area, so the gap on anatomy is a smoothing effect on thin, curved structures (stapes, chorda
   tympani), not an error of either tool: area is reported as method-dependent.
 
-## D8 — Storage: Orthanc (DICOMweb) + S3 + PostgreSQL (planned, stage 4)
+## D8 — Storage: Orthanc (DICOMweb) + S3 + PostgreSQL (accepted locally, stage 4)
 
 - **Decision:** CBCT DICOM in Orthanc with the DICOMweb plugin; meshes in S3; specimens,
-  measurements and pipeline runs in PostgreSQL. Production path: AWS HealthImaging.
+  measurements, pipeline runs, QC flags and validation results in PostgreSQL. Production path:
+  RDS for PostgreSQL, S3, Orthanc on EC2 (or AWS HealthImaging). Locally the same three roles
+  run in `infra/docker-compose.yml`; code reaches S3 through boto3, so only the endpoint differs.
 - **Basis:** Orthanc is a lightweight open-source DICOM server with REST API and DICOMweb plugin
   [Jodogne2018]; Imaging Data Commons stores DICOM in the cloud behind a web viewer
   [Fedorov2023]; Nautilus uses PostgreSQL [Margeta2022].
+- **Scope:** only the axial (Z) series of each CBCT is archived (481 + 401 instances): X/Y/Z
+  are the same volume resliced, and the viewer reslices itself.
+- **Local S3 emulation (engineering, no paper):** MinIO images could not be pulled from Docker
+  Hub or Quay (October 2026), so SeaweedFS's S3 gateway is used locally.
+- **Checks on ZETA:** DICOMweb QIDO-RS lists both studies, WADO-RS returns series metadata and a
+  rendered frame; mesh objects are downloadable through presigned URLs.
 
 ## D9 — Read-only API, results tagged with pipeline version (accepted, stage 5 in progress)
 
@@ -157,6 +165,27 @@ says so.
 - **Finding:** the landmark-free cochlear height proxy (4.36 mm) exceeds the published H range;
   the bounding box spans the outer envelope of the scala, while H is measured from the basal
   turn to the apex. The flag surfaces this limitation of D5 instead of hiding it.
+
+## D15 — Rewrite CBCT files as DICOM Part 10 before archiving (accepted, stage 4)
+
+- **Context:** OpenEar's CBCT files are bare datasets (implicit VR little endian) with no
+  128-byte preamble, no "DICM" prefix and no File Meta Information.
+- **Decision:** rewrite each file with a File Meta header (Media Storage SOP Class/Instance UID
+  from the file itself, Transfer Syntax implicit VR little endian), then upload to Orthanc.
+- **Basis:** the DICOM file format requires the preamble, prefix and File Meta group
+  [DICOM-PS3.10]; archives exchange Part 10 files [Jodogne2018].
+- **Check on ZETA:** pixel data byte-identical for all 882 files; all other elements kept except
+  the group-length elements (gggg,0000), retired outside group 0002 [DICOM-PS3.5], which pydicom
+  drops when writing.
+
+## D16 — Run-centred schema with migrations (accepted, stage 4)
+
+- **Decision:** every structure measurement, cochlear dimension, distance, QC flag and validation
+  row references a `pipeline_runs` row that stores the pipeline version, status, timing and QC
+  summary; mesh objects are keyed `meshes/<specimen>/<run id>/…`. Loading is idempotent per
+  (specimen, run start time). Schema changes go through Alembic migrations.
+- **Basis:** traceability of each result to the pipeline version that produced it
+  [Margeta2022]. Alembic and the idempotent loader are engineering choices.
 
 ## D12 — Evaluation (planned, stage 8)
 

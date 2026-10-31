@@ -73,6 +73,10 @@ Keys (e.g. `[Margeta2022]`) are used in `docs/DECISIONS.md` and in code comments
   *JCO Clin Cancer Inform* 4:336–345, 2020. PMC7259879
 - **[Fedorov2023]** Fedorov A, et al. National Cancer Institute Imaging Data Commons.
   *RadioGraphics*, 2023. doi:10.1148/rg.230180
+- **[DICOM-PS3.10]** NEMA. Digital Imaging and Communications in Medicine (DICOM) Part 10:
+  Media Storage and File Format for Media Interchange. NEMA PS3.10 / ISO 12052.
+- **[DICOM-PS3.5]** NEMA. Digital Imaging and Communications in Medicine (DICOM) Part 5: Data
+  Structures and Encoding. NEMA PS3.5 / ISO 12052.
 - **[Fedorov2012]** Fedorov A, et al. 3D Slicer as an image computing platform for the
   Quantitative Imaging Network. *Magn Reson Imaging* 30:1323–1341, 2012.
 
