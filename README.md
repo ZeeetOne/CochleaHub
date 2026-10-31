@@ -230,6 +230,14 @@ Carotis Interna.
 - [x] **7. AI assistant** — agent loop over the API + hybrid RAG with native citations; Claude or a local model; refuses clinical advice, says what is missing; every turn logged
 - [ ] **8. Evaluation & deploy** — assistant evaluation (both backends done; local mitigations next), dashboard-tool comparison (done), AWS deployment (prepared, not yet applied)
 
+### Later
+
+- **Document upload** for the assistant's knowledge base (protocols, papers, de-identified
+  case reports), with a staged ingestion pipeline. Patient reports need access control,
+  de-identification and deletion first; they will be designed before they are built.
+- **RAG storage in PostgreSQL** (pgvector + full-text search) once documents can change at run
+  time. At the current 87 static passages an in-memory index is exact and fast enough (D19).
+
 ## Design basis
 
 [`docs/DECISIONS.md`](docs/DECISIONS.md) (decision log, D1–D22) and
