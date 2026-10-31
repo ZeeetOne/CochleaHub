@@ -131,3 +131,78 @@ export const useComparison = (metric: Metric, structure?: string) =>
     queryFn: () => get<Schemas['Comparison']>('/compare', { metric, structure }),
     staleTime: STALE,
   })
+
+// --- assistant (stage 7) ----------------------------------------------------------------------
+
+export type AssistantBackend = 'claude' | 'local'
+
+export const useAssistantStatus = () =>
+  useQuery({
+    queryKey: ['assistant-status'],
+    queryFn: () => get<Schemas['AssistantStatus']>('/assistant/status'),
+    refetchInterval: 60_000,
+  })
+
+export type AssistantSource = { index: number; source: string; title: string; text?: string }
+
+/** Events of POST /assistant/chat (see backend assistant/agent.py). */
+export type AssistantEvent =
+  | { type: 'conversation'; id: string; backend: AssistantBackend; model: string }
+  | { type: 'tool_call'; id: string; name: string; input: unknown }
+  | {
+      type: 'tool_result'
+      id: string
+      name: string
+      ok: boolean
+      summary: string
+      error: string | null
+      sources: AssistantSource[]
+    }
+  | { type: 'text'; text: string }
+  | { type: 'answer'; blocks: { text: string; citations: number[] }[]; sources: AssistantSource[] }
+  | {
+      type: 'done'
+      stop_reason: string
+      backend: AssistantBackend
+      model: string
+      usage: Record<string, number>
+      rounds: number
+    }
+  | { type: 'error'; message: string }
+
+/** POST + Server-Sent Events: EventSource only does GET, so the stream is read by hand. */
+export async function askAssistant(
+  body: { question: string; conversation_id?: string; backend?: AssistantBackend },
+  onEvent: (e: AssistantEvent) => void,
+  signal?: AbortSignal,
+) {
+  const res = await fetch(`${BASE}/assistant/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+    signal,
+  })
+  if (!res.ok || !res.body) {
+    let detail = res.statusText
+    try {
+      detail = (await res.json()).detail ?? detail
+    } catch {
+      /* keep status text */
+    }
+    throw new ApiError(res.status, detail)
+  }
+  const reader = res.body.pipeThrough(new TextDecoderStream()).getReader()
+  let buffer = ''
+  for (;;) {
+    const { value, done } = await reader.read()
+    if (done) break
+    buffer += value
+    let cut
+    while ((cut = buffer.indexOf('\n\n')) >= 0) {
+      const frame = buffer.slice(0, cut)
+      buffer = buffer.slice(cut + 2)
+      for (const line of frame.split('\n'))
+        if (line.startsWith('data: ')) onEvent(JSON.parse(line.slice(6)) as AssistantEvent)
+    }
+  }
+}

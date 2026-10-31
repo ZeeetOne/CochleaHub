@@ -284,10 +284,100 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/assistant/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Status */
+        get: operations["status_api_v1_assistant_status_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assistant/conversations/{conversation_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Conversation */
+        get: operations["conversation_api_v1_assistant_conversations__conversation_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assistant/chat": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Chat
+         * @description Answer one question as a Server-Sent Events stream (see assistant/agent.py for the
+         *     event types). The first event is `{"type": "conversation", "id": ...}`.
+         */
+        post: operations["chat_api_v1_assistant_chat_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AssistantStatus */
+        AssistantStatus: {
+            /**
+             * Default
+             * @enum {string}
+             */
+            default: "claude" | "local";
+            /** Backends */
+            backends: {
+                [key: string]: components["schemas"]["BackendStatus"];
+            };
+        };
+        /** BackendStatus */
+        BackendStatus: {
+            /** Available */
+            available: boolean;
+            /** Model */
+            model: string;
+            /** Where */
+            where: string;
+            /** Reason */
+            reason?: string | null;
+        };
+        /** ChatRequest */
+        ChatRequest: {
+            /** Question */
+            question: string;
+            /** Conversation Id */
+            conversation_id?: string | null;
+            /**
+             * Backend
+             * @description Default: LLM_BACKEND setting.
+             */
+            backend?: ("claude" | "local") | null;
+        };
         /** Cochlea */
         Cochlea: {
             provenance: components["schemas"]["Provenance"];
@@ -645,6 +735,30 @@ export interface components {
             connected_components: number;
             /** Largest Component Fraction */
             largest_component_fraction: number;
+        };
+        /** Turn */
+        Turn: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Question */
+            question: string;
+            /** Answer */
+            answer: string;
+            /** Tool Calls */
+            tool_calls: unknown[];
+            /** Sources */
+            sources: unknown[];
+            /** Stop Reason */
+            stop_reason: string | null;
+            /** Model */
+            model: string | null;
+            /** Latency S */
+            latency_s: number | null;
+            /** Error */
+            error: string | null;
         };
         /** ValidationError */
         ValidationError: {
@@ -1138,6 +1252,91 @@ export interface operations {
                     "application/json": {
                         [key: string]: components["schemas"]["ReferenceRange"];
                     };
+                };
+            };
+        };
+    };
+    status_api_v1_assistant_status_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistantStatus"];
+                };
+            };
+        };
+    };
+    conversation_api_v1_assistant_conversations__conversation_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                conversation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Turn"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    chat_api_v1_assistant_chat_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChatRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                    "text/event-stream": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

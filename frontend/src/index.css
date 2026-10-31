@@ -409,3 +409,103 @@ label.check {
     grid-template-columns: 1fr;
   }
 }
+
+/* assistant */
+.backend-option {
+  align-items: flex-start;
+  margin-right: 18px;
+}
+.chat {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.suggestions .btn {
+  text-align: left;
+}
+.turn {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.bubble {
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  max-width: 920px;
+}
+.bubble.user {
+  align-self: flex-end;
+  background: var(--surface-2);
+}
+.bubble.bot {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+}
+.steps {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+}
+.answer p {
+  margin: 0 0 8px;
+}
+.answer table {
+  width: auto;
+  margin: 6px 0;
+}
+.answer sup a {
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0 1px;
+}
+.sources {
+  margin: 10px 0 6px;
+  padding-left: 22px;
+  border-top: 1px solid var(--grid);
+  padding-top: 8px;
+  font-size: 12px;
+}
+.sources li {
+  margin-bottom: 4px;
+}
+.source-title {
+  color: var(--text-secondary);
+}
+.composer {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  position: sticky;
+  bottom: 0;
+  background: var(--page);
+  padding: 10px 0;
+}
+.composer textarea {
+  flex: 1;
+  font: inherit;
+  color: var(--text-primary);
+  background: var(--surface-1);
+  border: 1px solid var(--axis);
+  border-radius: 8px;
+  padding: 8px 10px;
+  resize: vertical;
+}
+button.btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+button.btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
