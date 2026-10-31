@@ -83,6 +83,63 @@ def cmd_validate(args: argparse.Namespace) -> int:
     return 1 if s["status"] == "fail" else 0
 
 
+def cmd_load(args: argparse.Namespace) -> int:
+    from cochleahub.db.load import load_run
+    from cochleahub.db.session import SessionLocal
+    from cochleahub.storage.objects import ObjectStore
+
+    outputs = settings.output_path / "outputs"
+    measurements = json.loads((outputs / f"{args.specimen}_measurements.json").read_text())
+    validation_path = outputs / f"{args.specimen}_validation.json"
+    if not validation_path.exists():
+        print("Run `cochleahub validate` first: runs are stored with their QC.", file=sys.stderr)
+        return 1
+    validation = json.loads(validation_path.read_text())
+
+    with SessionLocal.begin() as session:
+        run, created = load_run(
+            session, args.specimen, measurements, validation,
+            settings.output_path / "meshes" / args.specimen, ObjectStore(),
+        )
+        verb = "Loaded" if created else "Already loaded"
+        print(f"{verb} run {run.id} ({len(run.structures)} structures, "
+              f"{len(run.distances)} distances, {len(run.qc_flags)} QC flags, "
+              f"{len(run.validations)} validation rows) -> bucket {settings.s3_mesh_bucket}")
+    return 0
+
+
+# Axial series uploaded by default: the viewer reslices the other planes itself
+DEFAULT_SERIES = {
+    "cbct_embedded_axial": "02_CBCT_Embedded/DICOM_*_Z",
+    "cbct_unembedded_axial": "01_CBCT_Unembedded/DICOM_*_Z",
+}
+
+
+def cmd_upload_dicom(args: argparse.Namespace) -> int:
+    from cochleahub.db.load import record_series
+    from cochleahub.db.session import SessionLocal
+    from cochleahub.storage.dicom import Orthanc, prepare_series
+
+    orthanc = Orthanc(settings.orthanc_url)
+    for label, pattern in DEFAULT_SERIES.items():
+        src = next(iter(sorted(settings.dataset_path.glob(pattern))), None)
+        if src is None:
+            print(f"skip {label}: nothing matches {pattern}", file=sys.stderr)
+            continue
+        dst = settings.output_path / "dicom" / args.specimen / label
+        info = prepare_series(src, dst, label)
+        info.orthanc_series_id = orthanc.upload_series(dst)
+        stored = orthanc.series_instance_count(info.orthanc_series_id)
+        if stored != info.n_instances:
+            print(f"{label}: Orthanc holds {stored}/{info.n_instances} instances", file=sys.stderr)
+            return 1
+        with SessionLocal.begin() as session:
+            record_series(session, args.specimen, info)
+        print(f"{label}: {stored} instances -> Orthanc series {info.orthanc_series_id} "
+              f"(SeriesInstanceUID {info.series_instance_uid})")
+    return 0
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(prog="cochleahub")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -95,6 +152,12 @@ def main() -> None:
     p = sub.add_parser("validate", help="Compare with Slicer and dataset meshes, raise QC flags")
     p.add_argument("--specimen", default=settings.specimen_id)
     p.set_defaults(func=cmd_validate)
+    p = sub.add_parser("load", help="Store a validated run in PostgreSQL and its meshes in S3")
+    p.add_argument("--specimen", default=settings.specimen_id)
+    p.set_defaults(func=cmd_load)
+    p = sub.add_parser("upload-dicom", help="Rewrite CBCT as DICOM Part 10 and upload to Orthanc")
+    p.add_argument("--specimen", default=settings.specimen_id)
+    p.set_defaults(func=cmd_upload_dicom)
 
     args = parser.parse_args()
     sys.exit(args.func(args))
