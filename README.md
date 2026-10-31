@@ -67,6 +67,11 @@ cochleahub load                            # stage 4: run + QC -> PostgreSQL, me
 cochleahub upload-dicom                    # stage 4: CBCT -> DICOM Part 10 -> Orthanc
 uvicorn cochleahub.api.main:app --reload   # stage 5: http://localhost:8000/docs
 cochleahub openapi                         # API schema -> docs/api/openapi.json
+cochleahub index-docs                      # stage 7: assistant documentation index (local embeddings)
+
+# assistant backends: set ANTHROPIC_API_KEY for Claude, and/or run a local model
+docker compose -f infra/docker-compose.yml --env-file .env --profile local-llm up -d ollama
+docker exec infra-ollama-1 ollama pull qwen3:4b
 
 # frontend (needs the API on :8000 and Orthanc on :8042; Vite proxies /api and /dicom-web)
 cd frontend
@@ -94,6 +99,7 @@ pipeline version, QC status). Missing data return 404 saying what is missing.
 | `GET /runs`, `/runs/{id}`, `/runs/{id}/qc`, `/runs/{id}/validation` | operations view |
 | `GET /compare?metric=…&structure=…` | one metric across specimens + published range |
 | `GET /reference-ranges` | published ranges and their reference keys |
+| `GET /assistant/status`, `POST /assistant/chat` (SSE), `GET /assistant/conversations/{id}` | assistant: backend availability, streamed answers with tool steps and cited sources, logged turns |
 
 ## Dataset: ZETA
 
@@ -117,7 +123,7 @@ Carotis Interna.
 - [x] **4. Storage (local, AWS-compatible)** — CBCT rewritten as DICOM Part 10 → Orthanc (DICOMweb); meshes → S3 API; runs, measurements, QC and validation → PostgreSQL (Alembic). AWS provisioning in stage 8
 - [x] **5. Backend API** — read-only `/api/v1`: specimens, measurements, cochlea vs. published ranges, distances, compare, runs, QC, validation, presigned mesh URLs, DICOMweb series; every result carries its run and pipeline version → [API](#api)
 - [x] **6. Dashboard & viewer** — Overview, Specimen (3D anatomy with measured distances, cochlea vs. published range, CT axial/coronal/sagittal via Cornerstone3D + DICOMweb, measurement table), Compare, Operations (services, runs, QC flags, validation charts)
-- [ ] **7. AI assistant** — tool calling to the API, RAG over docs/literature, refuses clinical advice, abstains when data is missing
+- [x] **7. AI assistant** — agent loop over the read-only API + hybrid RAG (BM25 + local embeddings, RRF) over the docs, native citations; Claude (API, or Bedrock EU in production) or a local model on Ollama; refuses clinical advice, says what is missing; every turn logged for evaluation
 - [ ] **8. Evaluation & deploy** — measurement validation table, 25-question assistant eval, AWS deploy, React vs. Power BI vs. Grafana comparison
 
 ## Design basis

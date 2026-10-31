@@ -15,6 +15,8 @@ in Indonesian; code, comments, commits and docs are in English.
 3. **Never modify, move or delete anything in `Dataset/`** (read-only source data, including
    `ZETA.zip`, which the owner keeps locally). Never commit it.
 4. Not a clinical tool: the assistant must refuse medical advice and abstain when data are missing.
+5. Outdated library or method? Check current best practice online; when it gives a real
+   advantage, use it and record "paper X uses A; we use B because …" in DECISIONS.md.
 
 ## Layout
 
@@ -40,9 +42,11 @@ backend/.venv/Scripts/cochleahub upload-dicom     # stage 4: CBCT -> Orthanc
 backend/.venv/Scripts/python -m pytest backend    # tests
 cd backend && .venv/Scripts/uvicorn cochleahub.api.main:app --reload   # stage 5, /api/v1
 backend/.venv/Scripts/cochleahub openapi          # docs/api/openapi.json (frontend types)
+backend/.venv/Scripts/cochleahub index-docs       # assistant retrieval index (stage 7)
 cd frontend && npm run dev | npm run build   # dev proxies /api -> :8000, /dicom-web -> :8042
 cd frontend && npm run gen:api                # TS types from docs/api/openapi.json
 docker compose -f infra/docker-compose.yml --env-file .env up -d
+docker compose -f infra/docker-compose.yml --env-file .env --profile local-llm up -d ollama  # local LLM
 ```
 
 ## Data notes (OpenEar ZETA)

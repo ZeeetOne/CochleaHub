@@ -90,3 +90,22 @@ Keys (e.g. `[Margeta2022]`) are used in `docs/DECISIONS.md` and in code comments
   tabular reasoning on electronic health records. EMNLP 2024.
 - **[Lee2022]** Lee G, et al. EHRSQL: a practical text-to-SQL benchmark for electronic health
   records. NeurIPS 2022 Datasets and Benchmarks.
+- **[Zakka2024]** Zakka C, et al. Almanac — retrieval-augmented language models for clinical
+  medicine. *NEJM AI* 1(2), 2024. doi:10.1056/AIoa2300068
+- **[Wiest2024]** Wiest IC, et al. Privacy-preserving large language models for structured
+  medical information retrieval. *npj Digital Medicine* 7:257, 2024.
+  doi:10.1038/s41746-024-01233-2
+- **[Singhal2023]** Singhal K, et al. Large language models encode clinical knowledge.
+  *Nature* 620:172–180, 2023. doi:10.1038/s41586-023-06291-2
+
+## Information retrieval
+
+- **[Robertson2009]** Robertson S, Zaragoza H. The probabilistic relevance framework: BM25 and
+  beyond. *Foundations and Trends in Information Retrieval* 3(4):333–389, 2009.
+- **[Thakur2021]** Thakur N, et al. BEIR: a heterogeneous benchmark for zero-shot evaluation of
+  information retrieval models. NeurIPS 2021 Datasets and Benchmarks. arXiv:2104.08663
+- **[Cormack2009]** Cormack GV, Clarke CLA, Büttcher S. Reciprocal rank fusion outperforms
+  Condorcet and individual rank learning methods. *SIGIR 2009*, 758–759.
+  doi:10.1145/1571941.1572114
+- **[Xiao2024]** Xiao S, et al. C-Pack: packed resources for general Chinese embeddings
+  (introduces the BGE embedding models). *SIGIR 2024*. arXiv:2309.07597

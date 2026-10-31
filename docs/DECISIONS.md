@@ -120,17 +120,25 @@ says so.
   so the comparison will be our own.
 - **Details:** D18.
 
-## D11 — AI assistant: tool calling over the API + RAG, with refusal/abstention (planned, stage 7)
+## D11 — AI assistant: tool calling over the API + RAG, with refusal/abstention (accepted, stage 7)
 
-- **Decision:** an agent loop where the LLM calls the read-only API as tools for data questions,
-  retrieves from a corpus (user guide + literature summaries) for concept questions, refuses
-  clinical advice and answers "unknown" when data are absent.
-- **Basis:** interleaving reasoning and tool actions [Yao2023]; clinical data QA framed as tool
-  planning [Shi2024]; retrieval-augmented generation [Lewis2020]; distinguishing answerable from
-  unanswerable questions [Lee2022].
-- **Consequences:** the assistant never sees raw voxels, only API results → answers are
-  traceable to versioned measurements (D9). LLM provider (Claude) is an engineering choice, not
-  paper-based.
+- **Decision:**
+  - An agent loop in which the LLM calls the read-only API as tools for data questions and
+    searches a documentation corpus for concept questions.
+  - It cites both kinds of source, refuses clinical advice, and says what is missing when data
+    are absent.
+  - Details: D19 (retrieval), D20 (backends and guardrails).
+- **Basis:**
+  - Interleaving reasoning and tool actions [Yao2023].
+  - Clinical data QA framed as tool planning over structured data [Shi2024].
+  - Retrieval-augmented generation [Lewis2020]; RAG with citations for clinical questions,
+    evaluated for factuality and adversarial safety [Zakka2024].
+  - Distinguishing answerable from unanswerable questions [Lee2022].
+- **Consequences:**
+  - The assistant never sees raw voxels or images, only API results. Its numbers are traceable
+    to versioned runs (D9, D17).
+  - The tools call the same `/api/v1` routes in-process (ASGI transport), so the assistant
+    cannot see anything the dashboard cannot.
 
 ## D13 — Meshes: marching cubes + Taubin smoothing, glTF for the web (accepted, stage 2)
 
@@ -288,3 +296,85 @@ says so.
   - the production build succeeds.
   - Bundle sizes: three.js loads only on the specimen page (≈1 MB) and Cornerstone only when the
     CT viewer opens (≈3.6 MB, ≈1 MB gzip).
+
+## D19 — Assistant retrieval: hybrid BM25 + dense, fused with RRF, cited natively (accepted, stage 7)
+
+- **Paper method vs. ours:**
+  - RAG [Lewis2020] retrieves with a dense retriever (DPR) only.
+  - We fuse BM25 [Robertson2009] with dense embeddings (BGE-small [Xiao2024], local ONNX via
+    fastembed) using Reciprocal Rank Fusion (k = 60) [Cormack2009].
+  - Why: BEIR [Thakur2021] showed that dense retrievers often fall behind BM25 outside their
+    training domain, and our corpus is a narrow technical domain full of exact codes
+    (OUT_OF_PUBLISHED_RANGE, D14, Zahara2019). RRF needs no score calibration between the two.
+  - Observed on our corpus: the query "why SeaweedFS instead of MinIO" ranks the right section
+    (D8) 1st with BM25 and 13th with the dense model; the fused ranking keeps it 1st.
+  - Paraphrased questions ("how close is the nerve to the cochlea") are matched by both.
+- **Corpus:**
+  - `docs/knowledge/` (measurements, dataset, user guide), `DECISIONS.md`, `REFERENCES.md` and
+    the validation report.
+  - Chunked per `##` section with the document and section title kept, so a passage stands on
+    its own: 55 passages.
+  - The knowledge pages state only facts already verified in this project; specimen numbers
+    always come from the API, never from the corpus.
+- **Citations:**
+  - Claude: every tool result (data and documentation) is sent as a `search_result` block, so
+    the API returns citations that point at the exact source (`search_result_location`).
+  - Local model: the same sources are numbered [S1]… in the tool result and resolved from the
+    answer text.
+  - Data sources are identified by API path + run id, documentation by `path#section`.
+- **Local, no vendor:** embeddings and the index run on the machine. Building the index sends
+  nothing out.
+- **Not done, on purpose:** cross-encoder re-ranking. BEIR shows re-rankers are the most
+  accurate but costly; with 55 passages, hybrid retrieval already places the relevant section
+  first on our checks. To be measured in the stage 8 evaluation before adding it.
+
+## D20 — Assistant backends and guardrails: Claude (API / Bedrock EU) or a local model (accepted, stage 7)
+
+- **Context:** clinicians would use the tool on patient data in an EU hospital. Sending
+  requests to an external LLM service then needs a legal basis and a contract under GDPR, and in
+  France health-data hosting rules apply.
+- **Decision:** one agent loop with two interchangeable backends, chosen by configuration:
+  - `claude`:
+    - Development: Claude through the Claude API (`claude-opus-5-5`, adaptive thinking,
+      effort `medium`).
+    - Production: `LLM_PROVIDER=bedrock` uses Claude on Amazon Bedrock in the deployment's AWS
+      region (eu-west-3, Paris), so requests stay in the operator's AWS account and region.
+  - `local`:
+    - An open-weight model (`qwen3:4b`) served by Ollama inside the hospital network
+      (`docker compose --profile local-llm`). Nothing leaves the machine.
+    - Locally deployed open LLMs have handled clinical text while keeping data on premises
+      [Wiest2024].
+  - Both backends see only API results and documentation passages, never images or patient
+    identifiers (data minimisation).
+- **Guardrails:**
+  - A frozen system prompt: numbers only from tools, with run and version; say what is missing
+    rather than guess [Lee2022]; no diagnosis, treatment or patient-specific implant/electrode
+    advice, with a short reason and an offer of what it can do. Harm is one of the axes
+    clinicians use to judge medical LLM answers [Singhal2023].
+  - Missing data reach the model as tool errors carrying the API's own message (D17).
+  - Tool inputs are validated before execution. Tool rounds are capped (8).
+  - Claude `refusal` stop reasons are surfaced. Server-side fallback (`fallbacks: "default"`)
+    retries a safety-classifier decline on another model (Claude API only; not on Bedrock).
+- **Audit trail:** every conversation (in the backend's own message format, with all sources
+  shown to the model) and every turn (question, answer, tools called, sources cited, stop
+  reason, tokens, latency) is stored in PostgreSQL. Stage 8 scores these turns.
+- **Engineering, no paper:**
+  - The choice of Claude, the choice of `qwen3:4b` (a 4B model with good community reports on tool
+    calling that fits a 4 GB GPU; to be compared with alternatives in stage 8), Ollama, Server-Sent Events, and storing conversations.
+  - Prompt caching: system prompt and tools are a stable prefix.
+  - The local backend asks Ollama to return reasoning separately (`think=True`) and drops it,
+    because with `think=False` qwen3 wrote its reasoning into the answer. Ollama's default
+    context is raised to 8,192 tokens because a few tool rounds exceed it and longer prompts are
+    silently truncated.
+- **Checks on ZETA:**
+  - 38 backend tests pass. They cover the tool layer on the real API routes, the agent loop
+    (tool → answer, missing data, round cap, refusal), source numbering, the SSE endpoint with
+    the conversation log, and the Claude backend's request and citation parsing against real SDK
+    types.
+  - Live, local backend (qwen3:4b, GTX 1650 4 GB): "How far is the facial nerve from the scala
+    tympani in ZETA?" was answered correctly (1.18 mm), cited to the run (19ac527c, pipeline
+    v0.1.0). It took 4 model rounds and 422 s. A height question also returned the right value
+    (4.36 mm, outside Zahara2019) with the proxy-method caveat.
+  - The live refusal and missing-data checks were interrupted (the machine ran low on memory) and
+    are left to the stage 8 evaluation.
+  - The Claude backend has not been run live yet (no API key configured).
