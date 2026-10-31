@@ -2,45 +2,17 @@
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
-from sqlalchemy.pool import StaticPool
 
-from cochleahub.api.deps import get_session, get_store
 from cochleahub.api.main import app
-from cochleahub.db.load import load_run, upsert_specimen
-from cochleahub.db.models import Base
 
 V1 = "/api/v1"
 
 
 @pytest.fixture
-def client(tmp_path, measurements, validation, store):
-    engine = create_engine(
-        "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
-    )
-    Base.metadata.create_all(engine)
-    with Session(engine) as session, session.begin():
-        old, _ = load_run(session, "zeta", measurements, validation, tmp_path, store)
-        # a later run that failed must not replace the completed one as "latest"
-        failed = {**measurements, "run": {**measurements["run"], "status": "failed",
-                                          "started_at": "2026-10-31T09:00:00+00:00"}}
-        new, _ = load_run(session, "zeta", failed, validation, tmp_path, store)
-        upsert_specimen(session, "empty")
-        ids = {"completed": str(old.id), "failed": str(new.id)}
-
-    make_session = sessionmaker(engine)
-
-    def session_override():
-        with make_session() as s:
-            yield s
-
-    app.dependency_overrides[get_session] = session_override
-    app.dependency_overrides[get_store] = lambda: store
+def client(seeded_api):
     with TestClient(app) as c:
-        c.run_ids = ids
+        c.run_ids = seeded_api.run_ids
         yield c
-    app.dependency_overrides.clear()
 
 
 def test_specimen_list_shows_latest_completed_run(client):
@@ -110,7 +82,9 @@ def test_runs_listed_newest_first(client):
     assert [r["status"] for r in body] == ["failed", "completed"]
 
 
-def test_api_is_read_only(client):
+def test_data_routes_are_read_only(client):
     paths = client.get("/openapi.json").json()["paths"]
-    assert {m for ops in paths.values() for m in ops} == {"get"}
+    writes = {(p, m) for p, ops in paths.items() for m in ops if m != "get"}
+    # the assistant's chat is the only non-GET route; it writes only its conversation log
+    assert writes == {(f"{V1}/assistant/chat", "post")}
     assert client.post(f"{V1}/specimens").status_code == 405

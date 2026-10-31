@@ -1,8 +1,17 @@
 """Shared fixtures: a small pipeline output and a fake object store."""
 
 import copy
+from types import SimpleNamespace
 
 import pytest
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.pool import StaticPool
+
+from cochleahub.api.deps import get_session, get_store
+from cochleahub.api.main import app
+from cochleahub.db.load import load_run, upsert_specimen
+from cochleahub.db.models import Base
 
 
 class FakeStore:
@@ -93,3 +102,32 @@ def validation():
 @pytest.fixture
 def store():
     return FakeStore()
+
+
+@pytest.fixture
+def seeded_api(tmp_path, measurements, validation, store):
+    """The app on an in-memory SQLite database holding ZETA (a completed and a later failed
+    run) and a specimen without runs."""
+    engine = create_engine(
+        "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
+    )
+    Base.metadata.create_all(engine)
+    with Session(engine) as session, session.begin():
+        old, _ = load_run(session, "zeta", measurements, validation, tmp_path, store)
+        # a later run that failed must not replace the completed one as "latest"
+        failed = {**measurements, "run": {**measurements["run"], "status": "failed",
+                                          "started_at": "2026-10-31T09:00:00+00:00"}}
+        new, _ = load_run(session, "zeta", failed, validation, tmp_path, store)
+        upsert_specimen(session, "empty")
+        ids = {"completed": str(old.id), "failed": str(new.id)}
+
+    make_session = sessionmaker(engine)
+
+    def session_override():
+        with make_session() as s:
+            yield s
+
+    app.dependency_overrides[get_session] = session_override
+    app.dependency_overrides[get_store] = lambda: store
+    yield SimpleNamespace(run_ids=ids, sessionmaker=make_session)
+    app.dependency_overrides.clear()
