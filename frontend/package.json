@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "cochleahub-dashboard",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -7,16 +7,21 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "gen:api": "npx -y -p typescript@5 -p openapi-typescript@7 openapi-typescript ../docs/api/openapi.json -o src/api/schema.d.ts",
+    "typecheck": "tsc -b"
   },
   "dependencies": {
+    "@cornerstonejs/core": "^5.14.0",
+    "@cornerstonejs/dicom-image-loader": "^5.14.0",
+    "@cornerstonejs/tools": "^5.14.0",
     "@react-three/drei": "^10.7.9",
     "@react-three/fiber": "^9.8.2",
     "@tanstack/react-query": "^5.105.0",
+    "events": "^3.3.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-router-dom": "^7.18.5",
-    "recharts": "^3.10.1",
     "three": "^0.187.0"
   },
   "devDependencies": {
