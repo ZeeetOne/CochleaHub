@@ -1,0 +1,28 @@
+[
+ {
+  "role": "user",
+  "content": "Bagaimana CochleaHub mengukur dimensi koklea A, B, dan tinggi, dan apa bedanya dengan cara klinis?"
+ },
+ {
+  "role": "tool_call",
+  "name": "search_docs",
+  "content": "{\n  \"query\": \"cara mengukur dimensi koklea A B tinggi metode komputasi vs klinis\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Documentation: 5 passage(s) for 'cara mengukur dimensi koklea A B tinggi metode komputasi vs klinis'"
+ },
+ {
+  "role": "tool_call",
+  "name": "search_docs",
+  "content": "{\n  \"query\": \"metode pengukuran dimensi koklea bounding box landmark height proxy\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Documentation: 5 passage(s) for 'metode pengukuran dimensi koklea bounding box landmark height proxy'"
+ },
+ {
+  "role": "assistant",
+  "content": "CochleaHub mengukur dimensi koklea A, B, dan tinggi menggunakan **metode landmark-free** yang berbeda dari pendekatan klinis:\n\n### Metode CochleaHub\n- Menggunakan **oriented bounding box** dari *scala tympani* saja (bukan *scala vestibuli*) [S7]\n- Dimensi dihitung sebagai panjang, lebar, dan ketebalan kotak terorientasi terbesar yang mengelilingi struktur tersebut\n- Nilai ini merupakan **proxy landmark-free**, bukan pengukuran langsung terhadap titik anatomis\n\n### Metode Klinis\n- Mengukur **koklea A**: diameter putaran basal (dari *round window* ke dinding berlawanan) [S6]\n- Mengukur **koklea B**: lebar tegak lurus\n- Mengukur **koklea H (height)**: tinggi dari putaran basal ke puncak, diukur dari landmark anatomis spesifik [S6]\n\n### Perbedaan Utama\n| Aspek | Klinis | CochleaHub |\n|-------|--------|-------------|\n| Referensi | Landmark anatomis (*round window*, *modiolar axis*) | Bounding box *scala tympani* |\n| Ketepatan | Langsung terhadap definisi anatomi | Proxy landmark-free |\n| Rentang terbitan [Zahara2019] | A: 8,17–9,33 mm; B: 5,73–7,50 mm; H: 2,80–3,72 mm | Nilai bisa keluar dari rentang ini (misal: H = 4,36 mm) [S8] |\n\n### Implikasi\n- Nilai CochleaHub yang keluar dari rentang terbitan **tidak dianggap error**, melainkan *warning* (*OUT_OF_PUBLISHED_RANGE*) karena perbedaan definisi pengukuran [S8]\n- Bounding box *scala tympani* mencakup envelope luar spiral koklea, sedangkan H klinis diukur dari putaran basal ke puncak [S8]\n- Ini adalah keterbatasan yang didokumentasikan; deteksi landmark seperti dalam [Stebani2023] masih menjadi pekerjaan masa depan [S7]\n\nUntuk keputusan klinis atau perencanaan operasi, tim medis tetap menggunakan standar anatomi dan pengukuran langsung. CochleaHub menyediakan data komparatif untuk penelitian."
+ }
+]

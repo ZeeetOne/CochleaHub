@@ -114,8 +114,9 @@ sequenceDiagram
   mean 0.05–0.10 mm of the dataset's own meshes.
 - **Assistant** (25 cases: answer, abstain when data are missing, refuse medical advice), Claude
   Sonnet: 25/25 correct behaviour, 0 numbers not grounded in a source, 13/15 citations pointing
-  at the right source, median 5 s, $0.023 per question.
-  [Results](evaluation/assistant/claude/baseline/summary.json).
+  at the right source, median 5 s, $0.023 per question. Local qwen3.5:4b on a 4 GB GPU: 23/25,
+  one answer with invented numbers, 10/15 citations, median 113 s.
+  [Stage 8](docs/architecture/08-evaluation-deploy.md).
 - **Dashboard tools**: React for the clinical surface, Grafana for operations, Power BI for
   aggregate reporting only. [Comparison](docs/evaluation/dashboard-tools.md).
 
@@ -227,7 +228,7 @@ Carotis Interna.
 - [x] **5. Backend API** — read-only `/api/v1` with provenance on every result → [API](#api)
 - [x] **6. Dashboard & viewer** — Overview, Specimen (3D anatomy with measured distances, cochlea vs. published range, CT via Cornerstone3D + DICOMweb), Compare, Operations
 - [x] **7. AI assistant** — agent loop over the API + hybrid RAG with native citations; Claude or a local model; refuses clinical advice, says what is missing; every turn logged
-- [ ] **8. Evaluation & deploy** — assistant evaluation (Claude done, local model running), dashboard-tool comparison (done), AWS deployment (prepared, not yet applied)
+- [ ] **8. Evaluation & deploy** — assistant evaluation (both backends done; local mitigations next), dashboard-tool comparison (done), AWS deployment (prepared, not yet applied)
 
 ## Design basis
 

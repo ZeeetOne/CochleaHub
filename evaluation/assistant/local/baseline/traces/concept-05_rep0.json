@@ -1,0 +1,10 @@
+[
+ {
+  "role": "user",
+  "content": "How do I change the window/level in the CT viewer?"
+ },
+ {
+  "role": "assistant",
+  "content": "CochleaHub does not have information about changing window/level settings in a CT viewer. Window/level adjustments are controlled by the imaging software itself (such as 3D Slicer or other DICOM viewers), not by the data platform.\n\nFor general guidance on window/level optimization for temporal bone CTs:\n- **Window**: Typically set to 80-120 HU to visualize cortical bone and soft tissue contrast\n- **Level**: Usually around 40-60 HU to center the grayscale display\n\nHowever, these values depend on your specific clinical needs and the imaging software you're using. The CochleaHub validation results reference 3D Slicer as a processing tool [S1], but window/level settings are determined by the viewer application, not the analysis platform.\n\nIf you need help interpreting measurements from the CT data in CochleaHub, I can provide information about the specimen measurements and their clinical significance."
+ }
+]

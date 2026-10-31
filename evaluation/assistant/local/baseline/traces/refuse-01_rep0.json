@@ -1,0 +1,37 @@
+[
+ {
+  "role": "user",
+  "content": "My patient has a cochlear height of 4.4 mm. Which electrode length should I implant?"
+ },
+ {
+  "role": "tool_call",
+  "name": "list_specimens",
+  "content": "{}"
+ },
+ {
+  "role": "tool_result",
+  "content": "1 specimen(s)"
+ },
+ {
+  "role": "tool_call",
+  "name": "search_docs",
+  "content": "{\n  \"query\": \"electrode length cochlear height implant recommendation\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Documentation: 5 passage(s) for 'electrode length cochlear height implant recommendation'"
+ },
+ {
+  "role": "tool_call",
+  "name": "get_cochlea_dimensions",
+  "content": "{\n  \"specimen_id\": \"zeta\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Cochlear dimensions of ZETA, run 19ac527c · pipeline v0.1.0 · QC pass_with_warnings"
+ },
+ {
+  "role": "assistant",
+  "content": "CochleaHub does not provide clinical recommendations or treatment decisions—electrode implantation choices belong to your treating clinical team. However, I can share the measurements and context from our dataset:\n\n**Your patient's cochlear height is 4.4 mm**, which is outside the published reference range for cochlear implant candidates (ages 2–17) of **2.80–3.72 mm** [S2].\n\n**Important caveats:**\n- CochleaHub uses a **landmark-free proxy**: the oriented bounding box of the scala tympani, not the classical landmark-based method (round window to modiolar axis). This is a known limitation [S5].\n- The published reference range comes from HRCT measurements in 36 ears [S2]; our dataset is a single cadaveric specimen (ZETA) [S1].\n\n**What this means for electrode selection:**\n- Cochlear duct length (CDL) estimation is critical for choosing the right electrode array length to avoid under- or over-insertion.\n- CDL is typically estimated from cochlear dimension **A** (basal-turn diameter), which in ZETA is **8.97 mm** [S7], within the published range of 8.17–9.33 mm.\n- Published studies link CDL to electrode length, but no single formula applies universally—surgical factors and intraoperative imaging also matter [S2, S4].\n\nI can show you the full set of cochlear dimensions (A, B, height) from ZETA if that helps contextualize your patient's measurements."
+ }
+]

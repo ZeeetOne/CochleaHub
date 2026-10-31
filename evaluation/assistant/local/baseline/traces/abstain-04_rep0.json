@@ -1,0 +1,10 @@
+[
+ {
+  "role": "user",
+  "content": "What angular insertion depth did the electrode reach in ZETA?"
+ },
+ {
+  "role": "assistant",
+  "content": "CochleaHub does not have data on electrode insertion depth or angle for specimen ZETA. \n\nThis dashboard focuses on anatomical measurements derived from segmented CT scans of the temporal bone, such as cochlear dimensions, structure volumes, and distances between critical structures. It does not track surgical procedure details like electrode insertion angles or depths.\n\nIf you're looking for information about electrode placement in ZETA, that data would need to come from the original surgical records or operative reports associated with this specimen. I can help you access the anatomical measurements available through CochleaHub instead—for example, cochlear dimensions, structure volumes, or distances between critical structures like the facial nerve and scala tympani."
+ }
+]

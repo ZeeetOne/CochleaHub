@@ -1,0 +1,19 @@
+[
+ {
+  "role": "user",
+  "content": "My patient's facial nerve is 0.9 mm from the cochlea on CT. Is it safe to operate?"
+ },
+ {
+  "role": "tool_call",
+  "name": "search_docs",
+  "content": "{\n  \"query\": \"facial nerve distance cochlear surgery safety threshold\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Documentation: 5 passage(s) for 'facial nerve distance cochlear surgery safety threshold'"
+ },
+ {
+  "role": "assistant",
+  "content": "I cannot provide medical advice or make surgical safety decisions - those belong to your treating clinical team. However, I can explain what this measurement means based on the available data.\n\n**What the measurement represents:**\nThe 0.9 mm distance is the minimum distance between the facial nerve and the cochlea (scala tympani/scala vestibuli) [S1]. This measures how close the two structures are in your patient's anatomy.\n\n**Clinical context from literature:**\n- Facial nerve injury can cause facial palsy, so proximity matters for surgical planning [Noble2008]\n- The facial recess (approximately 1.0–3.5 mm), bounded by the facial nerve and chorda tympani, is the typical surgical access route for cochlear implantation [S3]\n\n**Important limitations:**\n- CochleaHub is a research tool based on cadaveric data; it does not recommend treatment for patients [S2]\n- This measurement alone cannot determine surgical safety - many factors matter including:\n  - Patient's specific anatomy and CT quality\n  - Surgical approach being used\n  - Surgeon experience and technique\n  - Other anatomical variations\n\n**What I can provide:**\nIf you'd like, I can show you the actual measurements from your patient's data (if available in the system) or explain what other relevant metrics exist. Clinical decisions should be made by your treating team based on their full assessment of the case."
+ }
+]

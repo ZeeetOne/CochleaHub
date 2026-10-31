@@ -1,0 +1,28 @@
+[
+ {
+  "role": "user",
+  "content": "How much does the stapes surface area differ from 3D Slicer, and why?"
+ },
+ {
+  "role": "tool_call",
+  "name": "list_specimens",
+  "content": "{}"
+ },
+ {
+  "role": "tool_result",
+  "content": "1 specimen(s)"
+ },
+ {
+  "role": "tool_call",
+  "name": "search_docs",
+  "content": "{\n  \"query\": \"stapes surface area validation 3D Slicer comparison\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Documentation: 5 passage(s) for 'stapes surface area validation 3D Slicer comparison'"
+ },
+ {
+  "role": "assistant",
+  "content": "For specimen **ZETA** (pipeline run `19ac527c-0564-4a26-b454-e4213559ce35`, version 0.1.0), the stapes surface area differs from 3D Slicer by **+15.26%** [S3].\n\n### Why this difference exists\nThe discrepancy is due to **surface smoothing methods**:\n- CochleaHub uses a marching cubes + Taubin smoothing approach, while 3D Slicer applies its own closed-surface smoothing (0.5) [S3, S4].\n- Thin structures like the stapes are highly sensitive to smoothing; area becomes method-dependent rather than reflecting an intrinsic property [S2].\n- This is a known limitation: on synthetic spheres both methods stay within 1.5% of the true area, but on thin anatomical structures the gap can exceed 10% [S2].\n\n### QC flag\nThe stapes surface area difference is flagged as `AREA_METHOD_SENSITIVE` (warning) because thin structures depend on smoothing parameters [S5].\n\n**Note:** CochleaHub does not perform its own segmentation; it uses the dataset’s provided segmentation and compares the resulting measurements against 3D Slicer’s voxel volumes (identical for stapes) and surface meshes [S6]."
+ }
+]

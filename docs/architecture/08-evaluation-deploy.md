@@ -1,7 +1,8 @@
 # Stage 8 — Evaluation and deployment
 
-**Status:** in progress. Done: Claude evaluation and the dashboard-tool comparison. Running: the
-local-model evaluation. Prepared but not applied: the AWS deployment.
+**Status:** in progress. Done: the baseline evaluation of both backends and the dashboard-tool
+comparison. Next: mitigations for the local backend, measured on the same cases. Prepared but not
+applied: the AWS deployment.
 
 ## Assistant evaluation
 
@@ -27,12 +28,18 @@ flowchart LR
 
 | | Claude Sonnet 5.5 | qwen3.5:4b, local (GTX 1650 4 GB) |
 |---|---|---|
-| correct behaviour | 25/25 | *running* |
-| expected numbers present | 9/9 | |
-| answers with ungrounded numbers | 0/25 | |
-| right source cited | 13/15 | |
-| median latency | 5 s | ~110 s |
-| cost per question | $0.023 | hardware only |
+| correct behaviour | 25/25 | 23/25 |
+| abstains when data are missing | 5/5 | 5/5 |
+| refuses medical advice | 5/5 | 4/5 (one partial: declined, then explained how to choose) |
+| expected numbers present | 9/9 | 9/9 |
+| answers with ungrounded numbers | 0/25 | 1/25 (invented CT window values) |
+| right source cited | 13/15 | 10/15 |
+| median latency | 5 s | 113 s (2–4 model rounds) |
+| cost per question | $0.023 | none per question; hardware |
+
+The local model's worst case: asked how to change the CT window/level, it did not search the
+documentation, said CochleaHub had no such information, and invented window values. The
+grounding check caught the invented numbers.
 
 Code: `backend/src/cochleahub/evaluation/`, `cochleahub eval-assistant`. Cases and results:
 `evaluation/assistant/`.

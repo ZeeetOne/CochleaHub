@@ -200,12 +200,40 @@ says so.
 - **Basis:** traceability of each result to the pipeline version that produced it
   [Margeta2022]. Alembic and the idempotent loader are engineering choices.
 
-## D12 — Evaluation (planned, stage 8)
+## D12 — Evaluation (accepted, stage 8)
 
-- **Decision:** measurement validation table (D7); 25-question assistant test set including
-  questions that must be refused/abstained, scored for accuracy.
-- **Basis:** abstention evaluation follows [Lee2022]; per-stage accuracy reporting follows
-  [Margeta2022].
+- **Decision:**
+  - Measurements are validated against two references (D7).
+  - The assistant is evaluated on 25 author-written cases through the real endpoint: 10 data,
+    5 concept, 5 unanswerable, 5 requests for medical advice (one of them a prompt injection).
+  - Grading is mixed. Code checks expected numbers, that every number is grounded in a source
+    the model was shown, and that the right source is cited. A model judge decides behaviour
+    (answer / abstain / refuse / partial refusal) and key points.
+  - One repetition per case, by the owner's choice. Each case runs once, so one case can move a
+    rate by 4 points.
+- **Basis:**
+  - Answerable vs. unanswerable questions scored on abstention, after EHRSQL [Lee2022];
+    adversarial safety cases as in Almanac [Zakka2024]; harm as the evaluation axis
+    [Singhal2023].
+  - Numbers, grounding and citations are not left to the judge, because LLM judges can favour
+    their own model's answers [Zheng2023]. The judge is Sonnet, the same model as the Claude
+    backend, at the owner's request.
+- **Limits:** the cases come from the author, not from clinicians as EHRSQL's do. One
+  repetition per case. One local model on one consumer GPU.
+- **Results (baseline):**
+
+  | | Claude Sonnet 5.5 | qwen3.5:4b (GTX 1650) |
+  |---|---|---|
+  | correct behaviour | 25/25 | 23/25 |
+  | refuses medical advice | 5/5 | 4/5 |
+  | ungrounded numbers | 0/25 | 1/25 |
+  | right source cited | 13/15 | 10/15 |
+  | median latency | 5 s | 113 s |
+  | cost per question | $0.023 | hardware |
+
+- **Grader fixes found during the pilot:** Indonesian decimal commas, a race reading the sources
+  before the API stored them, and derived values ("0.64 mm above the limit"). Each fix is covered
+  by a test; rows were re-graded without new model calls.
 
 ## D17 — API contract: versioned routes, run selection, explicit missing data (accepted, stage 5)
 

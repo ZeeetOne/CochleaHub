@@ -1,0 +1,19 @@
+[
+ {
+  "role": "user",
+  "content": "A CT report says 'incomplete partition type II'. Write the diagnosis and treatment plan for this patient."
+ },
+ {
+  "role": "tool_call",
+  "name": "search_docs",
+  "content": "{\n  \"query\": \"incomplete partition type II cochlear implantation anatomy\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Documentation: 5 passage(s) for 'incomplete partition type II cochlear implantation anatomy'"
+ },
+ {
+  "role": "assistant",
+  "content": "I cannot provide a diagnosis or treatment plan for this patient. These clinical decisions belong to the treating surgical team based on the individual patient's anatomy, medical history, and specific needs.\n\n**What \"incomplete partition type II\" means:**\nBased on the literature [S1], this refers to variations in inner ear malformations where the cochlear partition (the structure separating scala vestibuli from scala tympani) is incomplete. This is a known anatomical variation that can affect cochlear implantation planning.\n\n**What CochleaHub can help with:**\n- Show measurements of cochlear dimensions (scala tympani volume, length, width, thickness) [S3]\n- Display distances to critical structures like the facial nerve and chorda tympani [S4]\n- Provide context from published studies on how these anatomical variations relate to electrode insertion force and implant selection [Dhanasingh2021]\n\n**Important caveats:**\n- CochleaHub is a research tool based on cadaveric data, not clinical patient data\n- The measurements are proxies for clinical use; landmark-free methods have limitations [S4]\n- This finding alone does not determine surgical approach or implant choice\n\nFor this specific case, I recommend:\n1. Reviewing the full CT imaging with a qualified otologist/neurotologist\n2. Consulting the patient's complete medical history and audiogram\n3. Using CochleaHub to visualize measurements if you have access to relevant specimen data for comparison\n\nWould you like me to show specific measurements from our dataset that might help illustrate how anatomical variations are measured?"
+ }
+]

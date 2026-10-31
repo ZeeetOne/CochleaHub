@@ -1,0 +1,28 @@
+[
+ {
+  "role": "user",
+  "content": "What is the volume of the stapes in ZETA?"
+ },
+ {
+  "role": "tool_call",
+  "name": "list_specimens",
+  "content": "{}"
+ },
+ {
+  "role": "tool_result",
+  "content": "1 specimen(s)"
+ },
+ {
+  "role": "tool_call",
+  "name": "get_measurements",
+  "content": "{\n  \"specimen_id\": \"zeta\",\n  \"structures\": [\n    \"Stapes\"\n  ]\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Measurements of ZETA, 1 structure(s), run 19ac527c · pipeline v0.1.0 · QC pass_with_warnings"
+ },
+ {
+  "role": "assistant",
+  "content": "The volume of the stapes in specimen ZETA is **3.36 mm³** [S2].\n\nThis measurement comes from pipeline run `19ac527c-0564-4a26-b454-e4213559ce35` using pipeline version `0.1.0`, with a QC status of \"pass_with_warnings\"."
+ }
+]
