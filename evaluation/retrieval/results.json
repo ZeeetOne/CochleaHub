@@ -1,0 +1,615 @@
+{
+ "queries": 30,
+ "corpus_passages": 87,
+ "embedding_model": "BAAI/bge-small-en-v1.5",
+ "modes": {
+  "bm25": {
+   "all": {
+    "n": 30,
+    "hit@1": 0.7,
+    "hit@5": 0.9666666666666667,
+    "hit@5_ci95": [
+     0.8332924860304112,
+     0.9940915620051425
+    ],
+    "mrr@10": 0.831
+   },
+   "code": {
+    "n": 8,
+    "hit@1": 0.625,
+    "hit@5": 1.0,
+    "hit@5_ci95": [
+     0.6755843804891231,
+     1.0
+    ],
+    "mrr@10": 0.812
+   },
+   "paraphrase": {
+    "n": 22,
+    "hit@1": 0.7272727272727273,
+    "hit@5": 0.9545454545454546,
+    "hit@5_ci95": [
+     0.7820151050048196,
+     0.9919307806988522
+    ],
+    "mrr@10": 0.838
+   }
+  },
+  "dense": {
+   "all": {
+    "n": 30,
+    "hit@1": 0.7,
+    "hit@5": 0.9333333333333333,
+    "hit@5_ci95": [
+     0.7867618227892791,
+     0.9815233646723066
+    ],
+    "mrr@10": 0.794
+   },
+   "code": {
+    "n": 8,
+    "hit@1": 0.75,
+    "hit@5": 1.0,
+    "hit@5_ci95": [
+     0.6755843804891231,
+     1.0
+    ],
+    "mrr@10": 0.875
+   },
+   "paraphrase": {
+    "n": 22,
+    "hit@1": 0.6818181818181818,
+    "hit@5": 0.9090909090909091,
+    "hit@5_ci95": [
+     0.7218461934161421,
+     0.9747051037171622
+    ],
+    "mrr@10": 0.765
+   }
+  },
+  "hybrid": {
+   "all": {
+    "n": 30,
+    "hit@1": 0.7,
+    "hit@5": 1.0,
+    "hit@5_ci95": [
+     0.8864829086095221,
+     1.0
+    ],
+    "mrr@10": 0.844
+   },
+   "code": {
+    "n": 8,
+    "hit@1": 0.625,
+    "hit@5": 1.0,
+    "hit@5_ci95": [
+     0.6755843804891231,
+     1.0
+    ],
+    "mrr@10": 0.812
+   },
+   "paraphrase": {
+    "n": 22,
+    "hit@1": 0.7272727272727273,
+    "hit@5": 1.0,
+    "hit@5_ci95": [
+     0.8513404742740388,
+     1.0
+    ],
+    "mrr@10": 0.856
+   }
+  }
+ },
+ "per_query": [
+  {
+   "id": "q01",
+   "kind": "paraphrase",
+   "query": "how close does the nerve that moves the face run to the hearing organ",
+   "bm25": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/measurements.md#minimum-distances-between-critical-structures"
+   },
+   "dense": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/measurements.md#minimum-distances-between-critical-structures"
+   },
+   "hybrid": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/measurements.md#minimum-distances-between-critical-structures"
+   }
+  },
+  {
+   "id": "q02",
+   "kind": "code",
+   "query": "What does OUT_OF_PUBLISHED_RANGE mean?",
+   "bm25": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/measurements.md#quality-control-flags-d14"
+   },
+   "dense": {
+    "first_relevant_rank": 2,
+    "top1": "docs/architecture/03-validation.md#decisions"
+   },
+   "hybrid": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/measurements.md#quality-control-flags-d14"
+   }
+  },
+  {
+   "id": "q03",
+   "kind": "code",
+   "query": "AREA_METHOD_SENSITIVE warning",
+   "bm25": {
+    "first_relevant_rank": 2,
+    "top1": "docs/validation/zeta.md#qc-flags"
+   },
+   "dense": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/measurements.md#surface-area"
+   },
+   "hybrid": {
+    "first_relevant_rank": 2,
+    "top1": "docs/validation/zeta.md#qc-flags"
+   }
+  },
+  {
+   "id": "q04",
+   "kind": "paraphrase",
+   "query": "why is the facial nerve to chorda tympani distance zero",
+   "bm25": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/measurements.md#minimum-distances-between-critical-structures"
+   },
+   "dense": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/measurements.md#minimum-distances-between-critical-structures"
+   },
+   "hybrid": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/measurements.md#minimum-distances-between-critical-structures"
+   }
+  },
+  {
+   "id": "q05",
+   "kind": "paraphrase",
+   "query": "how is the size of the cochlea measured without anatomical landmarks",
+   "bm25": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/measurements.md#cochlear-dimensions-a-b-and-height"
+   },
+   "dense": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/measurements.md#cochlear-dimensions-a-b-and-height"
+   },
+   "hybrid": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/measurements.md#cochlear-dimensions-a-b-and-height"
+   }
+  },
+  {
+   "id": "q06",
+   "kind": "paraphrase",
+   "query": "How do I change the window/level in the CT viewer?",
+   "bm25": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/user-guide.md#ct-viewer"
+   },
+   "dense": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/user-guide.md#ct-viewer"
+   },
+   "hybrid": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/user-guide.md#ct-viewer"
+   }
+  },
+  {
+   "id": "q07",
+   "kind": "paraphrase",
+   "query": "how many ears or donors are in the dataset",
+   "bm25": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/dataset.md#what-zeta-is"
+   },
+   "dense": {
+    "first_relevant_rank": null,
+    "top1": "docs/REFERENCES.md#dataset"
+   },
+   "hybrid": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/dataset.md#limits-for-interpretation"
+   }
+  },
+  {
+   "id": "q08",
+   "kind": "code",
+   "query": "why SeaweedFS instead of MinIO",
+   "bm25": {
+    "first_relevant_rank": 2,
+    "top1": "docs/DECISIONS.md#d19-assistant-retrieval-hybrid-bm25-dense-fused-with-rrf-cited-natively-accepted-stage-7"
+   },
+   "dense": {
+    "first_relevant_rank": 1,
+    "top1": "docs/architecture/04-storage.md#decisions"
+   },
+   "hybrid": {
+    "first_relevant_rank": 2,
+    "top1": "docs/DECISIONS.md#d19-assistant-retrieval-hybrid-bm25-dense-fused-with-rrf-cited-natively-accepted-stage-7"
+   }
+  },
+  {
+   "id": "q09",
+   "kind": "paraphrase",
+   "query": "were our volumes checked against another software",
+   "bm25": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/dataset.md#what-cochleahub-validated-and-what-it-did-not"
+   },
+   "dense": {
+    "first_relevant_rank": null,
+    "top1": "docs/DECISIONS.md#d17-api-contract-versioned-routes-run-selection-explicit-missing-data-accepted-stage-5"
+   },
+   "hybrid": {
+    "first_relevant_rank": 3,
+    "top1": "docs/DECISIONS.md#d22-dashboard-tools-react-for-the-clinical-surface-grafana-for-operations-accepted-stage-8"
+   }
+  },
+  {
+   "id": "q10",
+   "kind": "paraphrase",
+   "query": "why do thin structures have larger surface area differences",
+   "bm25": {
+    "first_relevant_rank": 1,
+    "top1": "docs/architecture/03-validation.md#results-zeta"
+   },
+   "dense": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/measurements.md#surface-area"
+   },
+   "hybrid": {
+    "first_relevant_rank": 1,
+    "top1": "docs/architecture/03-validation.md#results-zeta"
+   }
+  },
+  {
+   "id": "q11",
+   "kind": "code",
+   "query": "Dhanasingh2021 scala tympani volume range",
+   "bm25": {
+    "first_relevant_rank": 2,
+    "top1": "docs/architecture/02-measurement.md#results-zeta"
+   },
+   "dense": {
+    "first_relevant_rank": 2,
+    "top1": "docs/architecture/02-measurement.md#results-zeta"
+   },
+   "hybrid": {
+    "first_relevant_rank": 2,
+    "top1": "docs/architecture/02-measurement.md#results-zeta"
+   }
+  },
+  {
+   "id": "q12",
+   "kind": "code",
+   "query": "Zahara2019 reference range for cochlear height",
+   "bm25": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/measurements.md#cochlear-dimensions-a-b-and-height"
+   },
+   "dense": {
+    "first_relevant_rank": 1,
+    "top1": "docs/DECISIONS.md#d5-metric-set-volume-surface-area-dimensions-cochlear-a-b-height-accepted-stage-2"
+   },
+   "hybrid": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/measurements.md#cochlear-dimensions-a-b-and-height"
+   }
+  },
+  {
+   "id": "q13",
+   "kind": "paraphrase",
+   "query": "how were the ground truth labels of the specimen created",
+   "bm25": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/dataset.md#how-the-reference-segmentation-was-made"
+   },
+   "dense": {
+    "first_relevant_rank": 2,
+    "top1": "docs/architecture/01-data.md#stage-1-data-and-exploration"
+   },
+   "hybrid": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/dataset.md#how-the-reference-segmentation-was-made"
+   }
+  },
+  {
+   "id": "q14",
+   "kind": "paraphrase",
+   "query": "does the assistant send patient images to the cloud",
+   "bm25": {
+    "first_relevant_rank": 2,
+    "top1": "docs/knowledge/user-guide.md#the-assistant"
+   },
+   "dense": {
+    "first_relevant_rank": 3,
+    "top1": "docs/knowledge/user-guide.md#the-assistant"
+   },
+   "hybrid": {
+    "first_relevant_rank": 2,
+    "top1": "docs/knowledge/user-guide.md#the-assistant"
+   }
+  },
+  {
+   "id": "q15",
+   "kind": "paraphrase",
+   "query": "why can a local language model be used instead of Claude",
+   "bm25": {
+    "first_relevant_rank": 2,
+    "top1": "docs/architecture/07-assistant.md#how-the-guardrails-work"
+   },
+   "dense": {
+    "first_relevant_rank": 1,
+    "top1": "docs/DECISIONS.md#d20-assistant-backends-and-guardrails-claude-api-bedrock-eu-or-a-local-model-accepted-stage-7-1"
+   },
+   "hybrid": {
+    "first_relevant_rank": 1,
+    "top1": "docs/DECISIONS.md#d20-assistant-backends-and-guardrails-claude-api-bedrock-eu-or-a-local-model-accepted-stage-7-2"
+   }
+  },
+  {
+   "id": "q16",
+   "kind": "paraphrase",
+   "query": "how does the search combine keyword matching and embeddings",
+   "bm25": {
+    "first_relevant_rank": 2,
+    "top1": "docs/architecture/08-evaluation-deploy.md#assistant-evaluation"
+   },
+   "dense": {
+    "first_relevant_rank": 4,
+    "top1": "docs/REFERENCES.md#information-retrieval"
+   },
+   "hybrid": {
+    "first_relevant_rank": 2,
+    "top1": "docs/REFERENCES.md#information-retrieval"
+   }
+  },
+  {
+   "id": "q17",
+   "kind": "code",
+   "query": "Reciprocal Rank Fusion k=60",
+   "bm25": {
+    "first_relevant_rank": 1,
+    "top1": "docs/REFERENCES.md#information-retrieval"
+   },
+   "dense": {
+    "first_relevant_rank": 1,
+    "top1": "docs/REFERENCES.md#information-retrieval"
+   },
+   "hybrid": {
+    "first_relevant_rank": 1,
+    "top1": "docs/REFERENCES.md#information-retrieval"
+   }
+  },
+  {
+   "id": "q18",
+   "kind": "paraphrase",
+   "query": "why are the CT files rewritten before upload to the archive",
+   "bm25": {
+    "first_relevant_rank": 1,
+    "top1": "docs/DECISIONS.md#d15-rewrite-cbct-files-as-dicom-part-10-before-archiving-accepted-stage-4"
+   },
+   "dense": {
+    "first_relevant_rank": 1,
+    "top1": "docs/architecture/04-storage.md#checks"
+   },
+   "hybrid": {
+    "first_relevant_rank": 1,
+    "top1": "docs/DECISIONS.md#d15-rewrite-cbct-files-as-dicom-part-10-before-archiving-accepted-stage-4"
+   }
+  },
+  {
+   "id": "q19",
+   "kind": "paraphrase",
+   "query": "what happens when a newer pipeline run failed",
+   "bm25": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/user-guide.md#provenance"
+   },
+   "dense": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/user-guide.md#provenance"
+   },
+   "hybrid": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/user-guide.md#provenance"
+   }
+  },
+  {
+   "id": "q20",
+   "kind": "paraphrase",
+   "query": "how do I show a measured distance in the 3D view",
+   "bm25": {
+    "first_relevant_rank": 2,
+    "top1": "docs/architecture/06-dashboard.md#decisions"
+   },
+   "dense": {
+    "first_relevant_rank": 2,
+    "top1": "docs/architecture/06-dashboard.md#decisions"
+   },
+   "hybrid": {
+    "first_relevant_rank": 2,
+    "top1": "docs/architecture/06-dashboard.md#decisions"
+   }
+  },
+  {
+   "id": "q21",
+   "kind": "paraphrase",
+   "query": "What is the difference between React, Grafana and Power BI for this dashboard?",
+   "bm25": {
+    "first_relevant_rank": 1,
+    "top1": "docs/architecture/08-evaluation-deploy.md#dashboard-tools-react-vs-grafana-vs-power-bi"
+   },
+   "dense": {
+    "first_relevant_rank": 1,
+    "top1": "docs/architecture/08-evaluation-deploy.md#dashboard-tools-react-vs-grafana-vs-power-bi"
+   },
+   "hybrid": {
+    "first_relevant_rank": 1,
+    "top1": "docs/architecture/08-evaluation-deploy.md#dashboard-tools-react-vs-grafana-vs-power-bi"
+   }
+  },
+  {
+   "id": "q22",
+   "kind": "paraphrase",
+   "query": "how is the system deployed on AWS and how much does it cost",
+   "bm25": {
+    "first_relevant_rank": 3,
+    "top1": "docs/architecture/04-storage.md#stage-4-storage-local-aws-compatible"
+   },
+   "dense": {
+    "first_relevant_rank": 1,
+    "top1": "docs/architecture/08-evaluation-deploy.md#aws-deployment-cost-saving-demo"
+   },
+   "hybrid": {
+    "first_relevant_rank": 2,
+    "top1": "docs/architecture/04-storage.md#stage-4-storage-local-aws-compatible"
+   }
+  },
+  {
+   "id": "q23",
+   "kind": "paraphrase",
+   "query": "how were the assistant answers graded",
+   "bm25": {
+    "first_relevant_rank": 1,
+    "top1": "docs/architecture/08-evaluation-deploy.md#assistant-evaluation"
+   },
+   "dense": {
+    "first_relevant_rank": 1,
+    "top1": "docs/architecture/08-evaluation-deploy.md#assistant-evaluation"
+   },
+   "hybrid": {
+    "first_relevant_rank": 1,
+    "top1": "docs/architecture/08-evaluation-deploy.md#assistant-evaluation"
+   }
+  },
+  {
+   "id": "q24",
+   "kind": "paraphrase",
+   "query": "what are the limitations of using one cadaveric specimen",
+   "bm25": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/dataset.md#what-zeta-is"
+   },
+   "dense": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/dataset.md#limits-for-interpretation"
+   },
+   "hybrid": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/dataset.md#limits-for-interpretation"
+   }
+  },
+  {
+   "id": "q25",
+   "kind": "code",
+   "query": "Taubin smoothing marching cubes glTF",
+   "bm25": {
+    "first_relevant_rank": 1,
+    "top1": "docs/DECISIONS.md#d13-meshes-marching-cubes-taubin-smoothing-gltf-for-the-web-accepted-stage-2"
+   },
+   "dense": {
+    "first_relevant_rank": 1,
+    "top1": "docs/DECISIONS.md#d13-meshes-marching-cubes-taubin-smoothing-gltf-for-the-web-accepted-stage-2"
+   },
+   "hybrid": {
+    "first_relevant_rank": 1,
+    "top1": "docs/DECISIONS.md#d13-meshes-marching-cubes-taubin-smoothing-gltf-for-the-web-accepted-stage-2"
+   }
+  },
+  {
+   "id": "q26",
+   "kind": "paraphrase",
+   "query": "stray voxels outside the main piece of a structure",
+   "bm25": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/measurements.md#connected-components"
+   },
+   "dense": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/measurements.md#connected-components"
+   },
+   "hybrid": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/measurements.md#connected-components"
+   }
+  },
+  {
+   "id": "q27",
+   "kind": "paraphrase",
+   "query": "Why do the volume charts use a logarithmic scale?",
+   "bm25": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/user-guide.md#reading-the-charts"
+   },
+   "dense": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/user-guide.md#reading-the-charts"
+   },
+   "hybrid": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/user-guide.md#reading-the-charts"
+   }
+  },
+  {
+   "id": "q28",
+   "kind": "code",
+   "query": "SLICER_VOLUME_MISMATCH tolerance",
+   "bm25": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/measurements.md#quality-control-flags-d14"
+   },
+   "dense": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/measurements.md#quality-control-flags-d14"
+   },
+   "hybrid": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/measurements.md#quality-control-flags-d14"
+   }
+  },
+  {
+   "id": "q29",
+   "kind": "paraphrase",
+   "query": "which tables hold the measurements and how are they linked to a run",
+   "bm25": {
+    "first_relevant_rank": 9,
+    "top1": "docs/knowledge/measurements.md#length-width-thickness"
+   },
+   "dense": {
+    "first_relevant_rank": 1,
+    "top1": "docs/DECISIONS.md#d16-run-centred-schema-with-migrations-accepted-stage-4"
+   },
+   "hybrid": {
+    "first_relevant_rank": 2,
+    "top1": "docs/DECISIONS.md#d18-dashboard-implementation-embedded-cornerstone3d-provenance-on-every-view-accepted-stage-6"
+   }
+  },
+  {
+   "id": "q30",
+   "kind": "paraphrase",
+   "query": "is the platform allowed to recommend an electrode for a patient",
+   "bm25": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/measurements.md#cochlear-implant-context"
+   },
+   "dense": {
+    "first_relevant_rank": 4,
+    "top1": "docs/architecture/07-assistant.md#stage-7-ai-assistant"
+   },
+   "hybrid": {
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/measurements.md#cochlear-implant-context"
+   }
+  }
+ ]
+}

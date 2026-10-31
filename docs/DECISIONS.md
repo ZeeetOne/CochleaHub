@@ -341,7 +341,7 @@ says so.
   - `docs/knowledge/` (measurements, dataset, user guide), `DECISIONS.md`, `REFERENCES.md` and
     the validation report.
   - Chunked per `##` section with the document and section title kept, so a passage stands on
-    its own: 55 passages.
+    its own (87 passages from 14 documents as of stage 8).
   - The knowledge pages state only facts already verified in this project; specimen numbers
     always come from the API, never from the corpus.
 - **Citations:**
@@ -352,6 +352,25 @@ says so.
   - Data sources are identified by API path + run id, documentation by `path#section`.
 - **Local, no vendor:** embeddings and the index run on the machine. Building the index sends
   nothing out.
+- **Measured** (`cochleahub eval-retrieval`, 30 labelled English queries, 87 passages):
+
+  | Retriever | hit@1 | hit@5 (95% CI) | MRR@10 |
+  |---|---|---|---|
+  | BM25 only | 70% | 97% (83–99%) | 0.83 |
+  | dense only | 70% | 93% (79–98%) | 0.79 |
+  | hybrid (RRF) | 70% | 100% (89–100%) | 0.84 |
+
+  The hybrid finds a relevant passage in the top 5 for every query; each single retriever
+  misses one or two. With 30 queries the confidence intervals overlap, so this supports the
+  choice but does not prove the hybrid is better in general. Queries and labels are
+  author-written; results in `evaluation/retrieval/`.
+- **No vector database, on purpose:** the 87 vectors live in a NumPy array and every query is
+  compared with all of them (exact search, well under a millisecond). Vector databases do
+  approximate search for millions of vectors and would add a service without benefit at this
+  size. If the corpus grows to many thousands of passages (e.g. full-text papers), the next step
+  is pgvector in the existing PostgreSQL. This is an engineering choice; no paper is involved.
+- **Corpus:** the architecture pages (`docs/architecture/`) are included, with their Mermaid
+  diagrams stripped. Indexes of earlier corpus versions are deleted when a new one is built.
 - **Not done, on purpose:** cross-encoder re-ranking. BEIR shows re-rankers are the most
   accurate but costly; with 55 passages, hybrid retrieval already places the relevant section
   first on our checks. To be measured in the stage 8 evaluation before adding it.
