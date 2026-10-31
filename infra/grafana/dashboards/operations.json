@@ -1,0 +1,440 @@
+{
+  "uid": "cochleahub-ops",
+  "title": "CochleaHub operations (Grafana prototype)",
+  "description": "Stage 8 comparison prototype (D22): the Operations view rebuilt in Grafana on the same PostgreSQL, read-only.",
+  "tags": [
+    "cochleahub"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "refresh": "1m",
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Latest run QC",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "cochleahub-pg"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "cochleahub-pg"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT qc_status FROM pipeline_runs WHERE id = (SELECT id FROM pipeline_runs WHERE status = 'completed' ORDER BY started_at DESC LIMIT 1)"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/.*/"
+        },
+        "colorMode": "none",
+        "textMode": "value"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#2a78d6"
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "QC errors",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "cochleahub-pg"
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 0,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "cochleahub-pg"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT qc_errors FROM pipeline_runs WHERE id = (SELECT id FROM pipeline_runs WHERE status = 'completed' ORDER BY started_at DESC LIMIT 1)"
+        }
+      ],
+      "options": {
+        "colorMode": "none"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#2a78d6"
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "QC warnings",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "cochleahub-pg"
+      },
+      "gridPos": {
+        "x": 10,
+        "y": 0,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "cochleahub-pg"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT qc_warnings FROM pipeline_runs WHERE id = (SELECT id FROM pipeline_runs WHERE status = 'completed' ORDER BY started_at DESC LIMIT 1)"
+        }
+      ],
+      "options": {
+        "colorMode": "none"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#2a78d6"
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Assistant turns (7 days)",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "cochleahub-pg"
+      },
+      "gridPos": {
+        "x": 14,
+        "y": 0,
+        "w": 5,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "cochleahub-pg"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT count(*) FROM assistant_turns WHERE created_at > now() - interval '7 days'"
+        }
+      ],
+      "options": {
+        "colorMode": "none"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#2a78d6"
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Assistant median latency (s)",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "cochleahub-pg"
+      },
+      "gridPos": {
+        "x": 19,
+        "y": 0,
+        "w": 5,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "cochleahub-pg"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT percentile_cont(0.5) WITHIN GROUP (ORDER BY latency_s) FROM assistant_turns WHERE created_at > now() - interval '7 days' AND model LIKE 'claude%'"
+        }
+      ],
+      "options": {
+        "colorMode": "none"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#2a78d6"
+          },
+          "decimals": 1,
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "description": "Claude backend only"
+    },
+    {
+      "id": 6,
+      "type": "table",
+      "title": "Pipeline runs",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "cochleahub-pg"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 4,
+        "w": 24,
+        "h": 5
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "cochleahub-pg"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT left(id::text, 8) AS run, specimen_id AS specimen, started_at, status, pipeline_version AS version, round(duration_s::numeric, 1) AS duration_s, qc_status, qc_errors AS errors, qc_warnings AS warnings, qc_info AS info FROM pipeline_runs ORDER BY started_at DESC"
+        }
+      ],
+      "options": {},
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#2a78d6"
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 7,
+      "type": "barchart",
+      "title": "QC flags of the latest run",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "cochleahub-pg"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 9,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "cochleahub-pg"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT code || ' (' || severity || ')' AS flag, count(*) AS n FROM qc_flags WHERE run_id = (SELECT id FROM pipeline_runs WHERE status = 'completed' ORDER BY started_at DESC LIMIT 1) GROUP BY 1 ORDER BY 2 DESC"
+        }
+      ],
+      "options": {
+        "orientation": "horizontal",
+        "xField": "flag",
+        "showValue": "auto",
+        "legend": {
+          "showLegend": false
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#2a78d6"
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 8,
+      "type": "bargauge",
+      "title": "Structure volume, latest run (mm\u00b3)",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "cochleahub-pg"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 9,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "cochleahub-pg"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT name, volume_mm3 FROM structure_measurements WHERE run_id = (SELECT id FROM pipeline_runs WHERE status = 'completed' ORDER BY started_at DESC LIMIT 1) ORDER BY volume_mm3 DESC"
+        }
+      ],
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "basic",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": true
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#2a78d6"
+          },
+          "unit": "none",
+          "decimals": 1
+        },
+        "overrides": []
+      },
+      "description": "Linear scale only: bone and sinus dura dwarf the inner-ear structures"
+    },
+    {
+      "id": 9,
+      "type": "timeseries",
+      "title": "Assistant latency per turn",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "cochleahub-pg"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 17,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "cochleahub-pg"
+          },
+          "refId": "A",
+          "format": "time_series",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT created_at AS time, latency_s, model AS metric FROM assistant_turns WHERE $__timeFilter(created_at) ORDER BY 1"
+        }
+      ],
+      "options": {},
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "s",
+          "custom": {
+            "drawStyle": "points",
+            "pointSize": 6
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 10,
+      "type": "table",
+      "title": "Assistant turns",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "cochleahub-pg"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 17,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "cochleahub-pg"
+          },
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "rawSql": "SELECT created_at, model, stop_reason, round(latency_s::numeric, 1) AS latency_s, json_array_length(tool_calls::json) AS tools, json_array_length(sources::json) AS cited, (usage::json ->> 'output_tokens')::int AS output_tokens, error IS NOT NULL AS failed FROM assistant_turns WHERE $__timeFilter(created_at) ORDER BY created_at DESC LIMIT 200"
+        }
+      ],
+      "options": {},
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#2a78d6"
+          }
+        },
+        "overrides": []
+      }
+    }
+  ]
+}

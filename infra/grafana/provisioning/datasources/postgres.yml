@@ -1,0 +1,15 @@
+apiVersion: 1
+datasources:
+  - name: CochleaHub
+    uid: cochleahub-pg
+    type: grafana-postgresql-datasource
+    url: postgres:5432
+    user: grafana_ro
+    secureJsonData:
+      password: grafana_ro
+    jsonData:
+      database: cochleahub
+      sslmode: disable
+      postgresVersion: 1700
+    isDefault: true
+    editable: false

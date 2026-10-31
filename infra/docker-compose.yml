@@ -3,6 +3,7 @@
 #   Orthanc     -> Orthanc on EC2 / AWS HealthImaging (CBCT archive, DICOMweb)
 #   SeaweedFS   -> Amazon S3                   (meshes; same S3 API, only the endpoint differs)
 #   Ollama      -> local LLM inside the hospital network (optional, profile local-llm, D20)
+#   Grafana     -> comparison prototype of the Operations view (optional, profile grafana, D22)
 # Run from repo root:
 #   docker compose -f infra/docker-compose.yml --env-file .env up -d
 #   docker compose -f infra/docker-compose.yml --env-file .env --profile local-llm up -d
@@ -62,6 +63,22 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
+
+  # Stage 8 comparison prototype (D22): the Operations view in Grafana, read-only on the same
+  # database. Run infra/grafana/readonly.sql once first. Local only: anonymous viewer access.
+  grafana:
+    image: grafana/grafana-oss:latest
+    profiles: ["grafana"]
+    depends_on: [postgres]
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/operations.json
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
 
 volumes:
   pgdata:
