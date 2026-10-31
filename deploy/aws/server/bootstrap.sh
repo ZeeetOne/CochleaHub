@@ -2,7 +2,7 @@
 # Runs on the instance through SSM (deploy.py bootstrap). Idempotent: safe to re-run after a
 # new image or bundle. Arguments: deploy bucket, API image, meshes bucket, region, site URL.
 # The API image is either an ECR URI (deploy.py) or a local tag such as cochleahub-api:latest
-# built on the instance (manual console deployment, deploy/aws/MANUAL.md).
+# built on the instance (manual deployment through the AWS console).
 set -euo pipefail
 DEPLOY_BUCKET=$1 API_IMAGE=$2 MESH_BUCKET=$3 REGION=$4 SITE_URL=$5
 cd /opt/cochleahub
