@@ -247,6 +247,9 @@ says so.
   size informs electrode choice, and the small model then repeats that guidance after declining.
   A trade-off between grounding and refusal, measured on one repetition (one case moves a rate
   by 4 points, a class rate by 20).
+- **Consequence:** Claude stays the default backend. The local backend is offered for sites that
+  forbid cloud processing, with these measured limits stated. A request gate before retrieval
+  (v2) is left as later work.
 - **Grader fixes found during the pilot:** Indonesian decimal commas, a race reading the sources
   before the API stored them, and derived values ("0.64 mm above the limit"). Each fix is covered
   by a test; rows were re-graded without new model calls.

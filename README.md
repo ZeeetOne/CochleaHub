@@ -235,6 +235,10 @@ Carotis Interna.
 - **Document upload** for the assistant's knowledge base (protocols, papers, de-identified
   case reports), with a staged ingestion pipeline. Patient reports need access control,
   de-identification and deletion first; they will be designed before they are built.
+- **Request gate for the local model** (v2): classify requests for patient-specific clinical
+  decisions before retrieval, in the style of input guards such as Llama Guard, and answer them
+  with a fixed refusal. Measure it on new held-out cases, including legitimate questions that
+  mention patients, to check for over-refusal.
 - **RAG storage in PostgreSQL** (pgvector + full-text search) once documents can change at run
   time. At the current 87 static passages an in-memory index is exact and fast enough (D19).
 
