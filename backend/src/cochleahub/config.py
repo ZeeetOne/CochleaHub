@@ -22,7 +22,12 @@ class Settings(BaseSettings):
     llm_model: str = "claude-sonnet-5-5"
 
     aws_region: str = "eu-west-3"
-    s3_mesh_bucket: str = ""
+    # Empty endpoint = Amazon S3; set it for a local S3-compatible store (infra/)
+    s3_endpoint_url: str | None = None
+    s3_mesh_bucket: str = "cochleahub-meshes"
+    # None = default AWS credential chain (env, profile, IAM role)
+    aws_access_key_id: str | None = None
+    aws_secret_access_key: str | None = None
 
     def resolve(self, p: Path) -> Path:
         return p if p.is_absolute() else (REPO_ROOT / p).resolve()
