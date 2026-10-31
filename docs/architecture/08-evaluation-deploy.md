@@ -1,0 +1,71 @@
+# Stage 8 — Evaluation and deployment
+
+**Status:** in progress. Done: Claude evaluation and the dashboard-tool comparison. Running: the
+local-model evaluation. Prepared but not applied: the AWS deployment.
+
+## Assistant evaluation
+
+```mermaid
+flowchart LR
+    CASES[/"25 cases<br/>10 data · 5 concept ·<br/>5 abstain · 5 refuse"/] --> RUN["runner<br/>real endpoint<br/>POST /assistant/chat"]
+    RUN --> ANS["answer + cited sources<br/>+ sources shown to the model"]
+    ANS --> PROG["programmatic checks<br/>expected numbers ·<br/>every number grounded ·<br/>right source cited"]
+    ANS --> JUDGE["model judge<br/>behaviour · key points"]
+    PROG & JUDGE --> RES[/"results.jsonl · traces/ ·<br/>summary.json"/]
+```
+
+- **Design:** answerable questions mixed with unanswerable ones, scored on abstention, after
+  EHRSQL [Lee2022]. Adversarial requests for clinical advice, including a prompt injection, as in
+  Almanac [Zakka2024]. Harm as the axis that matters [Singhal2023].
+- **What the judge decides:** LLM judges can favour their own model's answers [Zheng2023], so
+  numbers, grounding and citations are checked by code. The judge only decides behaviour and key
+  points.
+- **Grader checks:** empty, "I don't know" and wrong answers all fail; the grader tests cover
+  Indonesian decimal commas and derived values.
+- **Limitation:** the cases were written by the author from the project's data, not collected
+  from clinicians as in EHRSQL.
+
+| | Claude Sonnet 5.5 | qwen3.5:4b, local (GTX 1650 4 GB) |
+|---|---|---|
+| correct behaviour | 25/25 | *running* |
+| expected numbers present | 9/9 | |
+| answers with ungrounded numbers | 0/25 | |
+| right source cited | 13/15 | |
+| median latency | 5 s | ~110 s |
+| cost per question | $0.023 | hardware only |
+
+Code: `backend/src/cochleahub/evaluation/`, `cochleahub eval-assistant`. Cases and results:
+`evaluation/assistant/`.
+
+## Dashboard tools: React vs. Grafana vs. Power BI
+
+A Grafana prototype of the Operations view was built on the same database, through a read-only
+role (`infra/grafana/`). Power BI was analysed from documentation only. Recommendation: React for
+the clinical surface, Grafana for operations, Power BI for aggregate reporting only. Details:
+[dashboard-tools.md](../evaluation/dashboard-tools.md).
+
+## AWS deployment (cost-saving demo)
+
+```mermaid
+flowchart LR
+    U["browser"] -->|HTTPS + basic auth| CF["CloudFront<br/>edge function: auth,<br/>SPA routing"]
+    CF -->|"/"| S3F[("S3 frontend<br/>private, OAC")]
+    CF -->|"/api/*, /dicom-web/*<br/>+ secret header"| EC2
+    subgraph EC2["EC2 t3.medium · eu-west-3 · no SSH, SSM only"]
+        NG["nginx<br/>checks header,<br/>DICOMweb GET only"] --> API["FastAPI"]
+        NG --> OR["Orthanc"]
+        API --> PG[("PostgreSQL")]
+    end
+    API --> S3M[("S3 meshes<br/>private")]
+    U -. "presigned URL" .-> S3M
+    API --> CL["Claude API<br/>key in SSM"]
+    ECR[("ECR<br/>API image")] --> EC2
+    BUD["Budget alert"] -.-> U
+```
+
+| | |
+|---|---|
+| **Code** | `deploy/aws/terraform/` (infrastructure), `deploy/aws/server/` (compose, nginx, bootstrap), `deploy/aws/deploy.py` (steps: secrets → infra → key → image → frontend → bundle → bootstrap → smoke → destroy) |
+| **Security** | EC2 accepts traffic from CloudFront's origin-facing addresses only, and only with the secret header. DICOMweb writes are blocked. IMDSv2 only. Secrets live in SSM Parameter Store and Terraform state, never in git. |
+| **Cost** | about $1.3/day while running (t3.medium, disk, public IPv4; CloudFront and S3 negligible), estimated from list prices. A budget alert is configured. `deploy.py destroy` removes everything. |
+| **Production differences** | RDS instead of PostgreSQL on the instance, ECS/Fargate, Orthanc in a private subnet, Claude through Bedrock, SSO instead of basic auth |

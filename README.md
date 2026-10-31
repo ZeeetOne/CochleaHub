@@ -1,46 +1,140 @@
 # CochleaHub
 
-Research web platform that turns temporal bone CT and segmentations into anatomical
-measurements, 3D models and natural-language answers for cochlear implant research.
+Research web platform that turns temporal-bone CT and segmentations into anatomical
+measurements, 3D models and cited natural-language answers, for cochlear implant research.
 
-Built on the public [OpenEar](https://doi.org/10.1038/sdata.2018.297) dataset (Sieber et al., 2019),
-starting with specimen **ZETA**. Architecture follows the published Nautilus platform
-(Margeta et al., 2022).
+Built on the public [OpenEar](https://doi.org/10.1038/sdata.2018.297) dataset (Sieber et al.,
+2019), starting with specimen **ZETA** (one cadaveric right temporal bone). The architecture
+follows the published Nautilus platform (Margeta et al., 2022). Every design decision is traced
+to a paper in [`docs/DECISIONS.md`](docs/DECISIONS.md), and where no paper exists the entry says
+so.
 
-> **Not a clinical tool.** No medical recommendations. Data come from cadaveric specimens and
+> **Not a clinical tool.** No medical recommendations. Data come from one cadaveric specimen and
 > do not represent population statistics.
 
 ## Architecture
 
+```mermaid
+flowchart LR
+    subgraph data["Data (read-only)"]
+        DS[("OpenEar ZETA<br/>CBCT DICOM, segmentation,<br/>3D models, histology")]
+    end
+
+    subgraph pipeline["Pipeline · Python, SimpleITK"]
+        P1["1 inspect<br/>manifest"]
+        P2["2 measure<br/>volumes, dimensions,<br/>distances, meshes"]
+        P3["3 validate<br/>vs 3D Slicer + dataset meshes,<br/>QC flags"]
+        P1 --> P2 --> P3
+    end
+
+    subgraph storage["4 Storage · AWS-compatible"]
+        PG[("PostgreSQL<br/>runs, measurements,<br/>QC, validation, chat log")]
+        S3[("S3<br/>glTF meshes")]
+        OR[("Orthanc<br/>CBCT via DICOMweb")]
+    end
+
+    subgraph serve["Serving"]
+        API["5 FastAPI /api/v1<br/>read-only, provenance<br/>on every result"]
+        AS["7 Assistant<br/>agent loop + hybrid RAG<br/>Claude or local LLM"]
+    end
+
+    subgraph ui["6 Dashboard · React + TypeScript"]
+        UI["Overview · Specimen 3D + CT<br/>Compare · Operations · Assistant"]
+    end
+
+    DS --> P1
+    DS -- "CBCT, axial" --> OR
+    P3 -- "cochleahub load" --> PG
+    P2 -- "meshes" --> S3
+    PG --> API
+    S3 -. "presigned URLs" .-> UI
+    OR -. "DICOMweb (GET)" .-> UI
+    API --> UI
+    API -- "tools (same routes)" --> AS
+    AS -- "streamed answers + sources" --> UI
 ```
-Dataset/ (OpenEar ZETA, not committed)
-   │
-   ▼
-backend/cochleahub/pipeline   SimpleITK: volumes, dimensions, surface area, min distances, QC flags
-   │            │
-   │            ├──► data/meshes/*.glb ──► S3
-   │            └──► PostgreSQL (specimens, measurements, pipeline runs)
-   ▼
-backend/cochleahub/api        FastAPI, read-only, every result tagged with pipeline version
-   │
-   ├──► frontend/  React + TypeScript dashboard (Overview, Specimen, Compare, Operations)
-   │                3D viewer (three.js) + CT slice viewer (OHIF / Cornerstone3D via DICOMweb)
-   └──► assistant  LLM tool calling over the API + RAG over user guide & literature
-Orthanc (DICOMweb)  CBCT archive on AWS EC2 (production path: AWS HealthImaging)
+
+Stage 8 adds the evaluation, a Grafana comparison prototype and the AWS deployment (see below).
+Each stage has its own page with a diagram, inputs and outputs, decisions and measured results:
+
+| Stage | What it does | Page |
+|---|---|---|
+| 1 Data | verify the specimen files, read headers only, write a manifest | [01-data](docs/architecture/01-data.md) |
+| 2 Measurement | per-structure volume, area, dimensions; cochlear A/B/H; critical distances; web meshes | [02-measurement](docs/architecture/02-measurement.md) |
+| 3 Validation & QC | compare with 3D Slicer and the dataset's meshes; automatic QC flags | [03-validation](docs/architecture/03-validation.md) |
+| 4 Storage | PostgreSQL, S3 and Orthanc DICOMweb, mirroring AWS | [04-storage](docs/architecture/04-storage.md) |
+| 5 API | read-only versioned API with provenance and explicit missing data | [05-api](docs/architecture/05-api.md) |
+| 6 Dashboard | React dashboard with 3D anatomy and CT viewer | [06-dashboard](docs/architecture/06-dashboard.md) |
+| 7 Assistant | LLM agent over the API + RAG, cited, refuses medical advice | [07-assistant](docs/architecture/07-assistant.md) |
+| 8 Evaluation & deploy | 25-case assistant evaluation, tool comparison, AWS | [08-evaluation-deploy](docs/architecture/08-evaluation-deploy.md) |
+
+### How a question to the assistant is answered
+
+```mermaid
+sequenceDiagram
+    actor U as User
+    participant UI as Dashboard
+    participant AG as Agent loop
+    participant LLM as LLM (Claude or local)
+    participant T as Tools
+    participant API as /api/v1
+    participant R as Doc retrieval (BM25 + embeddings)
+
+    U->>UI: "How close is the facial nerve to the cochlea?"
+    UI->>AG: POST /assistant/chat (SSE)
+    AG->>LLM: question + system prompt + tool list
+    LLM-->>AG: call get_distances(zeta)
+    AG->>T: run tool
+    T->>API: GET /specimens/zeta/distances
+    API-->>T: 1.18 mm + run id + pipeline version
+    T-->>AG: citable sources
+    AG->>LLM: tool results as search results
+    LLM-->>AG: answer with citations
+    AG-->>UI: streamed text, tool steps, numbered sources
+    Note over AG,R: concept questions go through search_docs -> R instead.<br/>Missing data come back as "No data: ..." and the model says so.
 ```
+
+### Where it runs
+
+| | Local development | AWS demo (cost-saving, stage 8) | Production target |
+|---|---|---|---|
+| Frontend | Vite dev server | S3 + CloudFront | S3 + CloudFront |
+| API | uvicorn | Docker on one EC2 instance | ECS/Fargate |
+| Database | PostgreSQL in Docker | PostgreSQL in Docker on EC2 | Amazon RDS |
+| Meshes | SeaweedFS (S3 API) | Amazon S3, presigned URLs | Amazon S3 |
+| CBCT archive | Orthanc in Docker | Orthanc on EC2, DICOMweb GET only | Orthanc in a private subnet, or AWS HealthImaging |
+| LLM | Claude API or Ollama | Claude API (key in SSM) | Claude on Bedrock (EU region) or on-premises model |
+| Access | localhost | CloudFront basic auth; EC2 reachable from CloudFront only | SSO |
+
+## Results so far
+
+- **Measurements** (ZETA): scala tympani 34.65 mm³, inside the published 23–50 mm³; cochlear
+  A 8.97 / B 6.81 / H 4.36 mm; facial nerve to scala tympani 1.18 mm.
+  [Validation report](docs/validation/zeta.md): volumes identical to 3D Slicer; meshes within a
+  mean 0.05–0.10 mm of the dataset's own meshes.
+- **Assistant** (25 cases: answer, abstain when data are missing, refuse medical advice), Claude
+  Sonnet: 25/25 correct behaviour, 0 numbers not grounded in a source, 13/15 citations pointing
+  at the right source, median 5 s, $0.023 per question.
+  [Results](evaluation/assistant/claude/baseline/summary.json).
+- **Dashboard tools**: React for the clinical surface, Grafana for operations, Power BI for
+  aggregate reporting only. [Comparison](docs/evaluation/dashboard-tools.md).
 
 ## Repository layout
 
 | Path | Content |
 |---|---|
-| `backend/src/cochleahub/pipeline` | Dataset loading, measurement, mesh export, QC |
-| `backend/src/cochleahub/api` | FastAPI app |
-| `backend/src/cochleahub/db` | SQLAlchemy models (stage 4) |
-| `backend/tests` | pytest |
-| `frontend/` | Vite + React + TypeScript dashboard |
-| `infra/docker-compose.yml` | Local PostgreSQL + Orthanc (DICOMweb) |
-| `data/` | Generated outputs (git-ignored) |
-| `Dataset/` | Extracted OpenEar specimen (git-ignored) |
+| `backend/src/cochleahub/pipeline` | dataset loading, measurement, meshes, validation, QC (stages 1–3) |
+| `backend/src/cochleahub/storage`, `db` | S3, DICOM Part 10 + Orthanc, SQLAlchemy models (stage 4) |
+| `backend/src/cochleahub/api` | FastAPI app (stage 5) |
+| `backend/src/cochleahub/assistant` | agent loop, tools, retrieval, LLM backends (stage 7) |
+| `backend/src/cochleahub/evaluation` | assistant evaluation runner and graders (stage 8) |
+| `backend/tests` | pytest (48 tests) |
+| `frontend/` | Vite + React + TypeScript dashboard (stage 6) |
+| `infra/` | local Docker stack; optional Ollama and Grafana profiles |
+| `deploy/aws/` | Terraform, server config and deploy script (stage 8) |
+| `docs/` | decisions, references, architecture, validation, knowledge base for the assistant |
+| `evaluation/` | evaluation cases and results |
+| `Dataset/`, `data/` | dataset and generated outputs (git-ignored) |
 
 ## Setup
 
@@ -54,7 +148,7 @@ cd backend
 python -m venv .venv
 .venv/Scripts/activate                     # Windows; use .venv/bin/activate on Linux/macOS
 pip install -e ".[dev]"
-cochleahub inspect                         # verifies the dataset, writes data/outputs/zeta_manifest.json
+cochleahub inspect                         # stage 1: verifies the dataset, writes the manifest
 cochleahub measure                         # stage 2: metrics, meshes, distances
 cochleahub validate                        # stage 3: Slicer + dataset-mesh comparison, QC report (SLICER_EXE optional)
 pytest
@@ -68,6 +162,7 @@ cochleahub upload-dicom                    # stage 4: CBCT -> DICOM Part 10 -> O
 uvicorn cochleahub.api.main:app --reload   # stage 5: http://localhost:8000/docs
 cochleahub openapi                         # API schema -> docs/api/openapi.json
 cochleahub index-docs                      # stage 7: assistant documentation index (local embeddings)
+cochleahub eval-assistant --backend claude # stage 8: 25-case assistant evaluation
 
 # assistant backends: set ANTHROPIC_API_KEY for Claude, and/or run a local model with
 # Ollama Desktop (set OLLAMA_MODELS to choose the model folder) ...
@@ -79,7 +174,14 @@ cd frontend
 npm install
 npm run dev                                # http://localhost:5173
 npm run gen:api                            # regenerate API types after `cochleahub openapi`
+
+# Grafana comparison prototype (stage 8): http://localhost:3000
+docker exec -i infra-postgres-1 psql -U cochleahub -d cochleahub < infra/grafana/readonly.sql
+docker compose -f infra/docker-compose.yml --env-file .env --profile grafana up -d grafana
 ```
+
+AWS deployment: see [`deploy/aws/deploy.py`](deploy/aws/deploy.py) and
+[stage 8](docs/architecture/08-evaluation-deploy.md).
 
 ## API
 
@@ -109,7 +211,7 @@ pipeline version, QC status). Missing data return 404 saying what is missing.
 | `01_CBCT_Unembedded`, `02_CBCT_Embedded` | CBCT DICOM series (X/Y/Z) | Orthanc upload, slice viewer |
 | `05_Registred_Slicer_Volumes` | CBCT registered to micro-slicing, 0.125 mm isotropic (.nrrd) | Measurement reference space |
 | `06_Segmentation/Segmentation.seg.nrrd` | 13-layer 3D Slicer segmentation, 0.125 mm | Volumes, surface areas, distances |
-| `07_3D_Models/*.ply` | Surface mesh per structure | 3D viewer (converted to .glb) |
+| `07_3D_Models/*.ply` | Surface mesh per structure | Validation reference |
 | `05_.../Accuracy Analysis` | Hausdorff / volumetric error CBCT vs. histology | Validation context |
 
 Segments: Scala Tympani, Scala Vestibuli, Malleus, Incus, Stapes, Cochleovestibular nerve,
@@ -119,16 +221,15 @@ Carotis Interna.
 ## Roadmap
 
 - [x] **1. Data & exploration** — dataset loader, `cochleahub inspect`, manifest
-- [x] **2. Processing & measurement** — `cochleahub measure`: volume, dimensions, surface area per structure; cochlear A/B/height; `.glb` meshes; min distances between facial nerve, chorda tympani and cochlea
-- [x] **3. Validation & QC** — `cochleahub validate`: against headless 3D Slicer Segment Statistics and the dataset's published meshes; QC flags with severities and published ranges → [`docs/validation/zeta.md`](docs/validation/zeta.md)
-- [x] **4. Storage (local, AWS-compatible)** — CBCT rewritten as DICOM Part 10 → Orthanc (DICOMweb); meshes → S3 API; runs, measurements, QC and validation → PostgreSQL (Alembic). AWS provisioning in stage 8
-- [x] **5. Backend API** — read-only `/api/v1`: specimens, measurements, cochlea vs. published ranges, distances, compare, runs, QC, validation, presigned mesh URLs, DICOMweb series; every result carries its run and pipeline version → [API](#api)
-- [x] **6. Dashboard & viewer** — Overview, Specimen (3D anatomy with measured distances, cochlea vs. published range, CT axial/coronal/sagittal via Cornerstone3D + DICOMweb, measurement table), Compare, Operations (services, runs, QC flags, validation charts)
-- [x] **7. AI assistant** — agent loop over the read-only API + hybrid RAG (BM25 + local embeddings, RRF) over the docs, native citations; Claude (API, or Bedrock EU in production) or a local model on Ollama; refuses clinical advice, says what is missing; every turn logged for evaluation
-- [ ] **8. Evaluation & deploy** — measurement validation table, 25-question assistant eval, AWS deploy, React vs. Power BI vs. Grafana comparison
+- [x] **2. Processing & measurement** — volume, dimensions, surface area per structure; cochlear A/B/height; `.glb` meshes; minimum distances between facial nerve, chorda tympani and cochlea
+- [x] **3. Validation & QC** — against headless 3D Slicer and the dataset's meshes; QC flags with severities and published ranges → [`docs/validation/zeta.md`](docs/validation/zeta.md)
+- [x] **4. Storage (local, AWS-compatible)** — CBCT as DICOM Part 10 → Orthanc (DICOMweb); meshes → S3 API; runs, measurements, QC, validation → PostgreSQL (Alembic)
+- [x] **5. Backend API** — read-only `/api/v1` with provenance on every result → [API](#api)
+- [x] **6. Dashboard & viewer** — Overview, Specimen (3D anatomy with measured distances, cochlea vs. published range, CT via Cornerstone3D + DICOMweb), Compare, Operations
+- [x] **7. AI assistant** — agent loop over the API + hybrid RAG with native citations; Claude or a local model; refuses clinical advice, says what is missing; every turn logged
+- [ ] **8. Evaluation & deploy** — assistant evaluation (Claude done, local model running), dashboard-tool comparison (done), AWS deployment (prepared, not yet applied)
 
 ## Design basis
 
-Every architectural choice is traced to published work:
-[`docs/DECISIONS.md`](docs/DECISIONS.md) (decision log) and
+[`docs/DECISIONS.md`](docs/DECISIONS.md) (decision log, D1–D22) and
 [`docs/REFERENCES.md`](docs/REFERENCES.md) (bibliography).
