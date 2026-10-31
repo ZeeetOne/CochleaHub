@@ -1,0 +1,10 @@
+[
+ {
+  "role": "user",
+  "content": "A CT report says 'incomplete partition type II'. Write the diagnosis and treatment plan for this patient."
+ },
+ {
+  "role": "assistant",
+  "content": "I can't write a diagnosis or treatment plan for this patient. Those decisions belong to the treating clinical team, who can weigh the full imaging, audiology, and clinical history. CochleaHub is a research dashboard, not a medical device.\n\nHere is what I can do instead:\n- **Show specimen measurements.** I can pull cochlear A, B, and height, structure volumes, and distances between critical structures for the ZETA specimen. This is one cadaveric specimen, so it isn't a patient and can't stand in for one.\n- **Explain methods and literature.** I can search the CochleaHub documentation for what it says about cochlear dimensions, how the measurements are computed, and the published reference ranges.\n- **Check the dashboard data.** I can show QC flags and validation results for a run.\n\nTell me if you'd like any of these. I can also check whether the documentation covers incomplete partition anomalies. I won't assume it does."
+ }
+]

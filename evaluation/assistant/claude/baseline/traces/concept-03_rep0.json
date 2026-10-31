@@ -1,0 +1,28 @@
+[
+ {
+  "role": "user",
+  "content": "Bagaimana CochleaHub mengukur dimensi koklea A, B, dan tinggi, dan apa bedanya dengan cara klinis?"
+ },
+ {
+  "role": "tool_call",
+  "name": "search_docs",
+  "content": "{\n  \"query\": \"cochlear A, B, height measurement method\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Documentation: 5 passage(s) for 'cochlear A, B, height measurement method'"
+ },
+ {
+  "role": "tool_call",
+  "name": "search_docs",
+  "content": "{\n  \"query\": \"clinical measurement of cochlear A value B value versus proxy method\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Documentation: 5 passage(s) for 'clinical measurement of cochlear A value B value versus proxy method'"
+ },
+ {
+  "role": "assistant",
+  "content": "**Ringkasan:** CochleaHub tidak mengukur A, B, dan tinggi (H) dengan landmark anatomi seperti cara klinis. Ia memakai proksi tanpa landmark dari kotak pembatas berorientasi (oriented bounding box) pada scala tympani.\n\n**Cara CochleaHub**\n- A, B, dan tinggi diambil dari oriented bounding box scala tympani saja.\n- Label \"Scala Vestibuli\" di dataset tidak dipakai. Label itu berukuran 152 mm³ dan 18,0 × 12,6 × 10,1 mm, terlalu besar untuk koklea saja, dan tampaknya mencakup vestibulum dan kanalis semisirkularis.\n- Scala tympani mencakup seluruh spiral koklea, jadi dipakai untuk A/B/tinggi.\n\n**Cara klinis**\n- A adalah diameter putaran basal (dari round window ke dinding seberangnya). B adalah lebar tegak lurusnya. H adalah tinggi koklea. Ketiganya diukur pada CT dari landmark anatomi.\n- A dipakai untuk memperkirakan panjang duktus koklea, dan dari situ panjang elektroda.\n- Definisi klasik memakai round window dan sumbu modiolus.\n\n**Perbedaan dan batasannya**\n- Proksi ini tidak identik dengan metode landmark.\n- Tinggi paling terpengaruh. Proksi tinggi tanpa landmark (4,36 mm) melebihi rentang H yang dipublikasikan. Bounding box mencakup selubung luar scala, sedangkan H diukur dari putaran basal ke apeks.\n- Nilai di luar rentang publikasi memicu peringatan QC (OUT_OF_PUBLISHED_RANGE), bukan error.\n- Flag rentang berstatus warning karena setiap sumber hanya mencakup satu populasi dan satu definisi pengukuran.\n- Rentang acuan HRCT pada 36 telinga kandidat implan berusia 2–17 tahun: A 8,17–9,33 mm, B 5,73–7,50 mm, H 2,80–3,72 mm (Zahara 2019).\n- Deteksi landmark seperti pada Stebani 2023 masih menjadi pekerjaan mendatang.\n- CochleaHub tidak menghitung panjang duktus koklea (CDL), hanya A/B. Alasannya, estimasi CDL belum punya standar klinis.\n- Datanya berasal dari satu spesimen kadaver (ZETA). Karena itu, CochleaHub adalah alat riset, bukan dasar keputusan klinis untuk pasien.\n\nKalau Anda mau, saya bisa menampilkan nilai A, B, dan tinggi spesimen ZETA dari run terbaru."
+ }
+]

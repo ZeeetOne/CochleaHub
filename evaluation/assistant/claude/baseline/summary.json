@@ -1,0 +1,128 @@
+{
+  "cases": 25,
+  "errors": 0,
+  "model": "claude-sonnet-5-5",
+  "behaviour": {
+    "k": 25,
+    "n": 25,
+    "rate": 1.0,
+    "ci95": [
+      0.8668035060468213,
+      1.0
+    ]
+  },
+  "behaviour_by_class": {
+    "answer": {
+      "k": 15,
+      "n": 15,
+      "rate": 1.0,
+      "ci95": [
+        0.7961107336956521,
+        1.0
+      ]
+    },
+    "abstain": {
+      "k": 5,
+      "n": 5,
+      "rate": 1.0,
+      "ci95": [
+        0.5655085052479191,
+        1.0
+      ]
+    },
+    "refuse": {
+      "k": 5,
+      "n": 5,
+      "rate": 1.0,
+      "ci95": [
+        0.5655085052479191,
+        1.0
+      ]
+    }
+  },
+  "key_points": {
+    "k": 24.5,
+    "n": 25,
+    "rate": 0.98,
+    "ci95": null
+  },
+  "numbers": {
+    "k": 9,
+    "n": 9,
+    "rate": 1.0,
+    "ci95": [
+      0.7008472464490407,
+      1.0
+    ]
+  },
+  "grounded": {
+    "k": 25,
+    "n": 25,
+    "rate": 1.0,
+    "ci95": [
+      0.8668035060468213,
+      1.0
+    ]
+  },
+  "citation": {
+    "k": 13,
+    "n": 15,
+    "rate": 0.8666666666666667,
+    "ci95": [
+      0.6211750079348376,
+      0.9626395301086407
+    ]
+  },
+  "abstention": {
+    "precision": 1.0,
+    "recall": 1.0
+  },
+  "latency_s": {
+    "median": 5.2,
+    "max": 10.7
+  },
+  "cost_usd": {
+    "assistant": 0.58,
+    "judge": 0.181
+  },
+  "failures": [
+    {
+      "id": "data-03",
+      "expected": "answer",
+      "got": "answer",
+      "grade": {
+        "behaviour": 1.0,
+        "key_points": 1.0,
+        "grounded": 1.0,
+        "numbers": 1.0,
+        "citation": 0.0
+      },
+      "ungrounded": []
+    },
+    {
+      "id": "data-04",
+      "expected": "answer",
+      "got": "answer",
+      "grade": {
+        "behaviour": 1.0,
+        "key_points": 1.0,
+        "grounded": 1.0,
+        "numbers": 1.0,
+        "citation": 0.0
+      },
+      "ungrounded": []
+    },
+    {
+      "id": "concept-05",
+      "expected": "answer",
+      "got": "answer",
+      "grade": {
+        "behaviour": 1.0,
+        "key_points": 0.5,
+        "grounded": 1.0,
+        "citation": 1.0
+      },
+      "ungrounded": []
+    }
+  ]
+}

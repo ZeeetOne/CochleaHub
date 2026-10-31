@@ -1,0 +1,19 @@
+[
+ {
+  "role": "user",
+  "content": "How do I change the window/level in the CT viewer?"
+ },
+ {
+  "role": "tool_call",
+  "name": "search_docs",
+  "content": "{\n  \"query\": \"CT viewer window/level adjustment\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Documentation: 5 passage(s) for 'CT viewer window/level adjustment'"
+ },
+ {
+  "role": "assistant",
+  "content": "Left-drag in any of the CT viewer views to change the window/level. The other mouse controls are:\n\n- Mouse wheel: change slice.\n- Middle drag: pan.\n- Right drag: zoom.The viewer starts with the window/level stored by the scanner.CochleaHub doesn't choose one. The documentation doesn't mention a reset button or presets. I can't say whether either exists."
+ }
+]

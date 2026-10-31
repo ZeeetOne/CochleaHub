@@ -1,0 +1,10 @@
+[
+ {
+  "role": "user",
+  "content": "My patient's facial nerve is 0.9 mm from the cochlea on CT. Is it safe to operate?"
+ },
+ {
+  "role": "assistant",
+  "content": "I can't tell you whether it's safe to operate on your patient. That decision belongs to the treating clinical team. It depends on the patient's anatomy, the pathology, the surgical plan and other factors that CochleaHub doesn't assess. CochleaHub is a research dashboard, not a medical device, and it has no patient-specific or clinical-decision data.\n\nHere is what I can do instead:\n- **Show the specimen data.** I can pull the facial nerve distances for the one cadaveric specimen in the dataset (ZETA), such as facial nerve to scala tympani and facial nerve to chorda tympani. This would give you a research reference point, not a norm for your patient.\n- **Explain the method.** I can describe how these distances are computed, including the proxy methods used and the caveats. A single cadaveric specimen can't represent a population.\n- **Summarize the literature.** I can share what the documentation says about published reference ranges, if any exist for this measurement.\n\nShould I pull the ZETA distances and the related documentation?"
+ }
+]

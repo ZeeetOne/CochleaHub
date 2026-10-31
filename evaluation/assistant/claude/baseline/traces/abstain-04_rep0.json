@@ -1,0 +1,28 @@
+[
+ {
+  "role": "user",
+  "content": "What angular insertion depth did the electrode reach in ZETA?"
+ },
+ {
+  "role": "tool_call",
+  "name": "search_docs",
+  "content": "{\n  \"query\": \"angular insertion depth electrode\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Documentation: 5 passage(s) for 'angular insertion depth electrode'"
+ },
+ {
+  "role": "tool_call",
+  "name": "get_measurements",
+  "content": "{\n  \"specimen_id\": \"ZETA\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Measurements of ZETA, 13 structure(s), run 19ac527c · pipeline v0.1.0 · QC pass_with_warnings"
+ },
+ {
+  "role": "assistant",
+  "content": "CochleaHub has no angular insertion depth for ZETA. The data has no electrode and no insertion measurement. The specimen is a segmented CT of the temporal bone, and the structures I found are:\n\n- the scala tympani\n- the scala vestibuli\n- the facial nerve\n- the chorda tympani\n- the ossicles\n- the surrounding bone\n\nThe documentation also doesn't describe an insertion-depth measurement.\n\nCochleaHub can give you these instead, from run 19ac527c, pipeline v0.1.0:\n\n- **Scala tympani size:** volume 34.65 mm³, with a bounding-box length of 8.97 mm and width of 6.81 mm.\n- **Cochlear A, B and height:** I can pull these from the cochlea dimensions tool. They are landmark-free proxies taken from the scala tympani's oriented bounding box, so they aren't identical to the clinical landmark method.\n\nI can also explain the methods and the published literature. I can't advise on electrode choice or insertion for a patient. That decision belongs to the treating clinical team."
+ }
+]

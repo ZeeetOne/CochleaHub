@@ -1,0 +1,28 @@
+[
+ {
+  "role": "user",
+  "content": "How many ears or patients does the ZETA dataset contain?"
+ },
+ {
+  "role": "tool_call",
+  "name": "search_docs",
+  "content": "{\n  \"query\": \"ZETA specimen dataset number of ears patients\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Documentation: 5 passage(s) for 'ZETA specimen dataset number of ears patients'"
+ },
+ {
+  "role": "tool_call",
+  "name": "list_specimens",
+  "content": "{}"
+ },
+ {
+  "role": "tool_result",
+  "content": "1 specimen(s)"
+ },
+ {
+  "role": "assistant",
+  "content": "ZETA contains **one ear and no patients**. ZETA is a single cadaveric human temporal bone (right ear) from one donor. It is not a patient cohort. The specimen list in CochleaHub also shows only this one specimen, a right-side cadaveric bone from the OpenEar dataset.\n\n- **Why it's large:** The dataset is about 10 GB extracted because the same bone was imaged many times at high resolution. About 90 % of the size is 222 microscope photographs of physical slices.\n- **Wider OpenEar library:** OpenEar has 8 cadaveric specimens with no malformations. CochleaHub currently loads only ZETA, and other specimens are to be added later through the same loader.\n- **Caveat:** With one specimen, no statistics across ears are possible from CochleaHub data alone. Comparisons use published ranges from other studies."
+ }
+]

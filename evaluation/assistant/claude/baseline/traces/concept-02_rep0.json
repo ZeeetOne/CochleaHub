@@ -1,0 +1,19 @@
+[
+ {
+  "role": "user",
+  "content": "What does the QC flag AREA_METHOD_SENSITIVE mean?"
+ },
+ {
+  "role": "tool_call",
+  "name": "search_docs",
+  "content": "{\n  \"query\": \"AREA_METHOD_SENSITIVE QC flag\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Documentation: 5 passage(s) for 'AREA_METHOD_SENSITIVE QC flag'"
+ },
+ {
+  "role": "assistant",
+  "content": "**AREA_METHOD_SENSITIVE** is a warning-level QC flag. It means the structure's surface area differs from 3D Slicer's by more than 10 %.A warning means the value is usable with care.\n\n**Why it happens:** Area is computed on the smoothed surface mesh (marching cubes plus Taubin smoothing). Thin structures such as the stapes and chorda tympani are sensitive to smoothing, so their area can differ from Slicer's by more than 10 %. The flag shows that the area depends on the method used. It does not necessarily mean the segmentation is wrong.\n\n**Example from the ZETA validation report:**\n- Stapes: area differs from Slicer by +15.3 %.\n- Chorda tympani: area differs from Slicer by +12.1 %.\n\n**Caveats:**\n- The 10 % threshold is an engineering choice based on the project's own validation results, not a value from a paper.\n- This is a single cadaveric specimen.\n\nIf you'd like the current flags for ZETA from the latest pipeline run, I can pull them."
+ }
+]

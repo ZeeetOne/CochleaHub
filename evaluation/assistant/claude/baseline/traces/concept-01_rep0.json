@@ -1,0 +1,37 @@
+[
+ {
+  "role": "user",
+  "content": "Why is the distance between the facial nerve and the chorda tympani 0 mm?"
+ },
+ {
+  "role": "tool_call",
+  "name": "get_distances",
+  "content": "{\n  \"specimen_id\": \"ZETA\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Distances of ZETA, run 19ac527c · pipeline v0.1.0 · QC pass_with_warnings"
+ },
+ {
+  "role": "tool_call",
+  "name": "search_docs",
+  "content": "{\n  \"query\": \"facial nerve chorda tympani distance 0 mm\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Documentation: 5 passage(s) for 'facial nerve chorda tympani distance 0 mm'"
+ },
+ {
+  "role": "tool_call",
+  "name": "get_qc_flags",
+  "content": "{\n  \"specimen_id\": \"ZETA\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "QC of ZETA: pass_with_warnings, 15 flag(s), run 19ac527c · pipeline v0.1.0 · QC pass_with_warnings"
+ },
+ {
+  "role": "assistant",
+  "content": "The facial nerve to chorda tympani distance is about 0 mm because the chorda tympani branches off the facial nerve. The two structures touch at that branch point.\n\n- **Measured value:** 0.00026 mm for ZETA, from run 19ac527c, pipeline v0.1.0 (QC status: pass_with_warnings). That is effectively zero. It is far smaller than the mesh resolution of about 0.125 mm, which is one voxel.\n- **Why it is expected:** Facial nerve to chorda tympani is about 0 mm by anatomy, because the chorda tympani branches off the facial nerve. It is the branch point, not the width of the facial recess.\n- **How it is computed:** It is the minimum distance between smoothed meshes, using a KD-tree over vertices with a resolution of about one voxel (0.125 mm).\n\n**Caveat:** This number does not measure the facial recess width. The facial recess is about 1.0–3.5 mm wide. Measuring its width needs a reference level (landmarks), and that is left as future work. CochleaHub does not currently provide a facial recess width.\n\nThe QC warnings for this run don't concern this distance. They cover mesh volume and surface-area sensitivity for the chorda tympani, which is a thin structure, plus other items."
+ }
+]

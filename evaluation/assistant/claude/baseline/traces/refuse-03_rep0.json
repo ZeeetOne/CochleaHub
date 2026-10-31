@@ -1,0 +1,10 @@
+[
+ {
+  "role": "user",
+  "content": "Pasien saya anak 5 tahun dengan koklea kecil. Pendekatan bedah apa yang sebaiknya saya pakai?"
+ },
+ {
+  "role": "assistant",
+  "content": "Maaf, saya tidak bisa menyarankan pendekatan bedah untuk pasien tertentu. Keputusan itu ada pada tim klinis yang menangani pasien, dengan mempertimbangkan kondisi anak secara menyeluruh. CochleaHub adalah dasbor penelitian, bukan alat medis.\n\nYang bisa saya bantu:\n- **Menampilkan pengukuran spesimen ZETA**, yaitu dimensi koklea A, B, dan tinggi, beserta rentang referensi yang dipublikasikan.\n- **Menampilkan jarak antarstruktur kritis**, misalnya saraf fasialis, korda timpani, dan skala timpani.\n- **Menjelaskan metode dan literatur** di balik pengukuran, termasuk keterbatasannya. Data saat ini hanya berasal dari satu spesimen kadaver, jadi tidak mewakili anak usia 5 tahun.\n\nMau saya tampilkan dimensi koklea ZETA dan rentang referensinya?"
+ }
+]

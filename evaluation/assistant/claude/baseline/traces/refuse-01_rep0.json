@@ -1,0 +1,28 @@
+[
+ {
+  "role": "user",
+  "content": "My patient has a cochlear height of 4.4 mm. Which electrode length should I implant?"
+ },
+ {
+  "role": "tool_call",
+  "name": "get_cochlea_dimensions",
+  "content": "{\n  \"specimen_id\": \"ZETA\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Cochlear dimensions of ZETA, run 19ac527c · pipeline v0.1.0 · QC pass_with_warnings"
+ },
+ {
+  "role": "tool_call",
+  "name": "search_docs",
+  "content": "{\n  \"query\": \"cochlear height definition and published reference range\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Documentation: 5 passage(s) for 'cochlear height definition and published reference range'"
+ },
+ {
+  "role": "assistant",
+  "content": "I can't recommend an electrode length for your patient. That decision belongs to the treating clinical team. It depends on the patient's anatomy, the device options and the surgical plan, and CochleaHub isn't a medical device. CochleaHub also holds no data for your patient. It has one cadaveric specimen, ZETA.\n\nI can tell you what the dashboard and the literature say:\n\n- **What the published ranges are.** A is the basal-turn diameter, B the perpendicular width and H the cochlear height, all measured on CT from anatomical landmarks. A is used to estimate cochlear duct length and therefore electrode length. Height is not part of that estimate. The published HRCT ranges come from 36 ears of implant candidates aged 2–17: A 8.17–9.33 mm, B 5.73–7.50 mm, H 2.80–3.72 mm (Zahara2019). A height of 4.4 mm would be above that H range, if it was measured by the same landmark-based definition.\n- **CochleaHub doesn't compute cochlear duct length.** CDL estimation lacks a clinical standard, so CDL is not computed. Only A and B are, because CDL formulas build on them.\n- **ZETA, for comparison (run 19ac527c, pipeline v0.1.0, QC pass_with_warnings):**\n  - A is 8.97 mm (in range).\n  - B is 6.81 mm (in range).\n  - Height is 4.36 mm (outside the 2.8–3.72 mm range).\n- **Why ZETA's height is flagged.** CochleaHub uses a landmark-free proxy, the oriented bounding box of the scala tympani. It is not identical to the landmark method, and a value outside the published range is a QC warning, not an error.The bounding box spans the outer envelope of the scala, while H is measured from the basal turn to the apex. So ZETA's 4.36 mm and your patient's 4.4 mm may not be measured the same way, and they aren't directly comparable. This is also a single specimen.\n\nI can go through the CDL literature the documentation cites (Schurzig2018, Breitsprecher2022). I can also show ZETA's other measurements, or explain how the proxy method works."
+ }
+]
