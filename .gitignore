@@ -45,3 +45,4 @@ Thumbs.db
 deploy/aws/terraform/.terraform/
 deploy/aws/terraform/*.tfstate*
 deploy/aws/terraform/secrets.auto.tfvars
+deploy/aws/terraform/tfplan
