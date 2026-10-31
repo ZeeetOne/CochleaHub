@@ -105,10 +105,12 @@ class ScriptedBackend:
         self.turns = list(turns)
         self.seen_sources = []
 
-    def start(self, question):
+    pre_retrieve = False
+
+    def start(self, question, context=(), offset=0):
         return [{"role": "user", "content": question}]
 
-    def ask(self, messages, question):
+    def ask(self, messages, question, context=(), offset=0):
         messages.append({"role": "user", "content": question})
 
     async def turn(self, messages, sources):
@@ -360,3 +362,49 @@ def test_search_modes_and_relevance_labels():
     # labels are id prefixes, so they survive a status change in a decision's title
     assert is_relevant(chunks[0].id, ["docs/DECISIONS.md#d6-"])
     assert not is_relevant(chunks[1].id, ["docs/DECISIONS.md#d6-"])
+
+
+def test_guard_sends_an_unbacked_number_back_once(executor):
+    backend = ScriptedBackend([
+        TurnResult("end_turn", blocks=[{"text": "Typical window is 4000 HU.", "citations": []}]),
+        TurnResult("end_turn", blocks=[{"text": "CochleaHub has no window values.",
+                                        "citations": []}]),
+    ])
+    conv = Conversation("claude", "s")
+    events = collect(run_turn(backend, executor, conv, "What window should I use?"))
+    guard = next(e for e in events if e["type"] == "guard")
+    assert guard["ungrounded"] == [4000.0]
+    answer = next(e for e in events if e["type"] == "answer")
+    assert answer["blocks"][0]["text"] == "CochleaHub has no window values."
+    assert "4000" in conv.messages[-2]["content"]  # the correction request
+
+
+def test_guard_labels_numbers_that_stay_unbacked(executor):
+    bad = TurnResult("end_turn", blocks=[{"text": "It is 4000 HU.", "citations": []}])
+    events = collect(run_turn(ScriptedBackend([bad, bad]), executor,
+                              Conversation("claude", "s"), "?"))
+    answer = next(e for e in events if e["type"] == "answer")
+    assert "could not be verified" in answer["blocks"][-1]["text"]
+
+
+def test_local_backend_gets_retrieved_sources_up_front(executor):
+    class Recording(ScriptedBackend):
+        pre_retrieve = True
+
+        def start(self, question, context=(), offset=0):
+            self.context = list(context)
+            return super().start(question)
+
+    backend = Recording([TurnResult("end_turn", blocks=[{"text": "A is the basal diameter.",
+                                                         "citations": [1]}])])
+    conv = Conversation("local", "s")
+    events = collect(run_turn(backend, executor, conv, "What is A?"))
+    assert [e["name"] for e in events if e["type"] == "tool_call"] == ["list_specimens",
+                                                                       "search_docs"]
+    assert backend.context and len(conv.sources) == len(backend.context)
+
+
+def test_local_backend_numbers_retrieved_context():
+    backend = LocalBackend(client=FakeOllama([]))
+    messages = backend.start("What is A?", context=[Source("s", "Doc", "A is ...")], offset=2)
+    assert "[S3] Doc" in messages[-1]["content"]

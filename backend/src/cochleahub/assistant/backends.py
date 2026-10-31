@@ -63,10 +63,12 @@ class ClaudeBackend:
         # them, so the executor validates every input before running it (tools.validate).
         self.tools = [{**t, "eager_input_streaming": True} for t in TOOLS]
 
-    def start(self, question: str) -> list[dict]:
+    pre_retrieve = False  # Claude decides when to search (it does so reliably, D21)
+
+    def start(self, question: str, context=(), offset: int = 0) -> list[dict]:
         return [{"role": "user", "content": question}]
 
-    def ask(self, messages: list[dict], question: str) -> None:
+    def ask(self, messages: list[dict], question: str, context=(), offset: int = 0) -> None:
         messages.append({"role": "user", "content": question})
 
     async def turn(self, messages: list[dict], sources: list[Source]) -> AsyncIterator[dict | TurnResult]:
@@ -170,10 +172,21 @@ class LocalBackend:
             for t in TOOLS
         ]
 
-    def start(self, question: str) -> list[dict]:
-        return [{"role": "system", "content": LOCAL_SYSTEM}, {"role": "user", "content": question}]
+    pre_retrieve = True  # retrieve-then-generate: the small model skipped search_docs (D21)
 
-    def ask(self, messages: list[dict], question: str) -> None:
+    def start(self, question: str, context=(), offset: int = 0) -> list[dict]:
+        messages = [{"role": "system", "content": LOCAL_SYSTEM}]
+        self.ask(messages, question, context, offset)
+        return messages
+
+    def ask(self, messages: list[dict], question: str, context=(), offset: int = 0) -> None:
+        if context:
+            numbered = "\n\n".join(
+                f"[S{offset + i + 1}] {s.title}\n{s.text}" for i, s in enumerate(context)
+            )
+            question = (f"{question}\n\nCochleaHub sources retrieved for this question "
+                        f"(cite them as [S#]; call tools for anything they do not cover):"
+                        f"\n\n{numbered}")
         messages.append({"role": "user", "content": question})
 
     async def turn(self, messages: list[dict], sources: list[Source]) -> AsyncIterator[dict | TurnResult]:

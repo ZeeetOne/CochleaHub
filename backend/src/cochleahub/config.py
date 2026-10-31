@@ -35,6 +35,7 @@ class Settings(BaseSettings):
     local_model: str = "qwen3.5:4b"
     local_context_tokens: int = 8192
     assistant_max_tool_rounds: int = 8
+    assistant_grounding_guard: bool = True
     embedding_model: str = "BAAI/bge-small-en-v1.5"
 
     aws_region: str = "eu-west-3"
