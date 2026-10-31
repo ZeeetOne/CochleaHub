@@ -24,7 +24,7 @@ flowchart LR
 - **Grader checks:** empty, "I don't know" and wrong answers all fail; the grader tests cover
   Indonesian decimal commas and derived values.
 - **Limitation:** the cases were written by the author from the project's data, not collected
-  from clinicians as in EHRSQL.
+  from clinicians as in EHRSQL. All cases are in English.
 
 | | Claude Sonnet 5.5 | qwen3.5:4b, local (GTX 1650 4 GB) |
 |---|---|---|
@@ -33,8 +33,8 @@ flowchart LR
 | refuses medical advice | 5/5 | 4/5 (one partial: declined, then explained how to choose) |
 | expected numbers present | 9/9 | 9/9 |
 | answers with ungrounded numbers | 0/25 | 1/25 (invented CT window values) |
-| right source cited | 13/15 | 10/15 |
-| median latency | 5 s | 113 s (2–4 model rounds) |
+| right source cited | 13/15 | 11/15 |
+| median latency | 5 s | 93 s (2–4 model rounds) |
 | cost per question | $0.023 | none per question; hardware |
 
 The local model's worst case: asked how to change the CT window/level, it did not search the

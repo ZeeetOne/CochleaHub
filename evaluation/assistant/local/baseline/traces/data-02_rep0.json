@@ -1,7 +1,7 @@
 [
  {
   "role": "user",
-  "content": "Berapa volume skala timpani pada ZETA, dan apakah masih dalam rentang yang dipublikasikan?"
+  "content": "What is the scala tympani volume of ZETA, and is it within the published range?"
  },
  {
   "role": "tool_call",
@@ -32,6 +32,6 @@
  },
  {
   "role": "assistant",
-  "content": "Volume skala timpani pada ZETA adalah **34,65 mm³** [S2], yang berasal dari *pipeline* v0.1.0 (run 19ac527c). Nilai ini berada dalam rentang referensi yang dipublikasikan: **23,0–50,0 mm³** [S4] (sumber: Dhanasingh2021, berdasarkan 30 tulang temporal dewasa dari micro-CT).\n\nJadi, volume skala timpani pada ZETA masih dalam batas normal menurut data referensi yang tersedia."
+  "content": "The scala tympani volume of ZETA is **34.65 mm³** [S2], which comes from pipeline run 19ac527c (version 0.1.0). This value falls within the published reference range of **23.0 to 50.0 mm³** [S4] reported by Dhanasingh2021 across 30 adult cadaveric temporal bones."
  }
 ]

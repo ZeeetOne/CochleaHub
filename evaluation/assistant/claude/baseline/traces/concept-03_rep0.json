@@ -1,28 +1,28 @@
 [
  {
   "role": "user",
-  "content": "Bagaimana CochleaHub mengukur dimensi koklea A, B, dan tinggi, dan apa bedanya dengan cara klinis?"
+  "content": "How does CochleaHub measure cochlear dimensions A, B and height, and how does that differ from the clinical method?"
  },
  {
   "role": "tool_call",
   "name": "search_docs",
-  "content": "{\n  \"query\": \"cochlear A, B, height measurement method\"\n}"
+  "content": "{\n  \"query\": \"how cochlear dimensions A, B and height are measured\"\n}"
  },
  {
   "role": "tool_result",
-  "content": "Documentation: 5 passage(s) for 'cochlear A, B, height measurement method'"
+  "content": "Documentation: 5 passage(s) for 'how cochlear dimensions A, B and height are measured'"
  },
  {
   "role": "tool_call",
   "name": "search_docs",
-  "content": "{\n  \"query\": \"clinical measurement of cochlear A value B value versus proxy method\"\n}"
+  "content": "{\n  \"query\": \"cochlea A B height proxy method vs clinical method (Escud\\u00e9, oblique CT view)\"\n}"
  },
  {
   "role": "tool_result",
-  "content": "Documentation: 5 passage(s) for 'clinical measurement of cochlear A value B value versus proxy method'"
+  "content": "Documentation: 5 passage(s) for 'cochlea A B height proxy method vs clinical method (Escudé, oblique CT view)'"
  },
  {
   "role": "assistant",
-  "content": "**Ringkasan:** CochleaHub tidak mengukur A, B, dan tinggi (H) dengan landmark anatomi seperti cara klinis. Ia memakai proksi tanpa landmark dari kotak pembatas berorientasi (oriented bounding box) pada scala tympani.\n\n**Cara CochleaHub**\n- A, B, dan tinggi diambil dari oriented bounding box scala tympani saja.\n- Label \"Scala Vestibuli\" di dataset tidak dipakai. Label itu berukuran 152 mm³ dan 18,0 × 12,6 × 10,1 mm, terlalu besar untuk koklea saja, dan tampaknya mencakup vestibulum dan kanalis semisirkularis.\n- Scala tympani mencakup seluruh spiral koklea, jadi dipakai untuk A/B/tinggi.\n\n**Cara klinis**\n- A adalah diameter putaran basal (dari round window ke dinding seberangnya). B adalah lebar tegak lurusnya. H adalah tinggi koklea. Ketiganya diukur pada CT dari landmark anatomi.\n- A dipakai untuk memperkirakan panjang duktus koklea, dan dari situ panjang elektroda.\n- Definisi klasik memakai round window dan sumbu modiolus.\n\n**Perbedaan dan batasannya**\n- Proksi ini tidak identik dengan metode landmark.\n- Tinggi paling terpengaruh. Proksi tinggi tanpa landmark (4,36 mm) melebihi rentang H yang dipublikasikan. Bounding box mencakup selubung luar scala, sedangkan H diukur dari putaran basal ke apeks.\n- Nilai di luar rentang publikasi memicu peringatan QC (OUT_OF_PUBLISHED_RANGE), bukan error.\n- Flag rentang berstatus warning karena setiap sumber hanya mencakup satu populasi dan satu definisi pengukuran.\n- Rentang acuan HRCT pada 36 telinga kandidat implan berusia 2–17 tahun: A 8,17–9,33 mm, B 5,73–7,50 mm, H 2,80–3,72 mm (Zahara 2019).\n- Deteksi landmark seperti pada Stebani 2023 masih menjadi pekerjaan mendatang.\n- CochleaHub tidak menghitung panjang duktus koklea (CDL), hanya A/B. Alasannya, estimasi CDL belum punya standar klinis.\n- Datanya berasal dari satu spesimen kadaver (ZETA). Karena itu, CochleaHub adalah alat riset, bukan dasar keputusan klinis untuk pasien.\n\nKalau Anda mau, saya bisa menampilkan nilai A, B, dan tinggi spesimen ZETA dari run terbaru."
+  "content": "**Short answer:** CochleaHub doesn't measure A, B and height from anatomical landmarks the way clinicians do. It uses a landmark-free proxy: the oriented bounding box of the scala tympani.\n\n**Clinical method**\n- A is the basal-turn diameter (round window to the opposite wall), B is the perpendicular width, and H is the cochlear height. All three are measured on CT from anatomical landmarks.\n- A is used to estimate cochlear duct length, and therefore electrode length.\n- Published HRCT ranges come from 36 ears of implant candidates aged 2–17: A 8.17–9.33 mm, B 5.73–7.50 mm, H 2.80–3.72 mm.\n\n**CochleaHub method**\n- A, B and height are taken from the oriented bounding box of the scala tympani alone.\n- The scala vestibuli isn't used. The dataset's \"Scala Vestibuli\" label also covers the vestibule and semicircular canals.\n- The classical definitions use the round window and modiolar axis. Landmark detection is future work.\n\n**Differences and caveats**\n- The proxy is not identical to the landmark method. A value outside the published range raises a QC warning (OUT_OF_PUBLISHED_RANGE), not an error.\n- Height is the clearest example. The proxy height (4.36 mm) exceeds the published H range. The bounding box spans the outer envelope of the scala, while H is measured from the basal turn to the apex. The flag is there to show this limitation.\n- Range flags are warnings because each source covers one population and one measurement definition. The published ranges come from implant candidates, and CochleaHub's data come from a single cadaveric specimen (ZETA).\n- Cochlear duct length is not computed, because it lacks a clinical standard. Only A/B are provided, since the duct-length formulas build on them.\n\nCochleaHub is a research tool. It doesn't support patient-specific decisions such as electrode selection, which belong to the treating clinical team. I can pull ZETA's current A, B and height values and their range check if you'd like."
  }
 ]

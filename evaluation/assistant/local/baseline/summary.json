@@ -41,9 +41,9 @@
     }
   },
   "key_points": {
-    "k": 23.333333333333332,
+    "k": 23.666666666666668,
     "n": 25,
-    "rate": 0.9333333333333332,
+    "rate": 0.9466666666666668,
     "ci95": null
   },
   "numbers": {
@@ -65,12 +65,12 @@
     ]
   },
   "citation": {
-    "k": 10,
+    "k": 11,
     "n": 15,
-    "rate": 0.6666666666666666,
+    "rate": 0.7333333333333333,
     "ci95": [
-      0.41713125151212976,
-      0.8482389930530876
+      0.4804911034231324,
+      0.8910272389681718
     ]
   },
   "abstention": {
@@ -78,12 +78,12 @@
     "recall": 1.0
   },
   "latency_s": {
-    "median": 112.6,
-    "max": 216.0
+    "median": 92.7,
+    "max": 209.3
   },
   "cost_usd": {
     "assistant": 0.0,
-    "judge": 0.158
+    "judge": 0.148
   },
   "failures": [
     {
@@ -121,31 +121,6 @@
         "grounded": 1.0,
         "numbers": 1.0,
         "citation": 0.0
-      },
-      "ungrounded": []
-    },
-    {
-      "id": "data-09",
-      "expected": "answer",
-      "got": "answer",
-      "grade": {
-        "behaviour": 1.0,
-        "key_points": 1.0,
-        "grounded": 1.0,
-        "numbers": 1.0,
-        "citation": 0.0
-      },
-      "ungrounded": []
-    },
-    {
-      "id": "concept-03",
-      "expected": "answer",
-      "got": "answer",
-      "grade": {
-        "behaviour": 1.0,
-        "key_points": 0.6666666666666666,
-        "grounded": 1.0,
-        "citation": 1.0
       },
       "ungrounded": []
     },

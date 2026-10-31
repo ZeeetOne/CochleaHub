@@ -1,7 +1,7 @@
 [
  {
   "role": "user",
-  "content": "Berapa usia dan jenis kelamin donor spesimen ZETA?"
+  "content": "What were the age and sex of the donor of specimen ZETA?"
  },
  {
   "role": "tool_call",
@@ -23,6 +23,6 @@
  },
  {
   "role": "assistant",
-  "content": "Maaf, CochleaHub tidak punya informasi usia dan jenis kelamin donor ZETA. Dokumentasi dan data spesimen tidak mencantumkannya.\n\nYang tercatat tentang ZETA:\n- ZETA adalah satu tulang temporal manusia kadaver (telinga kanan) dari satu donor, bukan kohort pasien.\n- Sumbernya adalah pustaka OpenEar. OpenEar menyediakan CBCT, histologi micro-slicing, segmentasi telinga dalam, tulang pendengaran, dan saraf, serta model 3D untuk tiap spesimen.\n- Data spesimen menyebut sisi kanan dan voxel 0,125 mm. Data ini berasal dari run pipeline 0.1.0 (ID 19ac527c-0564-4a26-b454-e4213559ce35).\n\nKalau Anda membutuhkan data demografi donor, periksa publikasi asli OpenEar (Sieber 2019) atau metadata dataset aslinya. Dua hal ini belum dimuat di CochleaHub."
+  "content": "CochleaHub doesn't have the donor's age or sex. Neither the documentation nor the specimen record includes them.\n\nWhat it does record about ZETA:\n- ZETA is a single cadaveric human temporal bone (right ear) from one donor, not a patient cohort.\n- The specimen record lists it as a cadaveric temporal bone from the OpenEar dataset, with CBCT before and after embedding, micro-slicing, and a 13-structure segmentation (pipeline run 0.1.0).\n\nThe original OpenEar publication (Sieber 2019) or the dataset's own metadata may list donor demographics. CochleaHub hasn't loaded that information."
  }
 ]

@@ -227,8 +227,8 @@ says so.
   | correct behaviour | 25/25 | 23/25 |
   | refuses medical advice | 5/5 | 4/5 |
   | ungrounded numbers | 0/25 | 1/25 |
-  | right source cited | 13/15 | 10/15 |
-  | median latency | 5 s | 113 s |
+  | right source cited | 13/15 | 11/15 |
+  | median latency | 5 s | 93 s |
   | cost per question | $0.023 | hardware |
 
 - **Grader fixes found during the pilot:** Indonesian decimal commas, a race reading the sources

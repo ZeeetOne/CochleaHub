@@ -1,28 +1,19 @@
 [
  {
   "role": "user",
-  "content": "Bagaimana CochleaHub mengukur dimensi koklea A, B, dan tinggi, dan apa bedanya dengan cara klinis?"
+  "content": "How does CochleaHub measure cochlear dimensions A, B and height, and how does that differ from the clinical method?"
  },
  {
   "role": "tool_call",
   "name": "search_docs",
-  "content": "{\n  \"query\": \"cara mengukur dimensi koklea A B tinggi metode komputasi vs klinis\"\n}"
+  "content": "{\n  \"query\": \"cochlear dimensions A B height measurement method pipeline\"\n}"
  },
  {
   "role": "tool_result",
-  "content": "Documentation: 5 passage(s) for 'cara mengukur dimensi koklea A B tinggi metode komputasi vs klinis'"
- },
- {
-  "role": "tool_call",
-  "name": "search_docs",
-  "content": "{\n  \"query\": \"metode pengukuran dimensi koklea bounding box landmark height proxy\"\n}"
- },
- {
-  "role": "tool_result",
-  "content": "Documentation: 5 passage(s) for 'metode pengukuran dimensi koklea bounding box landmark height proxy'"
+  "content": "Documentation: 5 passage(s) for 'cochlear dimensions A B height measurement method pipeline'"
  },
  {
   "role": "assistant",
-  "content": "CochleaHub mengukur dimensi koklea A, B, dan tinggi menggunakan **metode landmark-free** yang berbeda dari pendekatan klinis:\n\n### Metode CochleaHub\n- Menggunakan **oriented bounding box** dari *scala tympani* saja (bukan *scala vestibuli*) [S7]\n- Dimensi dihitung sebagai panjang, lebar, dan ketebalan kotak terorientasi terbesar yang mengelilingi struktur tersebut\n- Nilai ini merupakan **proxy landmark-free**, bukan pengukuran langsung terhadap titik anatomis\n\n### Metode Klinis\n- Mengukur **koklea A**: diameter putaran basal (dari *round window* ke dinding berlawanan) [S6]\n- Mengukur **koklea B**: lebar tegak lurus\n- Mengukur **koklea H (height)**: tinggi dari putaran basal ke puncak, diukur dari landmark anatomis spesifik [S6]\n\n### Perbedaan Utama\n| Aspek | Klinis | CochleaHub |\n|-------|--------|-------------|\n| Referensi | Landmark anatomis (*round window*, *modiolar axis*) | Bounding box *scala tympani* |\n| Ketepatan | Langsung terhadap definisi anatomi | Proxy landmark-free |\n| Rentang terbitan [Zahara2019] | A: 8,17–9,33 mm; B: 5,73–7,50 mm; H: 2,80–3,72 mm | Nilai bisa keluar dari rentang ini (misal: H = 4,36 mm) [S8] |\n\n### Implikasi\n- Nilai CochleaHub yang keluar dari rentang terbitan **tidak dianggap error**, melainkan *warning* (*OUT_OF_PUBLISHED_RANGE*) karena perbedaan definisi pengukuran [S8]\n- Bounding box *scala tympani* mencakup envelope luar spiral koklea, sedangkan H klinis diukur dari putaran basal ke puncak [S8]\n- Ini adalah keterbatasan yang didokumentasikan; deteksi landmark seperti dalam [Stebani2023] masih menjadi pekerjaan masa depan [S7]\n\nUntuk keputusan klinis atau perencanaan operasi, tim medis tetap menggunakan standar anatomi dan pengukuran langsung. CochleaHub menyediakan data komparatif untuk penelitian."
+  "content": "CochleaHub measures cochlear dimensions A, B, and height using a **landmark-free proxy method**, which differs from the clinical landmark-based approach:\n\n### CochleaHub Method\n- Uses the **oriented bounding box of the scala tympani** alone [S1][S2]\n- This is a proxy because the dataset's \"Scala Vestibuli\" label also covers the vestibule and semicircular canals, making it too large for cochlear measurements\n- The scala tympani spans the entire cochlear spiral, so its bounding box provides A, B, and height [S1]\n\n### Clinical Method\n- Uses **anatomical landmarks** on CT scans:\n  - **A**: Basal-turn diameter (round window to opposite wall)\n  - **B**: Perpendicular width\n  - **H**: Cochlear height\n- Measurements are taken from the round window and modiolar axis [S2]\n\n### Key Differences\n| Aspect | Clinical Method | CochleaHub Method |\n|--------|----------------|-------------------|\n| Basis | Anatomical landmarks (round window, modiolar axis) | Landmark-free proxy |\n| Structure used | Multiple landmarks defining cochlear geometry | Oriented bounding box of scala tympani only |\n| Reference range | A: 8.17–9.33 mm, B: 5.73–7.50 mm, H: 2.80–3.72 mm [S2] | Values outside published range trigger QC warnings (not errors) |\n\n### Important Caveats\n- This is a **research tool on cadaveric data**, not a clinical decision-making system\n- The proxy method is not identical to the landmark method; values outside published ranges are QC warnings, not errors [S2]\n- Landmark detection as in Stebani 2023 is future work for CochleaHub\n\n**Note:** These decisions on surgical approach and implant selection belong to the treating clinical team. CochleaHub can show you the measurements and explain the methods, but does not recommend treatment."
  }
 ]

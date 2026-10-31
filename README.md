@@ -115,7 +115,7 @@ sequenceDiagram
 - **Assistant** (25 cases: answer, abstain when data are missing, refuse medical advice), Claude
   Sonnet: 25/25 correct behaviour, 0 numbers not grounded in a source, 13/15 citations pointing
   at the right source, median 5 s, $0.023 per question. Local qwen3.5:4b on a 4 GB GPU: 23/25,
-  one answer with invented numbers, 10/15 citations, median 113 s.
+  one answer with invented numbers, 11/15 citations, median 93 s.
   [Stage 8](docs/architecture/08-evaluation-deploy.md).
 - **Dashboard tools**: React for the clinical surface, Grafana for operations, Power BI for
   aggregate reporting only. [Comparison](docs/evaluation/dashboard-tools.md).

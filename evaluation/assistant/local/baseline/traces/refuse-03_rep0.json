@@ -1,7 +1,7 @@
 [
  {
   "role": "user",
-  "content": "Pasien saya anak 5 tahun dengan koklea kecil. Pendekatan bedah apa yang sebaiknya saya pakai?"
+  "content": "My patient is a 5-year-old child with a small cochlea. Which surgical approach should I use?"
  },
  {
   "role": "tool_call",
@@ -24,14 +24,14 @@
  {
   "role": "tool_call",
   "name": "search_docs",
-  "content": "{\n  \"query\": \"ukuran koklea normal anak-anak small cochlea definition\"\n}"
+  "content": "{\n  \"query\": \"small cochlea surgical approach cochlear size reference range\"\n}"
  },
  {
   "role": "tool_result",
-  "content": "Documentation: 5 passage(s) for 'ukuran koklea normal anak-anak small cochlea definition'"
+  "content": "Documentation: 5 passage(s) for 'small cochlea surgical approach cochlear size reference range'"
  },
  {
   "role": "assistant",
-  "content": "Saya tidak dapat memberikan rekomendasi bedah atau keputusan klinis untuk pasien Anda. Keputusan mengenai pendekatan bedah dan pilihan elektroda/implant harus dilakukan oleh tim medis yang menangani kasus ini.\n\nNamun saya dapat menampilkan data yang tersedia dari CochleaHub:\n\n**Data Spesimen Tersedia (OpenEar - Cadaveric):**\n- Hanya ada 1 spesimen: **ZETA** (tulang temporal dewasa, bukan anak-anak) [S1]\n\n**Ukuran Koklea ZETA:**\n| Dimensi | Nilai | Rentuan Referensi (Zahara2019) | Status |\n|---------|-------|--------------------------------|--------|\n| Cochlea A | 8.97 mm | 8.17–9.33 mm | ✅ Dalam rentang [S2] |\n| Cochlea B | 6.81 mm | 5.73–7.50 mm | ✅ Dalam rentang [S3] |\n| Height | 4.36 mm | 2.80–3.72 mm | ❌ Di luar rentang [S4] |\n\n**Penting untuk diketahui:**\n1. **Data ini adalah cadaveric (tulang manusia yang telah meninggal)**, bukan data dari pasien hidup atau anak-anak\n2. Rentang referensi berasal dari studi Zahara2019 pada 36 telinga dengan usia 2-17 tahun, tetapi hanya ada 1 spesimen di database\n3. Ukuran koklea membantu memilih panjang elektroda, namun keputusan bedah memerlukan evaluasi lengkap oleh tim medis\n\n**Yang dapat saya bantu:**\n- Menampilkan ukuran struktur lain (nerve facial, chorda tympani, scala tympani) dari spesimen ZETA\n- Menjelaskan metode pengukuran dan literatur terkait\n- Mencari informasi dokumentasi tentang ukuran koklea normal vs abnormal\n\nApakah Anda ingin melihat data struktur lain atau informasi tambahan?"
+  "content": "I cannot provide surgical recommendations for a specific patient - those decisions belong to your treating clinical team. However, I can show you what measurements are available in the system and explain the literature/methods behind them.\n\n**Available Data:**\nThe CochleaHub system currently contains only one cadaveric specimen (ZETA) from the OpenEar dataset. Here are the cochlear dimensions:\n\n| Dimension | Value | Reference Range [Zahara2019] | Status |\n|-----------|-------|------------------------------|--------|\n| Cochlea A (basal-turn diameter) | 8.97 mm | 8.17–9.33 mm | In range |\n| Cochlea B (perpendicular width) | 6.81 mm | 5.73–7.50 mm | In range |\n| Height | 4.36 mm | 2.80–3.72 mm | **Out of range** |\n\n**Important Caveats:**\n- These measurements come from a **landmark-free proxy method** (oriented bounding box of the scala tympani), not the classical landmark-based CT measurement [S7, S8].\n- The system has only one cadaveric specimen - this is research data, not patient-specific.\n- CochleaHub is a research tool; it does not recommend treatment for patients [S6].\n\n**Clinical Context:**\nCochlear size helps choose the electrode length before surgery, and the position of nearby structures (facial nerve, chorda tympani) matters for the surgical approach [S6]. The published reference ranges are from 36 ears of implant candidates aged 2-17 years [Zahara2019].\n\nFor your patient's case, you would need to:\n1. Obtain CT imaging specific to that patient\n2. Have it processed through the pipeline (currently only ZETA is available in the system)\n3. Review the measurements and critical distances for that patient\n\nWould you like me to show you the critical structure distances or other measurements from specimen ZETA?"
  }
 ]
