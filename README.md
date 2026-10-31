@@ -69,9 +69,10 @@ uvicorn cochleahub.api.main:app --reload   # stage 5: http://localhost:8000/docs
 cochleahub openapi                         # API schema -> docs/api/openapi.json
 cochleahub index-docs                      # stage 7: assistant documentation index (local embeddings)
 
-# assistant backends: set ANTHROPIC_API_KEY for Claude, and/or run a local model
-docker compose -f infra/docker-compose.yml --env-file .env --profile local-llm up -d ollama
-docker exec infra-ollama-1 ollama pull qwen3:4b
+# assistant backends: set ANTHROPIC_API_KEY for Claude, and/or run a local model with
+# Ollama Desktop (set OLLAMA_MODELS to choose the model folder) ...
+ollama pull qwen3.5:4b
+# ... or in Docker: docker compose -f infra/docker-compose.yml --env-file .env --profile local-llm up -d ollama
 
 # frontend (needs the API on :8000 and Orthanc on :8042; Vite proxies /api and /dicom-web)
 cd frontend

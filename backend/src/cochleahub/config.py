@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     llm_effort: str = "medium"  # low | medium | high | xhigh | max
     bedrock_model: str = "anthropic.claude-opus-5-5"
     ollama_url: str = "http://localhost:11434"
-    local_model: str = "qwen3:4b"
+    local_model: str = "qwen3.5:4b"
     local_context_tokens: int = 8192
     assistant_max_tool_rounds: int = 8
     embedding_model: str = "BAAI/bge-small-en-v1.5"
