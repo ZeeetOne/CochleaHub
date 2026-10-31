@@ -1,6 +1,8 @@
 #!/bin/bash
 # Runs on the instance through SSM (deploy.py bootstrap). Idempotent: safe to re-run after a
-# new image or bundle. Arguments: deploy bucket, API image URI, meshes bucket, region, site URL.
+# new image or bundle. Arguments: deploy bucket, API image, meshes bucket, region, site URL.
+# The API image is either an ECR URI (deploy.py) or a local tag such as cochleahub-api:latest
+# built on the instance (manual console deployment, deploy/aws/MANUAL.md).
 set -euo pipefail
 DEPLOY_BUCKET=$1 API_IMAGE=$2 MESH_BUCKET=$3 REGION=$4 SITE_URL=$5
 cd /opt/cochleahub
@@ -40,9 +42,13 @@ umask 022
 sed -i "s/ORIGIN_SECRET/${ORIGIN_SECRET}/" nginx.conf
 chown -R 10001:10001 data
 
-aws ecr get-login-password --region "$REGION" | \
-  docker login --username AWS --password-stdin "${API_IMAGE%%/*}"
-docker compose pull --quiet
+if [[ "$API_IMAGE" == */* ]]; then  # registry image: log in to ECR and pull everything
+  aws ecr get-login-password --region "$REGION" | \
+    docker login --username AWS --password-stdin "${API_IMAGE%%/*}"
+  docker compose pull --quiet
+else                                 # image built on this instance: pull the others only
+  docker compose pull --quiet postgres orthanc nginx
+fi
 docker compose up -d --remove-orphans
 
 run() { docker compose exec -T api "$@"; }

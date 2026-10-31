@@ -79,6 +79,7 @@ flowchart LR
 | | |
 |---|---|
 | **Code** | `deploy/aws/terraform/` (infrastructure), `deploy/aws/server/` (compose, nginx, bootstrap), `deploy/aws/deploy.py` (steps: secrets → infra → key → image → frontend → bundle → bootstrap → smoke → destroy) |
+| **By hand** | [`deploy/aws/MANUAL.md`](../../deploy/aws/MANUAL.md): the same architecture built in the AWS console, without access keys or a registry (the image is built on the server) |
 | **Security** | EC2 accepts traffic from CloudFront's origin-facing addresses only, and only with the secret header. DICOMweb writes are blocked. IMDSv2 only. Secrets live in SSM Parameter Store and Terraform state, never in git. |
 | **Cost** | on an AWS free plan, drawn from the sign-up credits ($100–200), never charged; on a paid plan roughly $1.5–3/day for the instance, disk and public IPv4 (CloudFront and S3 negligible), estimated from list prices, with an optional budget alert. `deploy.py destroy` removes everything. |
 | **Production differences** | RDS instead of PostgreSQL on the instance, ECS/Fargate, Orthanc in a private subnet, Claude through Bedrock, SSO instead of basic auth |
