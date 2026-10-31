@@ -109,3 +109,10 @@ Keys (e.g. `[Margeta2022]`) are used in `docs/DECISIONS.md` and in code comments
   doi:10.1145/1571941.1572114
 - **[Xiao2024]** Xiao S, et al. C-Pack: packed resources for general Chinese embeddings
   (introduces the BGE embedding models). *SIGIR 2024*. arXiv:2309.07597
+
+## Evaluation
+
+- **[Zheng2023]** Zheng L, et al. Judging LLM-as-a-judge with MT-Bench and Chatbot Arena.
+  NeurIPS 2023 Datasets and Benchmarks. arXiv:2306.05685
+- **[Almasi2023]** Almasi S, et al. Usability evaluation of dashboards: a systematic literature
+  review of tools. *BioMed Research International* 2023:9990933.

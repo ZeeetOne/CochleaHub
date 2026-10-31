@@ -393,3 +393,22 @@ says so.
     mislabelled number is the failure the abstention evaluation [Lee2022] is meant to catch.
     Stage 8 measures this on the full question set before any mitigation, so the effect of each
     mitigation can be shown.
+
+## D22 — Dashboard tools: React for the clinical surface, Grafana for operations (accepted, stage 8)
+
+- **Context:** the posting asks for a comparison of React, Power BI and Grafana.
+- **Decision:** keep the React + API dashboard for everything clinicians and researchers use (3D,
+  CT, measurements, assistant). Add Grafana, read-only, for internal operations monitoring.
+  Recommend Power BI only for aggregate management reporting in Microsoft-based organisations.
+  Full comparison: [docs/evaluation/dashboard-tools.md](evaluation/dashboard-tools.md).
+- **Evidence:** a Grafana prototype of the Operations view, built on the same database (10
+  panels, SQL only, read-only role without access to conversation contents), next to the React
+  view. Power BI was analysed from documentation only.
+- **Basis:** clinical usability as the weight of the comparison [Dowding2015]; usability testing
+  with SUS/task tests as the next step [Almasi2023]. No paper compares these tools for this use;
+  the comparison is our own.
+- **Findings from the build:**
+  - Grafana's default threshold colours painted volumes red, which reads as "bad".
+  - Grafana's bar gauge has no log scale, so inner-ear volumes vanish next to bone.
+  - Grafana shows "No data" where the API would say what is missing.
+  - Grafana gives time ranges, auto-refresh and alerting without code.
