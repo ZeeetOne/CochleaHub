@@ -151,6 +151,19 @@ def cmd_openapi(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_index_docs(args: argparse.Namespace) -> int:
+    from cochleahub.assistant.retrieval import build_index
+
+    index = build_index()
+    print(f"indexed {len(index.chunks)} passages from {len({c.path for c in index.chunks})} "
+          f"documents ({index.embedder.name})")
+    for q in args.query or []:
+        print(f"\n{q}")
+        for h in index.search(q, k=3):
+            print(f"  {h.score:.4f}  bm25#{h.bm25_rank}  dense#{h.dense_rank}  {h.chunk.id}")
+    return 0
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(prog="cochleahub")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -169,6 +182,9 @@ def main() -> None:
     p = sub.add_parser("upload-dicom", help="Rewrite CBCT as DICOM Part 10 and upload to Orthanc")
     p.add_argument("--specimen", default=settings.specimen_id)
     p.set_defaults(func=cmd_upload_dicom)
+    p = sub.add_parser("index-docs", help="Build the assistant's documentation index")
+    p.add_argument("query", nargs="*", help="Optional test queries")
+    p.set_defaults(func=cmd_index_docs)
     p = sub.add_parser("openapi", help="Write the API schema to docs/api/openapi.json")
     p.set_defaults(func=cmd_openapi)
 
