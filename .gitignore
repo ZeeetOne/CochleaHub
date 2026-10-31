@@ -5,6 +5,8 @@ Dataset/
 # Generated pipeline outputs
 data/outputs/*
 data/meshes/*
+data/assistant/
+data/models/
 data/dicom/
 !data/**/.gitkeep
 
