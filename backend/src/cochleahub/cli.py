@@ -140,6 +140,17 @@ def cmd_upload_dicom(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_openapi(args: argparse.Namespace) -> int:
+    from cochleahub.api.main import app
+
+    out = REPO_ROOT / "docs" / "api" / "openapi.json"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    schema = app.openapi()
+    out.write_text(json.dumps(schema, indent=2) + "\n")
+    print(f"wrote {out.relative_to(REPO_ROOT)} ({len(schema['paths'])} paths)")
+    return 0
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(prog="cochleahub")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -158,6 +169,8 @@ def main() -> None:
     p = sub.add_parser("upload-dicom", help="Rewrite CBCT as DICOM Part 10 and upload to Orthanc")
     p.add_argument("--specimen", default=settings.specimen_id)
     p.set_defaults(func=cmd_upload_dicom)
+    p = sub.add_parser("openapi", help="Write the API schema to docs/api/openapi.json")
+    p.set_defaults(func=cmd_openapi)
 
     args = parser.parse_args()
     sys.exit(args.func(args))

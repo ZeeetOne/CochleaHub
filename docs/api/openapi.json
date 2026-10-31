@@ -1,0 +1,1946 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "CochleaHub API",
+    "description": "Read-only access to versioned temporal-bone measurements, QC and validation. Research use only; not a clinical tool.",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Health",
+        "description": "Liveness: the process is up. Does not touch dependencies.",
+        "operationId": "health_api_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/health/ready": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Ready",
+        "description": "Readiness: database, object store and DICOM archive are reachable.",
+        "operationId": "ready_api_v1_health_ready_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/specimens": {
+      "get": {
+        "tags": [
+          "specimens"
+        ],
+        "summary": "List Specimens",
+        "operationId": "list_specimens_api_v1_specimens_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SpecimenSummary"
+                  },
+                  "type": "array",
+                  "title": "Response List Specimens Api V1 Specimens Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/specimens/{specimen_id}": {
+      "get": {
+        "tags": [
+          "specimens"
+        ],
+        "summary": "Specimen Detail",
+        "operationId": "specimen_detail_api_v1_specimens__specimen_id__get",
+        "parameters": [
+          {
+            "name": "specimen_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Specimen Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Specimen"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/specimens/{specimen_id}/measurements": {
+      "get": {
+        "tags": [
+          "specimens"
+        ],
+        "summary": "Measurements",
+        "operationId": "measurements_api_v1_specimens__specimen_id__measurements_get",
+        "parameters": [
+          {
+            "name": "specimen_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Specimen Id"
+            }
+          },
+          {
+            "name": "run_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Pin a run; default is the latest completed run.",
+              "title": "Run Id"
+            },
+            "description": "Pin a run; default is the latest completed run."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Measurements"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/specimens/{specimen_id}/cochlea": {
+      "get": {
+        "tags": [
+          "specimens"
+        ],
+        "summary": "Cochlea",
+        "description": "Cochlear A, B and height with the published range each is checked against (D5, D14).",
+        "operationId": "cochlea_api_v1_specimens__specimen_id__cochlea_get",
+        "parameters": [
+          {
+            "name": "specimen_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Specimen Id"
+            }
+          },
+          {
+            "name": "run_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Pin a run; default is the latest completed run.",
+              "title": "Run Id"
+            },
+            "description": "Pin a run; default is the latest completed run."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cochlea"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/specimens/{specimen_id}/distances": {
+      "get": {
+        "tags": [
+          "specimens"
+        ],
+        "summary": "Distances",
+        "operationId": "distances_api_v1_specimens__specimen_id__distances_get",
+        "parameters": [
+          {
+            "name": "specimen_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Specimen Id"
+            }
+          },
+          {
+            "name": "run_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Pin a run; default is the latest completed run.",
+              "title": "Run Id"
+            },
+            "description": "Pin a run; default is the latest completed run."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Distances"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/specimens/{specimen_id}/meshes": {
+      "get": {
+        "tags": [
+          "specimens"
+        ],
+        "summary": "Meshes",
+        "description": "Short-lived presigned URLs: the browser downloads meshes from S3 directly, the bucket\nstays private (D8).",
+        "operationId": "meshes_api_v1_specimens__specimen_id__meshes_get",
+        "parameters": [
+          {
+            "name": "specimen_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Specimen Id"
+            }
+          },
+          {
+            "name": "run_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Pin a run; default is the latest completed run.",
+              "title": "Run Id"
+            },
+            "description": "Pin a run; default is the latest completed run."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Meshes"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/specimens/{specimen_id}/imaging": {
+      "get": {
+        "tags": [
+          "specimens"
+        ],
+        "summary": "Imaging",
+        "description": "Where a DICOMweb viewer finds this specimen's CT series (D8, D10).",
+        "operationId": "imaging_api_v1_specimens__specimen_id__imaging_get",
+        "parameters": [
+          {
+            "name": "specimen_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Specimen Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DicomWeb"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/runs": {
+      "get": {
+        "tags": [
+          "runs"
+        ],
+        "summary": "List Runs",
+        "description": "Most recent first.",
+        "operationId": "list_runs_api_v1_runs_get",
+        "parameters": [
+          {
+            "name": "specimen_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Specimen Id"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RunSummary"
+                  },
+                  "title": "Response List Runs Api V1 Runs Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/runs/{run_id}": {
+      "get": {
+        "tags": [
+          "runs"
+        ],
+        "summary": "Run Detail",
+        "operationId": "run_detail_api_v1_runs__run_id__get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Run"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/runs/{run_id}/qc": {
+      "get": {
+        "tags": [
+          "runs"
+        ],
+        "summary": "Qc",
+        "description": "Flags sorted by severity (errors first); counts always cover the whole run.",
+        "operationId": "qc_api_v1_runs__run_id__qc_get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Run Id"
+            }
+          },
+          {
+            "name": "severity",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "error",
+                    "warning",
+                    "info"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Severity"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QcReport"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/runs/{run_id}/validation": {
+      "get": {
+        "tags": [
+          "runs"
+        ],
+        "summary": "Validation",
+        "operationId": "validation_api_v1_runs__run_id__validation_get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Run Id"
+            }
+          },
+          {
+            "name": "reference",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "slicer",
+                    "dataset_mesh"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Reference"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationReport"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/compare": {
+      "get": {
+        "tags": [
+          "compare"
+        ],
+        "summary": "Compare",
+        "operationId": "compare_api_v1_compare_get",
+        "parameters": [
+          {
+            "name": "metric",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Metric"
+            }
+          },
+          {
+            "name": "structure",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required for per-structure metrics, e.g. 'Scala Tympani'.",
+              "title": "Structure"
+            },
+            "description": "Required for per-structure metrics, e.g. 'Scala Tympani'."
+          },
+          {
+            "name": "specimens",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Default: all specimens.",
+              "title": "Specimens"
+            },
+            "description": "Default: all specimens."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Comparison"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reference-ranges": {
+      "get": {
+        "tags": [
+          "compare"
+        ],
+        "summary": "Reference Ranges",
+        "description": "Published ranges the QC and comparison views use, with their source keys.",
+        "operationId": "reference_ranges_api_v1_reference_ranges_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/ReferenceRange"
+                  },
+                  "type": "object",
+                  "title": "Response Reference Ranges Api V1 Reference Ranges Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Cochlea": {
+        "properties": {
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          },
+          "method": {
+            "type": "string",
+            "title": "Method"
+          },
+          "a": {
+            "$ref": "#/components/schemas/CochleaValue"
+          },
+          "b": {
+            "$ref": "#/components/schemas/CochleaValue"
+          },
+          "height": {
+            "$ref": "#/components/schemas/CochleaValue"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provenance",
+          "method",
+          "a",
+          "b",
+          "height"
+        ],
+        "title": "Cochlea"
+      },
+      "CochleaValue": {
+        "properties": {
+          "value_mm": {
+            "type": "number",
+            "title": "Value Mm"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReferenceRange"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "in_range": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "In Range"
+          }
+        },
+        "type": "object",
+        "required": [
+          "value_mm",
+          "reference",
+          "in_range"
+        ],
+        "title": "CochleaValue"
+      },
+      "ComparedValue": {
+        "properties": {
+          "specimen_id": {
+            "type": "string",
+            "title": "Specimen Id"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "provenance": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Provenance"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "specimen_id",
+          "value",
+          "provenance"
+        ],
+        "title": "ComparedValue"
+      },
+      "Comparison": {
+        "properties": {
+          "metric": {
+            "type": "string",
+            "title": "Metric"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "structure": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Structure"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReferenceRange"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "values": {
+            "items": {
+              "$ref": "#/components/schemas/ComparedValue"
+            },
+            "type": "array",
+            "title": "Values"
+          }
+        },
+        "type": "object",
+        "required": [
+          "metric",
+          "unit",
+          "structure",
+          "reference",
+          "values"
+        ],
+        "title": "Comparison"
+      },
+      "DicomWeb": {
+        "properties": {
+          "dicomweb_root": {
+            "type": "string",
+            "title": "Dicomweb Root",
+            "description": "Base URL for QIDO-RS / WADO-RS, as seen by a browser."
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/ImagingSeries"
+            },
+            "type": "array",
+            "title": "Series"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dicomweb_root",
+          "series"
+        ],
+        "title": "DicomWeb"
+      },
+      "Distance": {
+        "properties": {
+          "from_structure": {
+            "type": "string",
+            "title": "From Structure"
+          },
+          "to_structure": {
+            "type": "string",
+            "title": "To Structure"
+          },
+          "meaning": {
+            "type": "string",
+            "title": "Meaning"
+          },
+          "distance_mm": {
+            "type": "number",
+            "title": "Distance Mm"
+          },
+          "point_a_lps_mm": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Point A Lps Mm"
+          },
+          "point_b_lps_mm": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Point B Lps Mm"
+          }
+        },
+        "type": "object",
+        "required": [
+          "from_structure",
+          "to_structure",
+          "meaning",
+          "distance_mm",
+          "point_a_lps_mm",
+          "point_b_lps_mm"
+        ],
+        "title": "Distance"
+      },
+      "Distances": {
+        "properties": {
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          },
+          "distances": {
+            "items": {
+              "$ref": "#/components/schemas/Distance"
+            },
+            "type": "array",
+            "title": "Distances"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provenance",
+          "distances"
+        ],
+        "title": "Distances"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Health": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "degraded"
+            ],
+            "title": "Status"
+          },
+          "pipeline_version": {
+            "type": "string",
+            "title": "Pipeline Version"
+          },
+          "checks": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Checks",
+            "description": "Per dependency: 'ok' or the error message."
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "pipeline_version"
+        ],
+        "title": "Health"
+      },
+      "ImagingSeries": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "modality": {
+            "type": "string",
+            "title": "Modality"
+          },
+          "study_instance_uid": {
+            "type": "string",
+            "title": "Study Instance Uid"
+          },
+          "series_instance_uid": {
+            "type": "string",
+            "title": "Series Instance Uid"
+          },
+          "n_instances": {
+            "type": "integer",
+            "title": "N Instances"
+          },
+          "rows": {
+            "type": "integer",
+            "title": "Rows"
+          },
+          "columns": {
+            "type": "integer",
+            "title": "Columns"
+          },
+          "pixel_spacing_mm": {
+            "type": "number",
+            "title": "Pixel Spacing Mm"
+          },
+          "slice_thickness_mm": {
+            "type": "number",
+            "title": "Slice Thickness Mm"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "modality",
+          "study_instance_uid",
+          "series_instance_uid",
+          "n_instances",
+          "rows",
+          "columns",
+          "pixel_spacing_mm",
+          "slice_thickness_mm"
+        ],
+        "title": "ImagingSeries"
+      },
+      "Measurements": {
+        "properties": {
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          },
+          "structures": {
+            "items": {
+              "$ref": "#/components/schemas/Structure"
+            },
+            "type": "array",
+            "title": "Structures"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provenance",
+          "structures"
+        ],
+        "title": "Measurements"
+      },
+      "Mesh": {
+        "properties": {
+          "structure": {
+            "type": "string",
+            "title": "Structure"
+          },
+          "color": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Color"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "description": "Presigned GET URL for the glTF binary; expires."
+          },
+          "expires_in_s": {
+            "type": "integer",
+            "title": "Expires In S"
+          },
+          "faces": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Faces"
+          },
+          "bytes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bytes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "structure",
+          "color",
+          "url",
+          "expires_in_s",
+          "faces",
+          "bytes"
+        ],
+        "title": "Mesh"
+      },
+      "Meshes": {
+        "properties": {
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          },
+          "coordinate_system": {
+            "type": "string",
+            "const": "LPS",
+            "title": "Coordinate System",
+            "default": "LPS"
+          },
+          "meshes": {
+            "items": {
+              "$ref": "#/components/schemas/Mesh"
+            },
+            "type": "array",
+            "title": "Meshes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provenance",
+          "meshes"
+        ],
+        "title": "Meshes"
+      },
+      "Metric": {
+        "type": "string",
+        "enum": [
+          "volume_mm3",
+          "surface_area_mm2",
+          "length_mm",
+          "width_mm",
+          "thickness_mm",
+          "cochlea_a_mm",
+          "cochlea_b_mm",
+          "cochlea_height_mm"
+        ],
+        "title": "Metric"
+      },
+      "Provenance": {
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Run Id"
+          },
+          "specimen_id": {
+            "type": "string",
+            "title": "Specimen Id"
+          },
+          "pipeline_version": {
+            "type": "string",
+            "title": "Pipeline Version"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Started At"
+          },
+          "qc_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Qc Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "run_id",
+          "specimen_id",
+          "pipeline_version",
+          "started_at",
+          "qc_status"
+        ],
+        "title": "Provenance"
+      },
+      "QcFlag": {
+        "properties": {
+          "severity": {
+            "type": "string",
+            "enum": [
+              "error",
+              "warning",
+              "info"
+            ],
+            "title": "Severity"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "structure": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Structure"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "threshold": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Threshold"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source",
+            "description": "Reference key (docs/REFERENCES.md) behind the check."
+          }
+        },
+        "type": "object",
+        "required": [
+          "severity",
+          "code",
+          "structure",
+          "message",
+          "value",
+          "threshold",
+          "source"
+        ],
+        "title": "QcFlag"
+      },
+      "QcReport": {
+        "properties": {
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Counts"
+          },
+          "flags": {
+            "items": {
+              "$ref": "#/components/schemas/QcFlag"
+            },
+            "type": "array",
+            "title": "Flags"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provenance",
+          "status",
+          "counts",
+          "flags"
+        ],
+        "title": "QcReport"
+      },
+      "ReferenceRange": {
+        "properties": {
+          "low": {
+            "type": "number",
+            "title": "Low"
+          },
+          "high": {
+            "type": "number",
+            "title": "High"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "population": {
+            "type": "string",
+            "title": "Population"
+          }
+        },
+        "type": "object",
+        "required": [
+          "low",
+          "high",
+          "unit",
+          "source",
+          "population"
+        ],
+        "title": "ReferenceRange"
+      },
+      "Run": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "specimen_id": {
+            "type": "string",
+            "title": "Specimen Id"
+          },
+          "pipeline_version": {
+            "type": "string",
+            "title": "Pipeline Version"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Started At"
+          },
+          "duration_s": {
+            "type": "number",
+            "title": "Duration S"
+          },
+          "voxel_size_mm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Voxel Size Mm"
+          },
+          "qc_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Qc Status"
+          },
+          "qc_errors": {
+            "type": "integer",
+            "title": "Qc Errors"
+          },
+          "qc_warnings": {
+            "type": "integer",
+            "title": "Qc Warnings"
+          },
+          "qc_info": {
+            "type": "integer",
+            "title": "Qc Info"
+          },
+          "loaded_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Loaded At"
+          },
+          "errors": {
+            "items": {},
+            "type": "array",
+            "title": "Errors"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "specimen_id",
+          "pipeline_version",
+          "status",
+          "started_at",
+          "duration_s",
+          "voxel_size_mm",
+          "qc_status",
+          "qc_errors",
+          "qc_warnings",
+          "qc_info",
+          "loaded_at",
+          "errors"
+        ],
+        "title": "Run"
+      },
+      "RunSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "specimen_id": {
+            "type": "string",
+            "title": "Specimen Id"
+          },
+          "pipeline_version": {
+            "type": "string",
+            "title": "Pipeline Version"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Started At"
+          },
+          "duration_s": {
+            "type": "number",
+            "title": "Duration S"
+          },
+          "voxel_size_mm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Voxel Size Mm"
+          },
+          "qc_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Qc Status"
+          },
+          "qc_errors": {
+            "type": "integer",
+            "title": "Qc Errors"
+          },
+          "qc_warnings": {
+            "type": "integer",
+            "title": "Qc Warnings"
+          },
+          "qc_info": {
+            "type": "integer",
+            "title": "Qc Info"
+          },
+          "loaded_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Loaded At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "specimen_id",
+          "pipeline_version",
+          "status",
+          "started_at",
+          "duration_s",
+          "voxel_size_mm",
+          "qc_status",
+          "qc_errors",
+          "qc_warnings",
+          "qc_info",
+          "loaded_at"
+        ],
+        "title": "RunSummary"
+      },
+      "Specimen": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "dataset": {
+            "type": "string",
+            "title": "Dataset"
+          },
+          "side": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Side"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "latest_run": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RunSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/ImagingSeries"
+            },
+            "type": "array",
+            "title": "Series"
+          },
+          "n_runs": {
+            "type": "integer",
+            "title": "N Runs"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "dataset",
+          "side",
+          "description",
+          "series",
+          "n_runs"
+        ],
+        "title": "Specimen"
+      },
+      "SpecimenSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "dataset": {
+            "type": "string",
+            "title": "Dataset"
+          },
+          "side": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Side"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "latest_run": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RunSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "dataset",
+          "side",
+          "description"
+        ],
+        "title": "SpecimenSummary"
+      },
+      "Structure": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "segment_id": {
+            "type": "string",
+            "title": "Segment Id"
+          },
+          "color": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Color"
+          },
+          "voxel_count": {
+            "type": "integer",
+            "title": "Voxel Count"
+          },
+          "volume_mm3": {
+            "type": "number",
+            "title": "Volume Mm3"
+          },
+          "surface_area_mm2": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Surface Area Mm2"
+          },
+          "length_mm": {
+            "type": "number",
+            "title": "Length Mm",
+            "description": "Longest oriented-bounding-box edge."
+          },
+          "width_mm": {
+            "type": "number",
+            "title": "Width Mm"
+          },
+          "thickness_mm": {
+            "type": "number",
+            "title": "Thickness Mm"
+          },
+          "centroid_lps_mm": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Centroid Lps Mm"
+          },
+          "connected_components": {
+            "type": "integer",
+            "title": "Connected Components"
+          },
+          "largest_component_fraction": {
+            "type": "number",
+            "title": "Largest Component Fraction"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "segment_id",
+          "color",
+          "voxel_count",
+          "volume_mm3",
+          "surface_area_mm2",
+          "length_mm",
+          "width_mm",
+          "thickness_mm",
+          "centroid_lps_mm",
+          "connected_components",
+          "largest_component_fraction"
+        ],
+        "title": "Structure"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "ValidationReport": {
+        "properties": {
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationRow"
+            },
+            "type": "array",
+            "title": "Results"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provenance",
+          "results"
+        ],
+        "title": "ValidationReport"
+      },
+      "ValidationRow": {
+        "properties": {
+          "reference": {
+            "type": "string",
+            "enum": [
+              "slicer",
+              "dataset_mesh"
+            ],
+            "title": "Reference"
+          },
+          "reference_detail": {
+            "type": "string",
+            "title": "Reference Detail"
+          },
+          "structure": {
+            "type": "string",
+            "title": "Structure"
+          },
+          "volume_rel_diff": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volume Rel Diff"
+          },
+          "surface_area_rel_diff": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Surface Area Rel Diff"
+          },
+          "mean_distance_mm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean Distance Mm"
+          },
+          "p95_distance_mm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P95 Distance Mm"
+          },
+          "max_distance_mm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Distance Mm"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reference",
+          "reference_detail",
+          "structure",
+          "volume_rel_diff",
+          "surface_area_rel_diff",
+          "mean_distance_mm",
+          "p95_distance_mm",
+          "max_distance_mm"
+        ],
+        "title": "ValidationRow"
+      }
+    }
+  }
+}
