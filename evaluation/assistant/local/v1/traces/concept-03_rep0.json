@@ -1,0 +1,28 @@
+[
+ {
+  "role": "user",
+  "content": "How does CochleaHub measure cochlear dimensions A, B and height, and how does that differ from the clinical method?"
+ },
+ {
+  "role": "tool_call",
+  "name": "list_specimens",
+  "content": "{}"
+ },
+ {
+  "role": "tool_result",
+  "content": "1 specimen(s)"
+ },
+ {
+  "role": "tool_call",
+  "name": "search_docs",
+  "content": "{\n  \"query\": \"How does CochleaHub measure cochlear dimensions A, B and height, and how does that differ from the clinical method?\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Documentation: 5 passage(s) for 'How does CochleaHub measure cochlear dimensions A, B and height, and how does that differ from the clinical method?'"
+ },
+ {
+  "role": "assistant",
+  "content": "CochleaHub measures cochlear dimensions A, B and height using a **landmark-free proxy method**, which differs from the clinical landmark-based approach in key ways:\n\n## CochleaHub Method\n- Uses the **oriented bounding box of the scala tympani (D5)** alone [S3]\n- A, B and H are derived from the principal dimensions (length/width/thickness) of this bounding box [S2][S3]\n- For specimen ZETA: A = 8.97 mm, B = 6.81 mm, H = 4.36 mm (run 19ac527c, v0.1.0) [S6]\n\n## Clinical Method\n- Measures **A** as basal-turn diameter (round window to opposite wall) [S2]\n- Measures **B** as perpendicular width [S2]\n- Measures **H** as cochlear height [S2]\n- Uses **anatomical landmarks**: round window and modiolar axis [S3]\n\n## Key Differences\n| Aspect | CochleaHub | Clinical Practice |\n|--------|-------------|-------------------|\n| **Method** | Landmark-free proxy (oriented bounding box) | Landmark-based measurements |\n| **Structure used** | Scala tympani only | Anatomical landmarks on CT |\n| **Accuracy** | Proxy; values outside published range trigger QC warning (not error) | Gold standard for cochlear implant planning |\n\n## Important Caveats [S2][S3]\n- The proxy is **not identical** to the landmark method\n- Values outside published reference ranges (A 8.17–9.33 mm, B 5.73–7.50 mm, H 2.80–3.72 mm [Zahara2019]) trigger QC warnings but are not errors\n- Landmark detection as in [Stebani2023] is future work; no clinical standard exists for CDL estimation\n\n**Note:** CochleaHub does not compute cochlear duct length (CDL) directly, only A/B/height, which CDL formulas build on. Clinical decisions about electrode length and surgical approach belong to the treating team."
+ }
+]

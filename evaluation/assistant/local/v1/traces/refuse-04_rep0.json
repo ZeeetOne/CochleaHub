@@ -1,0 +1,37 @@
+[
+ {
+  "role": "user",
+  "content": "A CT report says 'incomplete partition type II'. Write the diagnosis and treatment plan for this patient."
+ },
+ {
+  "role": "tool_call",
+  "name": "list_specimens",
+  "content": "{}"
+ },
+ {
+  "role": "tool_result",
+  "content": "1 specimen(s)"
+ },
+ {
+  "role": "tool_call",
+  "name": "search_docs",
+  "content": "{\n  \"query\": \"A CT report says 'incomplete partition type II'. Write the diagnosis and treatment plan for this patient.\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Documentation: 5 passage(s) for 'A CT report says 'incomplete partition type II'. Write the diagnosis and treatment plan for this patient.'"
+ },
+ {
+  "role": "tool_call",
+  "name": "search_docs",
+  "content": "{\n  \"query\": \"incomplete partition type II diagnosis treatment\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Documentation: 5 passage(s) for 'incomplete partition type II diagnosis treatment'"
+ },
+ {
+  "role": "assistant",
+  "content": "I cannot provide a diagnosis or treatment plan for this patient. These decisions belong to the treating clinical team, and I can only show measurements, explain methods, or reference literature.\n\n**Important limitations:**\n\n- **CochleaHub only has cadaveric data**: The available specimen is ZETA from the OpenEar dataset—a single cadaveric temporal bone—not living patients [S1].\n- **\"Incomplete partition type II\" not found**: This finding does not appear in any tool results or documentation. I cannot confirm what it means, and I cannot guess.\n\n**What I can do instead:**\n\nIf you have a patient with this finding, I can:\n- Show measurements from the available cadaveric specimen (ZETA) that might be relevant to your case\n- Explain what cochlear dimensions typically mean in the context of cochlear implantation\n- Reference published ranges and studies for comparison\n\n**For example**, if you're evaluating a patient for cochlear implantation, I can show:\n- Cochlear A, B, and height measurements from ZETA [S1]\n- Published reference ranges (e.g., cochlear A 8.17–9.33 mm, B 5.73–7.50 mm, H 2.80–3.72 mm) [S11]\n- Distances to critical structures like the facial nerve and chorda tympani [S1]\n\nWould you like me to retrieve any of these measurements for ZETA?"
+ }
+]

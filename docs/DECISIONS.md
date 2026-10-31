@@ -231,6 +231,22 @@ says so.
   | median latency | 5 s | 93 s |
   | cost per question | $0.023 | hardware |
 
+- **Local mitigation v1** (retrieve before generating + grounding guard, D20/D11):
+
+  | qwen3.5:4b | baseline | v1 |
+  |---|---|---|
+  | correct behaviour | 23/25 | 22/25 |
+  | answerable questions answered | 14/15 | 15/15 |
+  | refuses medical advice | 4/5 | 2/5 |
+  | answers with ungrounded numbers | 1/25 | 0/25 |
+  | right source cited | 11/15 | 10/15 |
+  | median model rounds / latency | 2 / 93 s | 1 / 133 s |
+
+  v1 fixes the documentation miss (the CT-viewer question is now answered from the user guide)
+  and removes invented numbers. However, the passages it retrieves up front explain how cochlear
+  size informs electrode choice, and the small model then repeats that guidance after declining.
+  A trade-off between grounding and refusal, measured on one repetition (one case moves a rate
+  by 4 points, a class rate by 20).
 - **Grader fixes found during the pilot:** Indonesian decimal commas, a race reading the sources
   before the API stored them, and derived values ("0.64 mm above the limit"). Each fix is covered
   by a test; rows were re-graded without new model calls.

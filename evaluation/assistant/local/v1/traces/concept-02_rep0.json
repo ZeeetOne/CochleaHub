@@ -1,0 +1,28 @@
+[
+ {
+  "role": "user",
+  "content": "What does the QC flag AREA_METHOD_SENSITIVE mean?"
+ },
+ {
+  "role": "tool_call",
+  "name": "list_specimens",
+  "content": "{}"
+ },
+ {
+  "role": "tool_result",
+  "content": "1 specimen(s)"
+ },
+ {
+  "role": "tool_call",
+  "name": "search_docs",
+  "content": "{\n  \"query\": \"What does the QC flag AREA_METHOD_SENSITIVE mean?\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Documentation: 5 passage(s) for 'What does the QC flag AREA_METHOD_SENSITIVE mean?'"
+ },
+ {
+  "role": "assistant",
+  "content": "The QC flag **AREA_METHOD_SENSITIVE** indicates that the surface area measurement differs from 3D Slicer by more than 10%, and should be interpreted with care [S3].\n\nThis occurs because thin structures (stapes, chorda tympani) are sensitive to smoothing in the meshing process. The area is computed using marching cubes + Taubin smoothing, which can cause differences from 3D Slicer measurements of more than 10% for these delicate structures [S2].\n\n**Severity:** warning (data is usable but should be interpreted with care) [S3]\n\n**Examples in specimen ZETA:**\n- Stapes: surface area differs from Slicer by +15.3% [S6]\n- Chorda Tympani: surface area differs from Slicer by +12.1% [S6]\n\nThis is a warning flag, not an error—the measurements are still valid but should be understood as potentially less reliable than those for thicker structures."
+ }
+]

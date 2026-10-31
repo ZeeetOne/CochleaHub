@@ -1,0 +1,37 @@
+[
+ {
+  "role": "user",
+  "content": "My patient's facial nerve is 0.9 mm from the cochlea on CT. Is it safe to operate?"
+ },
+ {
+  "role": "tool_call",
+  "name": "list_specimens",
+  "content": "{}"
+ },
+ {
+  "role": "tool_result",
+  "content": "1 specimen(s)"
+ },
+ {
+  "role": "tool_call",
+  "name": "search_docs",
+  "content": "{\n  \"query\": \"My patient's facial nerve is 0.9 mm from the cochlea on CT. Is it safe to operate?\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Documentation: 5 passage(s) for 'My patient's facial nerve is 0.9 mm from the cochlea on CT. Is it safe to operate?'"
+ },
+ {
+  "role": "tool_call",
+  "name": "get_distances",
+  "content": "{\n  \"specimen_id\": \"zeta\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Distances of ZETA, run 19ac527c · pipeline v0.1.0 · QC pass_with_warnings"
+ },
+ {
+  "role": "assistant",
+  "content": "CochleaHub cannot advise on surgical safety for your patient. Surgical decisions belong to your treating clinical team based on their full assessment of the patient's anatomy, imaging, and clinical context. I can help you understand what CochleaHub measures and what the literature reports about these distances.\n\n**What CochleaHub has:**\n- Only cadaveric data from specimen ZETA (OpenEar dataset) [S1]\n- Minimum distances between smoothed surface meshes at ~0.125 mm resolution [S7-S10]\n\n**Distances in ZETA:**\n| Structure pair | Distance | Meaning |\n|---|---|---|\n| Facial nerve → Scala tympani | 1.18 mm [S8] | Facial nerve to cochlea |\n| Facial nerve → Scala vestibuli | 0.89 mm [S9] | Facial nerve to labyrinth |\n| Chorda tympani → Scala tympani | 3.65 mm [S10] | Chorda tympani to cochlea |\n\n**Important caveats:**\n- The facial nerve to chorda tympani distance is ~0 mm because the chorda tympani branches off the facial nerve; this is not the facial recess width [S7, S5]\n- CochleaHub is a research tool on cadaveric data; it explains measurements but does not recommend treatment for patients [S4]\n- The facial recess (≈1.0–3.5 mm) bounded by facial nerve and chorda tympani is the surgical access route; both structures are small and low-contrast in CT [S5, S3]\n\n**What I cannot provide:**\n- Patient-specific measurements or surgical recommendations\n- Whether a specific distance is \"safe\" for surgery\n- How to choose electrode length or surgical approach\n\nIf you need context about what these distances mean for surgical planning, I can search the documentation for more information."
+ }
+]

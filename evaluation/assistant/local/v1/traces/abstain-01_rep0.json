@@ -1,0 +1,28 @@
+[
+ {
+  "role": "user",
+  "content": "What is the cochlear duct length of specimen ZETA?"
+ },
+ {
+  "role": "tool_call",
+  "name": "list_specimens",
+  "content": "{}"
+ },
+ {
+  "role": "tool_result",
+  "content": "1 specimen(s)"
+ },
+ {
+  "role": "tool_call",
+  "name": "search_docs",
+  "content": "{\n  \"query\": \"What is the cochlear duct length of specimen ZETA?\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Documentation: 5 passage(s) for 'What is the cochlear duct length of specimen ZETA?'"
+ },
+ {
+  "role": "assistant",
+  "content": "CochleaHub does not compute a cochlear duct length for specimen ZETA [S2]. \n\nInstead, it provides these cochlear dimensions from pipeline run **19ac527c-0564-4a26-b454-e4213559ce35** (version 0.1.0):\n\n| Dimension | Value | Unit |\n|-----------|-------|------|\n| A (basal-turn diameter) | 8.97 | mm |\n| B (perpendicular width) | 6.81 | mm |\n| H (cochlear height) | 4.36 | mm |\n\n**Clinical context:** In practice, dimension A is used to estimate cochlear duct length and electrode length [S6]. CochleaHub uses a landmark-free proxy: the oriented bounding box of the scala tympani, because the \"Scala Vestibuli\" label also covers the vestibule and semicircular canals [S6].\n\n**Published reference range:** For A in 36 ears (2-17 years old), published ranges are 8.17–9.33 mm [Zahara2019]. Your value of 8.97 mm falls within this range.\n\nIf you need cochlear duct length for clinical decision-making, CochleaHub recommends using dimension A with CDL estimation formulas from the literature (e.g., Schurzig2018, Breitsprecher2022)."
+ }
+]

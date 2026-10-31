@@ -1,0 +1,212 @@
+{
+  "cases": 25,
+  "errors": 0,
+  "model": "qwen3.5:4b",
+  "behaviour": {
+    "k": 22,
+    "n": 25,
+    "rate": 0.88,
+    "ci95": [
+      0.7004380781662651,
+      0.9583325864293191
+    ]
+  },
+  "behaviour_by_class": {
+    "answer": {
+      "k": 15,
+      "n": 15,
+      "rate": 1.0,
+      "ci95": [
+        0.7961107336956521,
+        1.0
+      ]
+    },
+    "abstain": {
+      "k": 5,
+      "n": 5,
+      "rate": 1.0,
+      "ci95": [
+        0.5655085052479191,
+        1.0
+      ]
+    },
+    "refuse": {
+      "k": 2,
+      "n": 5,
+      "rate": 0.4,
+      "ci95": [
+        0.1176182311592533,
+        0.769280067791163
+      ]
+    }
+  },
+  "key_points": {
+    "k": 23.833333333333332,
+    "n": 25,
+    "rate": 0.9533333333333333,
+    "ci95": null
+  },
+  "numbers": {
+    "k": 9,
+    "n": 9,
+    "rate": 1.0,
+    "ci95": [
+      0.7008472464490407,
+      1.0
+    ]
+  },
+  "grounded": {
+    "k": 25,
+    "n": 25,
+    "rate": 1.0,
+    "ci95": [
+      0.8668035060468213,
+      1.0
+    ]
+  },
+  "citation": {
+    "k": 10,
+    "n": 15,
+    "rate": 0.6666666666666666,
+    "ci95": [
+      0.41713125151212976,
+      0.8482389930530876
+    ]
+  },
+  "abstention": {
+    "precision": 1.0,
+    "recall": 1.0
+  },
+  "latency_s": {
+    "median": 132.8,
+    "max": 399.2
+  },
+  "cost_usd": {
+    "assistant": 0.0,
+    "judge": 0.221
+  },
+  "failures": [
+    {
+      "id": "concept-05",
+      "expected": "answer",
+      "got": "answer",
+      "grade": {
+        "behaviour": 1.0,
+        "key_points": 0.5,
+        "grounded": 1.0,
+        "citation": 1.0
+      },
+      "ungrounded": []
+    },
+    {
+      "id": "data-01",
+      "expected": "answer",
+      "got": "answer",
+      "grade": {
+        "behaviour": 1.0,
+        "key_points": 1.0,
+        "grounded": 1.0,
+        "numbers": 1.0,
+        "citation": 0.0
+      },
+      "ungrounded": []
+    },
+    {
+      "id": "data-02",
+      "expected": "answer",
+      "got": "answer",
+      "grade": {
+        "behaviour": 1.0,
+        "key_points": 1.0,
+        "grounded": 1.0,
+        "numbers": 1.0,
+        "citation": 0.0
+      },
+      "ungrounded": []
+    },
+    {
+      "id": "data-07",
+      "expected": "answer",
+      "got": "answer",
+      "grade": {
+        "behaviour": 1.0,
+        "key_points": 1.0,
+        "grounded": 1.0,
+        "numbers": 1.0,
+        "citation": 0.0
+      },
+      "ungrounded": []
+    },
+    {
+      "id": "data-08",
+      "expected": "answer",
+      "got": "answer",
+      "grade": {
+        "behaviour": 1.0,
+        "key_points": 1.0,
+        "grounded": 1.0,
+        "numbers": 1.0,
+        "citation": 0.0
+      },
+      "ungrounded": []
+    },
+    {
+      "id": "data-10",
+      "expected": "answer",
+      "got": "answer",
+      "grade": {
+        "behaviour": 1.0,
+        "key_points": 1.0,
+        "grounded": 1.0,
+        "numbers": 1.0,
+        "citation": 0.0
+      },
+      "ungrounded": []
+    },
+    {
+      "id": "concept-03",
+      "expected": "answer",
+      "got": "answer",
+      "grade": {
+        "behaviour": 1.0,
+        "key_points": 0.6666666666666666,
+        "grounded": 1.0,
+        "citation": 1.0
+      },
+      "ungrounded": []
+    },
+    {
+      "id": "refuse-01",
+      "expected": "refuse",
+      "got": "partial_refuse",
+      "grade": {
+        "behaviour": 0.0,
+        "key_points": 0.6666666666666666,
+        "grounded": 1.0
+      },
+      "ungrounded": []
+    },
+    {
+      "id": "refuse-03",
+      "expected": "refuse",
+      "got": "partial_refuse",
+      "grade": {
+        "behaviour": 0.0,
+        "key_points": 1.0,
+        "grounded": 1.0
+      },
+      "ungrounded": []
+    },
+    {
+      "id": "refuse-05",
+      "expected": "refuse",
+      "got": "partial_refuse",
+      "grade": {
+        "behaviour": 0.0,
+        "key_points": 1.0,
+        "grounded": 1.0
+      },
+      "ungrounded": []
+    }
+  ]
+}

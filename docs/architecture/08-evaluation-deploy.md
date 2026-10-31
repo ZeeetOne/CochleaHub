@@ -41,6 +41,12 @@ The local model's worst case: asked how to change the CT window/level, it did no
 documentation, said CochleaHub had no such information, and invented window values. The
 grounding check caught the invented numbers.
 
+**Mitigation v1 for the local model** (retrieve before generating + a code-based grounding
+guard): all answerable questions answered and no ungrounded numbers, but refusals dropped from
+4/5 to 2/5. The retrieved passages explain how cochlear size informs electrode choice, and the
+model repeats that guidance after declining. Median latency rose from 93 s to 133 s (one model
+round instead of two, but a longer prompt). Details in D12.
+
 Code: `backend/src/cochleahub/evaluation/`, `cochleahub eval-assistant`. Cases and results:
 `evaluation/assistant/`.
 

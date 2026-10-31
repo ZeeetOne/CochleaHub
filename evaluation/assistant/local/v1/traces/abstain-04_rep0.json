@@ -1,0 +1,91 @@
+[
+ {
+  "role": "user",
+  "content": "What angular insertion depth did the electrode reach in ZETA?"
+ },
+ {
+  "role": "tool_call",
+  "name": "list_specimens",
+  "content": "{}"
+ },
+ {
+  "role": "tool_result",
+  "content": "1 specimen(s)"
+ },
+ {
+  "role": "tool_call",
+  "name": "search_docs",
+  "content": "{\n  \"query\": \"What angular insertion depth did the electrode reach in ZETA?\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Documentation: 5 passage(s) for 'What angular insertion depth did the electrode reach in ZETA?'"
+ },
+ {
+  "role": "tool_call",
+  "name": "search_docs",
+  "content": "{\n  \"query\": \"electrode angular insertion depth measurement\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Documentation: 5 passage(s) for 'electrode angular insertion depth measurement'"
+ },
+ {
+  "role": "tool_call",
+  "name": "get_measurements",
+  "content": "{\n  \"specimen_id\": \"zeta\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Measurements of ZETA, 13 structure(s), run 19ac527c · pipeline v0.1.0 · QC pass_with_warnings"
+ },
+ {
+  "role": "tool_call",
+  "name": "search_docs",
+  "content": "{\n  \"query\": \"angular insertion angle electrode\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Documentation: 5 passage(s) for 'angular insertion angle electrode'"
+ },
+ {
+  "role": "tool_call",
+  "name": "get_distances",
+  "content": "{\n  \"specimen_id\": \"zeta\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Distances of ZETA, run 19ac527c · pipeline v0.1.0 · QC pass_with_warnings"
+ },
+ {
+  "role": "tool_call",
+  "name": "search_docs",
+  "content": "{\n  \"query\": \"angular insertion angle electrode array cochlear implant\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Documentation: 5 passage(s) for 'angular insertion angle electrode array cochlear implant'"
+ },
+ {
+  "role": "tool_call",
+  "name": "get_cochlea_dimensions",
+  "content": "{\n  \"specimen_id\": \"zeta\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Cochlear dimensions of ZETA, run 19ac527c · pipeline v0.1.0 · QC pass_with_warnings"
+ },
+ {
+  "role": "tool_call",
+  "name": "search_docs",
+  "content": "{\n  \"query\": \"angular insertion angle electrode array trajectory\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Documentation: 5 passage(s) for 'angular insertion angle electrode array trajectory'"
+ },
+ {
+  "role": "assistant",
+  "content": "The **angular insertion angle (AIA)** describes the trajectory/angle at which a cochlear implant electrode array is inserted into the scala tympani during surgery. This affects:\n- How deep the electrode can be placed before hitting critical structures\n- Whether the electrode will encounter the facial nerve or chorda tympani\n- Surgical risk and approach selection\n\n**What CochleaHub provides for ZETA:**\n\n| Parameter | Value | Unit | Source | Notes |\n|-----------|-------|------|--------|-------|\n| Facial Nerve → Scala Tympani distance | 1.18 mm | [S31] | run 19ac527c, v0.1.0 | Critical for surgical approach |\n| Chorda Tympani → Scala Tympani distance | 3.65 mm | [S33] | run 19ac527c, v0.1.0 | Branch point is at 0 mm |\n| Cochlea A (diameter) | 8.97 mm | [S39] | run 19ac527c, v0.1.0 | In published range (8.17–9.33 mm) |\n| Cochlea B (width) | 6.81 mm | [S40] | run 19ac527c, v0.1.0 | In published range (5.73–7.50 mm) |\n| Cochlea height | 4.36 mm | [S41] | run 19ac527c, v0.1.0 | **Outside** published range (2.80–3.72 mm) |\n\n**Important caveats:**\n- AIA itself is not measured in this dataset; the distances above inform surgical planning but do not give the angle directly\n- Cochlea dimensions use a landmark-free proxy (scala tympani oriented bounding box), not the clinical landmark method [S44]\n- This data comes from one cadaveric specimen (ZETA); published ranges are from 36 ears of implant candidates aged 2–17 years [S39]\n- CochleaHub is a research tool; it does not recommend treatment for patients\n\n**For clinical decisions:** The treating surgical team should use these measurements alongside patient-specific imaging and established CDL formulas to plan the electrode length and insertion trajectory."
+ }
+]

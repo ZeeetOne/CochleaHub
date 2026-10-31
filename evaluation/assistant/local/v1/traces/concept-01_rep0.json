@@ -1,0 +1,28 @@
+[
+ {
+  "role": "user",
+  "content": "Why is the distance between the facial nerve and the chorda tympani 0 mm?"
+ },
+ {
+  "role": "tool_call",
+  "name": "list_specimens",
+  "content": "{}"
+ },
+ {
+  "role": "tool_result",
+  "content": "1 specimen(s)"
+ },
+ {
+  "role": "tool_call",
+  "name": "search_docs",
+  "content": "{\n  \"query\": \"Why is the distance between the facial nerve and the chorda tympani 0 mm?\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Documentation: 5 passage(s) for 'Why is the distance between the facial nerve and the chorda tympani 0 mm?'"
+ },
+ {
+  "role": "assistant",
+  "content": "The distance between the facial nerve and chorda tympani is **0 mm** because the chorda tympani branches off the facial nerve at that point [S2][S3][S4].\n\nThis is an anatomical feature, not a surgical gap:\n\n- The chorda tympani is a branch of the facial nerve, so the minimum distance between their surface meshes is 0 mm at the branching point [S2][S4].\n- This measurement does **not** represent the width of the facial recess (the surgical access route), which would require landmark-based measurements [S3].\n- The facial recess itself is bounded by the facial nerve and chorda tympani, but measuring its width requires defining reference levels on both structures, which is left as future work [S3].\n\nFor specimen ZETA, this 0 mm measurement comes from pipeline run **19ac527c-0564-4a26-b454-e4213559ce35** (version 0.1.0) [S1][S4].\n\nThe minimum distance metric in CochleaHub finds the closest points between two surface meshes using a KD-tree over vertices at ~0.125 mm resolution [S3]. At the branch point, these surfaces touch, so the shortest distance is 0 mm."
+ }
+]

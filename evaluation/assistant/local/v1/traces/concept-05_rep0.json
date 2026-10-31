@@ -1,0 +1,28 @@
+[
+ {
+  "role": "user",
+  "content": "How do I change the window/level in the CT viewer?"
+ },
+ {
+  "role": "tool_call",
+  "name": "list_specimens",
+  "content": "{}"
+ },
+ {
+  "role": "tool_result",
+  "content": "1 specimen(s)"
+ },
+ {
+  "role": "tool_call",
+  "name": "search_docs",
+  "content": "{\n  \"query\": \"How do I change the window/level in the CT viewer?\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Documentation: 5 passage(s) for 'How do I change the window/level in the CT viewer?'"
+ },
+ {
+  "role": "assistant",
+  "content": "To change window/level in the CT viewer: **drag the left side of the screen**.\n\nThe CT viewer uses Cornerstone3D over DICOMweb, with these mouse controls:\n\n| Action | Effect |\n|--------|--------|\n| Mouse wheel | Change slice |\n| Left drag | Window/level |\n| Middle drag | Pan |\n| Right drag | Zoom |\n\nThe initial window/level is the one stored by the scanner; CochleaHub does not set a default value [S2][S3]."
+ }
+]

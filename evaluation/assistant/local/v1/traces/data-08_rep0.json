@@ -1,0 +1,28 @@
+[
+ {
+  "role": "user",
+  "content": "How close is our facial nerve mesh to the dataset's published mesh?"
+ },
+ {
+  "role": "tool_call",
+  "name": "list_specimens",
+  "content": "{}"
+ },
+ {
+  "role": "tool_result",
+  "content": "1 specimen(s)"
+ },
+ {
+  "role": "tool_call",
+  "name": "search_docs",
+  "content": "{\n  \"query\": \"How close is our facial nerve mesh to the dataset's published mesh?\"\n}"
+ },
+ {
+  "role": "tool_result",
+  "content": "Documentation: 5 passage(s) for 'How close is our facial nerve mesh to the dataset's published mesh?'"
+ },
+ {
+  "role": "assistant",
+  "content": "For specimen ZETA (right side), the facial nerve mesh lies on average **0.049 mm** from the dataset's published mesh [S4].\n\n| Metric | Value |\n| --- | --- |\n| Mean surface distance | 0.049 mm |\n| 95th percentile | 0.075 mm |\n| Maximum | 0.344 mm |\n\nThis means the closest points between our mesh and the dataset's published mesh are within ~0.05 mm on average, with occasional outliers up to 0.34 mm [S4]. \n\nThe validation confirms that CochleaHub's surface meshes lie on average 0.05–0.1 mm from the dataset's published meshes [S3]. This is consistent with the pipeline version 0.1.0 run for specimen ZETA [S1].\n\nNote: CochleaHub uses the dataset's segmentation as given and does not perform independent anatomical validation [S3]."
+ }
+]

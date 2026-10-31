@@ -1,0 +1,2 @@
+{"prompt_id": "abstain-04", "rep": 0, "class": "timeout", "error": ""}
+{"prompt_id": "abstain-05", "rep": 0, "class": "RuntimeError", "error": "HTTP 503: {\"detail\":\"Assistant backend 'local' unavailable: Ollama not reachable (ReadTimeout).\"}"}
