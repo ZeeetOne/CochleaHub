@@ -34,6 +34,7 @@ CORPUS = [
     "docs/DECISIONS.md",
     "docs/REFERENCES.md",
     "docs/validation/zeta.md",
+    "docs/architecture/*.md",
 ]
 
 RRF_K = 60  # [Cormack2009]
@@ -92,10 +93,17 @@ def chunk_markdown(path: str, text: str) -> list[Chunk]:
     return chunks
 
 
+MERMAID = re.compile(r"```mermaid\n.*?```\n?", re.DOTALL)
+
+
 def load_corpus(root: Path = REPO_ROOT, files: list[str] = CORPUS) -> list[Chunk]:
     chunks = []
-    for rel in files:
-        chunks.extend(chunk_markdown(rel, (root / rel).read_text(encoding="utf-8")))
+    for pattern in files:
+        for path in sorted(root.glob(pattern)):
+            rel = path.relative_to(root).as_posix()
+            # diagrams are for people; their node syntax only adds noise to retrieval
+            text = MERMAID.sub("", path.read_text(encoding="utf-8"))
+            chunks.extend(chunk_markdown(rel, text))
     return chunks
 
 
@@ -164,16 +172,18 @@ class Index:
         self.embedder = embedder
         self.bm25 = BM25([tokenize(f"{c.title}\n{c.text}") for c in chunks])
 
-    def search(self, query: str, k: int = 5, candidates: int = 20) -> list[Hit]:
+    def search(
+        self, query: str, k: int = 5, candidates: int = 20, mode: str = "hybrid"
+    ) -> list[Hit]:
+        """mode: "hybrid" (default), "bm25" or "dense"; the single modes exist for evaluation."""
         lexical = self.bm25.scores(tokenize(query))
         bm25_rank = [int(i) for i in np.argsort(-lexical)[:candidates] if lexical[i] > 0]
-        rankings = [bm25_rank]
         dense_rank: list[int] = []
-        if self.vectors is not None and self.embedder is not None:
+        if self.vectors is not None and self.embedder is not None and mode != "bm25":
             sims = self.vectors @ self.embedder.query(query)
             dense_rank = [int(i) for i in np.argsort(-sims)[:candidates]]
-            rankings.append(dense_rank)
-        fused = rrf(rankings)
+        rankings = {"bm25": [bm25_rank], "dense": [dense_rank]}.get(mode, [bm25_rank, dense_rank])
+        fused = rrf([r for r in rankings if r])
         best = sorted(fused, key=fused.get, reverse=True)[:k]
         return [
             Hit(
@@ -210,4 +220,7 @@ def build_index(index_dir: Path | None = None, dense: bool = True) -> Index:
         vectors = embedder.documents([f"{c.title}\n{c.text}" for c in chunks])
         np.save(vec_path, vectors)
         meta_path.write_text(json.dumps([asdict(c) for c in chunks], indent=1), encoding="utf-8")
+    for old in [*index_dir.glob("vectors-*.npy"), *index_dir.glob("chunks-*.json")]:
+        if key not in old.name:  # indexes of earlier corpus versions
+            old.unlink()
     return Index(chunks, vectors, embedder)

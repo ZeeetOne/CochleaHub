@@ -347,3 +347,16 @@ def test_claude_turn_builds_request_and_reads_citations():
     # the assistant turn is stored as plain JSON for the next request and the audit log
     assert messages[-1]["role"] == "assistant"
     json.dumps(messages)
+
+
+def test_search_modes_and_relevance_labels():
+    from cochleahub.evaluation.retrieval_eval import is_relevant
+
+    chunks = [Chunk("docs/DECISIONS.md#d6-minimum-distances-accepted", "d", "D6", "facial nerve"),
+              Chunk("docs/x.md#other", "x", "X", "volume of bone")]
+    index = Index(chunks, None)
+    assert index.search("facial nerve", k=1, mode="bm25")[0].chunk.id.startswith("docs/DECISIONS")
+    assert index.search("facial nerve", k=1, mode="dense") == []  # no vectors in this index
+    # labels are id prefixes, so they survive a status change in a decision's title
+    assert is_relevant(chunks[0].id, ["docs/DECISIONS.md#d6-"])
+    assert not is_relevant(chunks[1].id, ["docs/DECISIONS.md#d6-"])

@@ -180,6 +180,16 @@ def cmd_eval_assistant(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_eval_retrieval(args: argparse.Namespace) -> int:
+    from cochleahub.assistant.retrieval import build_index
+    from cochleahub.evaluation.retrieval_eval import evaluate, markdown, write
+
+    result = evaluate(build_index())
+    write(result, REPO_ROOT / "evaluation" / "retrieval")
+    print(markdown(result))
+    return 0
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(prog="cochleahub")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -209,6 +219,8 @@ def main() -> None:
     p.add_argument("--regrade", action="store_true",
                    help="Recompute programmatic grades of a finished run (no model calls)")
     p.set_defaults(func=cmd_eval_assistant)
+    p = sub.add_parser("eval-retrieval", help="Evaluate documentation retrieval (stage 8)")
+    p.set_defaults(func=cmd_eval_retrieval)
     p = sub.add_parser("openapi", help="Write the API schema to docs/api/openapi.json")
     p.set_defaults(func=cmd_openapi)
 
