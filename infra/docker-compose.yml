@@ -1,9 +1,11 @@
 # Local development stack mirroring the AWS target (D8):
 #   PostgreSQL  -> Amazon RDS for PostgreSQL   (specimens, runs, measurements, QC)
 #   Orthanc     -> Orthanc on EC2 / AWS HealthImaging (CBCT archive, DICOMweb)
-#   MinIO       -> Amazon S3                   (meshes; same S3 API, only the endpoint differs)
+#   SeaweedFS   -> Amazon S3                   (meshes; same S3 API, only the endpoint differs)
+#   Ollama      -> local LLM inside the hospital network (optional, profile local-llm, D20)
 # Run from repo root:
 #   docker compose -f infra/docker-compose.yml --env-file .env up -d
+#   docker compose -f infra/docker-compose.yml --env-file .env --profile local-llm up -d
 services:
   postgres:
     image: postgres:17
@@ -45,7 +47,24 @@ services:
     volumes:
       - s3-data:/data
 
+  # Local open-weight LLM for the assistant's "local" backend: no request leaves the machine.
+  ollama:
+    image: ollama/ollama:latest
+    profiles: ["local-llm"]
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
 volumes:
   pgdata:
   orthanc-db:
   s3-data:
+  ollama:
