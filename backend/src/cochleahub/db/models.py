@@ -154,3 +154,44 @@ class ValidationResult(Base):
     mean_distance_mm: Mapped[float | None] = mapped_column(Float)
     p95_distance_mm: Mapped[float | None] = mapped_column(Float)
     max_distance_mm: Mapped[float | None] = mapped_column(Float)
+
+
+class AssistantConversation(Base):
+    """Assistant conversation in the backend's own message format (D20). Kept so a
+    conversation can continue, and as an audit trail of what the model was shown."""
+
+    __tablename__ = "assistant_conversations"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    backend: Mapped[str] = mapped_column(String(16))
+    model: Mapped[str] = mapped_column(String(64))
+    messages: Mapped[list] = mapped_column(JSON, default=list)
+    sources: Mapped[list] = mapped_column(JSON, default=list)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+    turns: Mapped[list["AssistantTurn"]] = relationship(
+        cascade="all, delete-orphan", order_by="AssistantTurn.created_at"
+    )
+
+
+class AssistantTurn(Base):
+    """One question and its answer, with the tools called and the sources cited; the unit
+    the assistant evaluation (stage 8) scores."""
+
+    __tablename__ = "assistant_turns"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    conversation_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("assistant_conversations.id", ondelete="CASCADE")
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    question: Mapped[str] = mapped_column(Text)
+    answer: Mapped[str] = mapped_column(Text, default="")
+    tool_calls: Mapped[list] = mapped_column(JSON, default=list)
+    sources: Mapped[list] = mapped_column(JSON, default=list)
+    stop_reason: Mapped[str | None] = mapped_column(String(32))
+    model: Mapped[str | None] = mapped_column(String(64))
+    usage: Mapped[dict] = mapped_column(JSON, default=dict)
+    latency_s: Mapped[float | None] = mapped_column(Float)
+    error: Mapped[str | None] = mapped_column(Text)
