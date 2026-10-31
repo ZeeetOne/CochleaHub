@@ -1,7 +1,8 @@
 """Programmatic graders of the assistant evaluation: an oracle answer passes, a made-up or empty
 one fails."""
 
-from cochleahub.evaluation.assistant_eval import citation_ok, grounded, numbers_in, wilson
+from cochleahub.assistant.grounding import grounded, numbers_in
+from cochleahub.evaluation.assistant_eval import citation_ok, wilson
 
 SOURCES = '{"from_structure": "Facial Nerve", "distance_mm": 1.1801} {"rel": 0.1526} 2.80-3.72'
 
