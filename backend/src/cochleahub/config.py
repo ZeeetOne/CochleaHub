@@ -17,6 +17,10 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+psycopg://cochleahub:cochleahub@localhost:5432/cochleahub"
     orthanc_url: str = "http://localhost:8042"
     dicomweb_root: str = "http://localhost:8042/dicom-web"
+    # DICOMweb base as the browser sees it: same-origin path, proxied to Orthanc by the Vite
+    # dev server locally and by the edge in production, so Orthanc is never exposed (D8)
+    dicomweb_public_root: str = "/dicom-web"
+    cors_origins: list[str] = ["http://localhost:5173"]
 
     anthropic_api_key: str = ""
     llm_model: str = "claude-sonnet-5-5"
