@@ -2,7 +2,9 @@
 venv: backend/.venv/Scripts/python deploy/aws/deploy.py <step>
 
 Steps, in order (or `all`):
-  secrets     create deploy/aws/terraform/secrets.auto.tfvars (random passwords; git-ignored)
+  secrets     create deploy/aws/terraform/secrets.auto.tfvars (random passwords; git-ignored).
+              `secrets <email>` adds a budget alert; without an email (AWS free plan, which
+              never charges) no budget is created.
   infra       terraform init + apply
   key         store ANTHROPIC_API_KEY from .env in SSM Parameter Store (not in Terraform state)
   image       build the API image and push it to ECR
@@ -65,13 +67,12 @@ def step_secrets(email: str | None = None):
     if path.exists():
         print(f"{path.name} exists; keeping it")
         return
-    if not email:
-        sys.exit("usage: deploy.py secrets <alert-email>")
     values = {
         "basic_auth_password": secrets.token_urlsafe(12),
         "origin_secret": secrets.token_hex(24),
         "postgres_password": secrets.token_urlsafe(24),
-        "alert_email": email,
+        "create_budget": bool(email),
+        "alert_email": email or "",
     }
     path.write_text("".join(f"{k} = {json.dumps(v)}\n" for k, v in values.items()))
     print(f"wrote {path.relative_to(ROOT)} (git-ignored)")

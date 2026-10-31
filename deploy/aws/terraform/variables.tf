@@ -5,9 +5,19 @@ variable "region" {
 }
 
 variable "instance_type" {
-  description = "4 GB RAM: PostgreSQL, Orthanc, the API (with local embeddings) and nginx."
+  description = <<-EOT
+    Needs at least 4 GB RAM for PostgreSQL, Orthanc, the API (with local embeddings) and nginx.
+    m7i-flex.large (2 vCPU, 8 GB) is free-tier eligible on accounts created from July 2025;
+    if it is not offered in the region, use c7i-flex.large (4 GB) or t3.medium (paid plan).
+  EOT
   type        = string
-  default     = "t3.medium"
+  default     = "m7i-flex.large"
+}
+
+variable "create_budget" {
+  description = "Create the monthly budget alert. Set false on an AWS free plan, which never charges."
+  type        = bool
+  default     = true
 }
 
 variable "basic_auth_user" {
@@ -40,6 +50,7 @@ variable "monthly_budget_usd" {
 }
 
 variable "alert_email" {
+  default     = ""
   description = "Where budget alerts are sent."
   type        = string
 }

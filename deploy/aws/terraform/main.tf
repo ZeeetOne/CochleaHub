@@ -5,7 +5,7 @@
 #                                   └── /dicom-web/* -> EC2 :80 nginx -> Orthanc (GET only)
 #   meshes: S3 (private), fetched by the browser through short-lived presigned URLs
 #
-# One t3.medium runs PostgreSQL, Orthanc, the API and nginx in Docker. Production would use RDS,
+# One m7i-flex.large (free-tier eligible) runs PostgreSQL, Orthanc, the API and nginx in Docker. Production would use RDS,
 # ECS/Fargate and a private subnet for Orthanc (D8); this variant keeps the same interfaces at a
 # few dollars a day and is meant to be destroyed after a demo (`terraform destroy`).
 
@@ -313,6 +313,7 @@ resource "aws_ssm_parameter" "postgres_password" {
 # Terraform state.
 
 resource "aws_budgets_budget" "monthly" {
+  count        = var.create_budget ? 1 : 0
   name         = "${local.name}-monthly"
   budget_type  = "COST"
   limit_amount = var.monthly_budget_usd
