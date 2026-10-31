@@ -1,7 +1,7 @@
 variable "region" {
-  description = "AWS region; Paris keeps data in the EU (D20)."
+  description = "AWS region; an EU region keeps data in the EU (D20). The demo account is restricted to eu-north-1 by a service control policy (D23)."
   type        = string
-  default     = "eu-west-3"
+  default     = "eu-north-1"
 }
 
 variable "instance_type" {

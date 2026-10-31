@@ -38,7 +38,7 @@ class Settings(BaseSettings):
     assistant_grounding_guard: bool = True
     embedding_model: str = "BAAI/bge-small-en-v1.5"
 
-    aws_region: str = "eu-west-3"
+    aws_region: str = "eu-north-1"
     # Empty endpoint = Amazon S3; set it for a local S3-compatible store (infra/)
     s3_endpoint_url: str | None = None
     s3_mesh_bucket: str = "cochleahub-meshes"

@@ -64,7 +64,7 @@ flowchart LR
     U["browser"] -->|HTTPS + basic auth| CF["CloudFront<br/>edge function: auth,<br/>SPA routing"]
     CF -->|"/"| S3F[("S3 frontend<br/>private, OAC")]
     CF -->|"/api/*, /dicom-web/*<br/>+ secret header"| EC2
-    subgraph EC2["EC2 m7i-flex.large · eu-west-3 · no SSH, SSM only"]
+    subgraph EC2["EC2 m7i-flex.large · eu-north-1 · no SSH, SSM only"]
         NG["nginx<br/>checks header,<br/>DICOMweb GET only"] --> API["FastAPI"]
         NG --> OR["Orthanc"]
         API --> PG[("PostgreSQL")]

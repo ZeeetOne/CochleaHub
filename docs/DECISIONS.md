@@ -404,7 +404,7 @@ says so.
     - Development: Claude through the Claude API (`claude-opus-5-5`, adaptive thinking,
       effort `medium`).
     - Production: `LLM_PROVIDER=bedrock` uses Claude on Amazon Bedrock in the deployment's AWS
-      region (eu-west-3, Paris), so requests stay in the operator's AWS account and region.
+      EU region (eu-north-1, Stockholm, for the demo account), so requests stay in the operator's AWS account and region.
   - `local`:
     - An open-weight model (`qwen3.5:4b`; first built with `qwen3:4b`) served by Ollama
       inside the hospital network (Ollama Desktop, or `docker compose --profile local-llm`).
@@ -478,3 +478,31 @@ says so.
   - Grafana's bar gauge has no log scale, so inner-ear volumes vanish next to bone.
   - Grafana shows "No data" where the API would say what is missing.
   - Grafana gives time ranges, auto-refresh and alerting without code.
+
+## D23 — AWS deployment: one instance behind CloudFront, infrastructure as code (accepted, stage 8)
+
+- **Decision:**
+  - **Edge:** CloudFront serves the private S3 frontend bucket (origin access control) and
+    forwards `/api/*` and `/dicom-web/*` to a single EC2 instance. A CloudFront Function adds
+    HTTP basic auth for the demo and SPA routing, without rewriting API paths, so a 404 "no data"
+    still reaches the client (D17).
+  - **Instance:** runs PostgreSQL, Orthanc, the API and nginx in Docker. It accepts port 80 from
+    CloudFront's origin-facing prefix list only, and nginx rejects requests without the secret
+    header CloudFront adds and allows DICOMweb GETs only. There is no SSH; administration goes
+    through Systems Manager. IMDSv2 only, encrypted disk.
+  - **Secrets:** in SSM Parameter Store. The Claude key is written there by the deploy script,
+    so it never enters Terraform state.
+  - **Storage:** meshes in a private S3 bucket, served through presigned URLs (D8).
+  - **Infrastructure as code:** everything is described in Terraform (`deploy/aws/terraform`)
+    and driven by `deploy/aws/deploy.py`; `destroy` removes it all.
+- **Region:** the demo AWS account is a member of an organisation whose service control policy
+  denies every region except **eu-north-1 (Stockholm)**; this was found by probing and by IAM
+  policy simulation before deploying. Stockholm is an EU region, so the data-residency argument
+  of D20 holds.
+- **Instance type:** m7i-flex.large (2 vCPU, 8 GB), free-tier eligible on the account's plan and
+  offered in eu-north-1.
+- **Basis:** no paper; this is an engineering decision. It keeps the interfaces of the local
+  stack (D8): S3 through boto3, DICOMweb, PostgreSQL. The production differences are stated in
+  `docs/architecture/08-evaluation-deploy.md`: RDS, ECS/Fargate, Orthanc in a private subnet,
+  Claude through Bedrock, SSO.
+
