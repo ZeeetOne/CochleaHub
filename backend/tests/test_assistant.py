@@ -78,6 +78,10 @@ def test_missing_data_is_an_error_the_model_can_abstain_on(executor):
     assert not out.ok and "Available: Scala Tympani" in out.error
 
 
+def test_specimen_id_is_case_insensitive(executor):
+    assert run(executor.run("get_distances", {"specimen_id": "ZETA"})).ok
+
+
 def test_tool_input_is_validated(executor):
     assert "missing required" in run(executor.run("get_distances", {})).error
     bad = run(executor.run("compare_metric", {"metric": "weight"}))
@@ -153,6 +157,17 @@ def test_agent_stops_after_max_rounds(executor, monkeypatch):
                               Conversation("claude", "s"), "loop"))
     assert any(e["type"] == "error" and "2 tool rounds" in e["message"] for e in events)
     assert events[-1]["stop_reason"] == "max_rounds"
+
+
+def test_answer_is_the_last_rounds_text(executor):
+    backend = ScriptedBackend([
+        TurnResult("tool_use", [ToolCall("t", "list_specimens", {})],
+                   blocks=[{"text": "Let me check.", "citations": []}]),
+        TurnResult("end_turn", blocks=[{"text": "One specimen.", "citations": [0]}]),
+    ])
+    events = collect(run_turn(backend, executor, Conversation("claude", "s"), "How many?"))
+    answer = next(e for e in events if e["type"] == "answer")
+    assert [b["text"] for b in answer["blocks"]] == ["One specimen."]
 
 
 def test_refusal_is_reported(executor):

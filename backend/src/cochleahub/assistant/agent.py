@@ -61,7 +61,9 @@ async def run_turn(
         add_usage(usage, result.usage)
         model = result.model or model
         stop_reason = result.stop_reason
-        blocks.extend(b for b in result.blocks if b["text"].strip())
+        # the answer is the last round's text; text before a tool call is narration
+        # ("let me look that up") and was already streamed
+        blocks = [b for b in result.blocks if b["text"].strip()]
 
         if stop_reason == "refusal":
             blocks.append({"text": REFUSAL_TEXT, "citations": []})

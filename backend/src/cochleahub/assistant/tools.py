@@ -193,6 +193,9 @@ class ToolExecutor:
             return ToolOutcome(False, error=f"Unknown tool '{name}'.")
         if problem := validate(name, args):
             return ToolOutcome(False, error=f"Invalid input for {name}: {problem}.")
+        if isinstance(args.get("specimen_id"), str):
+            # users and models write "ZETA"; specimen ids are stored lower-case
+            args = {**args, "specimen_id": args["specimen_id"].strip().lower()}
         try:
             return await getattr(self, f"_{name}")(**args)
         except httpx.HTTPError as e:
