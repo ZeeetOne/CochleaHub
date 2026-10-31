@@ -1,0 +1,18 @@
+# Build context for backend/Dockerfile: code and docs only
+Dataset/
+data/
+evaluation/
+frontend/
+infra/
+deploy/
+**/.venv/
+**/node_modules/
+**/__pycache__/
+**/.pytest_cache/
+**/.ruff_cache/
+.git/
+.env
+.env.*
+*.zip
+*.docx
+*.pdf

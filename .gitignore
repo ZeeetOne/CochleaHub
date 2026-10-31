@@ -39,3 +39,9 @@ Thumbs.db
 
 # Claude Code personal overrides
 .claude/settings.local.json
+
+# Deployment (stage 8): local tools, Terraform state and generated secrets
+.tools/
+deploy/aws/terraform/.terraform/
+deploy/aws/terraform/*.tfstate*
+deploy/aws/terraform/secrets.auto.tfvars
