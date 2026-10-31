@@ -164,6 +164,22 @@ def cmd_index_docs(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_eval_assistant(args: argparse.Namespace) -> int:
+    import asyncio
+
+    from cochleahub.evaluation.assistant_eval import EVAL_DIR, regrade, run, summarize
+
+    if args.regrade:
+        out = EVAL_DIR / args.backend / args.variant
+        regrade(out)
+    else:
+        out = asyncio.run(run(args.backend, args.variant, args.api, args.only))
+    summary = summarize(out)
+    (out / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
+    print(json.dumps({k: v for k, v in summary.items() if k != "failures"}, indent=2))
+    return 0
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(prog="cochleahub")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -185,6 +201,14 @@ def main() -> None:
     p = sub.add_parser("index-docs", help="Build the assistant's documentation index")
     p.add_argument("query", nargs="*", help="Optional test queries")
     p.set_defaults(func=cmd_index_docs)
+    p = sub.add_parser("eval-assistant", help="Run the assistant evaluation (stage 8)")
+    p.add_argument("--backend", choices=["claude", "local"], default="claude")
+    p.add_argument("--variant", default="baseline")
+    p.add_argument("--api", default="http://localhost:8000")
+    p.add_argument("--only", nargs="*", help="Case ids to run")
+    p.add_argument("--regrade", action="store_true",
+                   help="Recompute programmatic grades of a finished run (no model calls)")
+    p.set_defaults(func=cmd_eval_assistant)
     p = sub.add_parser("openapi", help="Write the API schema to docs/api/openapi.json")
     p.set_defaults(func=cmd_openapi)
 
