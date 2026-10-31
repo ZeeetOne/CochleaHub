@@ -6,12 +6,13 @@ variable "region" {
 
 variable "instance_type" {
   description = <<-EOT
-    Needs at least 4 GB RAM for PostgreSQL, Orthanc, the API (with local embeddings) and nginx.
-    m7i-flex.large (2 vCPU, 8 GB) is free-tier eligible on accounts created from July 2025;
-    if it is not offered in the region, use c7i-flex.large (4 GB) or t3.medium (paid plan).
+    Smallest type that runs PostgreSQL, Orthanc, the API (local embeddings) and nginx: t3.small
+    (2 vCPU, 2 GB + 2 GB swap from user data), free-tier eligible. The API image is built on the
+    laptop, never on the instance. If the API runs out of memory, use c7i-flex.large (4 GB) or
+    m7i-flex.large (8 GB); both are free-tier eligible too, at a higher hourly price.
   EOT
   type        = string
-  default     = "m7i-flex.large"
+  default     = "t3.small"
 }
 
 variable "create_budget" {

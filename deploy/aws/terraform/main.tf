@@ -5,7 +5,7 @@
 #                                   └── /dicom-web/* -> EC2 :80 nginx -> Orthanc (GET only)
 #   meshes: S3 (private), fetched by the browser through short-lived presigned URLs
 #
-# One m7i-flex.large (free-tier eligible) runs PostgreSQL, Orthanc, the API and nginx in Docker. Production would use RDS,
+# One t3.small (free-tier eligible, 2 GB + swap) runs PostgreSQL, Orthanc, the API and nginx in Docker. Production would use RDS,
 # ECS/Fargate and a private subnet for Orthanc (D8); this variant keeps the same interfaces at a
 # few dollars a day and is meant to be destroyed after a demo (`terraform destroy`).
 
@@ -101,8 +101,8 @@ resource "aws_ecr_lifecycle_policy" "api" {
   policy = jsonencode({
     rules = [{
       rulePriority = 1
-      description  = "keep the last 3 images"
-      selection    = { tagStatus = "any", countType = "imageCountMoreThan", countNumber = 3 }
+      description  = "keep only the latest image (demo: storage is billed per GB)"
+      selection    = { tagStatus = "any", countType = "imageCountMoreThan", countNumber = 1 }
       action       = { type = "expire" }
     }]
   })
@@ -188,7 +188,7 @@ resource "aws_instance" "app" {
 
   root_block_device {
     volume_type = "gp3"
-    volume_size = 30
+    volume_size = 20 # images (~4 GB) + data (~0.5 GB) + room
     encrypted   = true
   }
   metadata_options {

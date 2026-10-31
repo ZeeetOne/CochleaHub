@@ -12,6 +12,8 @@ Steps, in order (or `all`):
   bundle      upload server config + pipeline outputs, meshes and the axial CBCT to S3
   bootstrap   run deploy/aws/server/bootstrap.sh on the instance through SSM
   smoke       check the public URL end to end
+  stop        stop the instance between demos (no instance-hour charges; disk still billed)
+  start       start it again and point CloudFront at its new address
   destroy     terraform destroy (removes everything, including the data)
 
 AWS credentials come from the standard chain (AWS_PROFILE / ~/.aws/credentials); this script
@@ -225,13 +227,33 @@ def step_smoke():
         sys.exit(1)
 
 
+def step_stop():
+    o = outputs()
+    ec2 = boto3.client("ec2", region_name=o["region"])
+    ec2.stop_instances(InstanceIds=[o["instance_id"]])
+    ec2.get_waiter("instance_stopped").wait(InstanceIds=[o["instance_id"]])
+    print("instance stopped; the site is down until `deploy.py start`")
+
+
+def step_start():
+    o = outputs()
+    ec2 = boto3.client("ec2", region_name=o["region"])
+    ec2.start_instances(InstanceIds=[o["instance_id"]])
+    ec2.get_waiter("instance_running").wait(InstanceIds=[o["instance_id"]])
+    # a stopped instance gets a new public DNS name; apply updates the CloudFront origin
+    sh(TERRAFORM, "apply", "-input=false", "-auto-approve", cwd=TF)
+    print(f"started; containers restart by themselves. {o['url']} (CloudFront needs a few "
+          "minutes to pick up the new origin)")
+
+
 def step_destroy():
     sh(TERRAFORM, "destroy", "-input=false", "-auto-approve", cwd=TF)
 
 
 STEPS = {"secrets": step_secrets, "infra": step_infra, "key": step_key, "image": step_image,
          "frontend": step_frontend, "bundle": step_bundle, "bootstrap": step_bootstrap,
-         "smoke": step_smoke, "destroy": step_destroy}
+         "smoke": step_smoke, "stop": step_stop, "start": step_start,
+         "destroy": step_destroy}
 
 if __name__ == "__main__":
     if len(sys.argv) < 2 or sys.argv[1] not in [*STEPS, "all"]:

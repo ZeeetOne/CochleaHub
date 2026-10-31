@@ -499,8 +499,14 @@ says so.
   denies every region except **eu-north-1 (Stockholm)**; this was found by probing and by IAM
   policy simulation before deploying. Stockholm is an EU region, so the data-residency argument
   of D20 holds.
-- **Instance type:** m7i-flex.large (2 vCPU, 8 GB), free-tier eligible on the account's plan and
-  offered in eu-north-1.
+- **Cost (demo only):**
+  - t3.small (2 vCPU, 2 GB + 2 GB swap), free-tier eligible. The image is built on the laptop,
+    so the instance only runs it.
+  - 20 GB disk; only the latest image is kept in ECR.
+  - `deploy.py stop` and `start` turn the instance off between demos. On start, Terraform points
+    CloudFront at the instance's new public address.
+  - Larger free-tier types (c7i-flex.large, m7i-flex.large) are the fallback if memory runs
+    short.
 - **Basis:** no paper; this is an engineering decision. It keeps the interfaces of the local
   stack (D8): S3 through boto3, DICOMweb, PostgreSQL. The production differences are stated in
   `docs/architecture/08-evaluation-deploy.md`: RDS, ECS/Fargate, Orthanc in a private subnet,
