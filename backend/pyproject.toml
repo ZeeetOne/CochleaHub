@@ -22,7 +22,9 @@ dependencies = [
     "boto3>=1.35",
     "alembic>=1.14",
     # assistant (stage 7)
-    "anthropic>=0.40",
+    "anthropic>=2.3",
+    "ollama>=0.6",
+    "fastembed>=0.9",
 ]
 
 [project.optional-dependencies]

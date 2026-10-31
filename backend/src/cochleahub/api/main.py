@@ -2,7 +2,8 @@
 
 All data routes live under `/api/v1` and are GET-only. Every run-derived result carries its
 provenance (run id, pipeline version, QC status) [Margeta2022]. The same routes are the tools
-of the AI assistant (stage 7), which therefore can only read versioned results.
+of the AI assistant (stage 7), which therefore can only read versioned results; its own
+`POST /assistant/chat` writes nothing but the conversation log.
 """
 
 from typing import Annotated
@@ -14,13 +15,12 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from cochleahub import __version__
+from cochleahub.api import API_PREFIX
 from cochleahub.api.deps import get_session, get_store
-from cochleahub.api.routers import compare, runs, specimens
+from cochleahub.api.routers import assistant, compare, runs, specimens
 from cochleahub.api.schemas import Health
 from cochleahub.config import settings
 from cochleahub.storage.objects import ObjectStore
-
-API_PREFIX = "/api/v1"
 
 app = FastAPI(
     title="CochleaHub API",
@@ -71,4 +71,5 @@ def ready(
 v1.include_router(specimens.router)
 v1.include_router(runs.router)
 v1.include_router(compare.router)
+v1.include_router(assistant.router)
 app.include_router(v1)
