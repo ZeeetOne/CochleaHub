@@ -108,14 +108,17 @@ says so.
   for traceability [Margeta2022].
 - **Check:** a test asserts the OpenAPI schema contains only GET operations.
 
-## D10 — React + TypeScript dashboard, web 3D + DICOMweb slice viewer (planned, stage 6)
+## D10 — React + TypeScript dashboard, web 3D + DICOMweb slice viewer (accepted, stage 6)
 
-- **Decision:** React/TS SPA with Overview, Specimen detail (3D + table), Compare and Operations
-  pages; CT slices through OHIF/Cornerstone3D over DICOMweb; three.js for meshes.
-- **Basis:** Nautilus frontend is React with vtk.js viewports and Plotly/Chart.js [Margeta2022];
-  OHIF is a zero-footprint DICOMweb viewer [Ziegler2020]; accessible dashboards are associated
-  with better care processes [Dowding2015]. Power BI / Grafana are evaluated in stage 8 as the
-  posting requests; no paper compares them — the comparison will be our own.
+- **Decision:** React/TS SPA (Vite) with four pages: Overview, Specimen detail, Compare and
+  Operations. CT slices are shown with Cornerstone3D over DICOMweb. Meshes are rendered with
+  three.js (react-three-fiber).
+- **Basis:** the Nautilus frontend is React, with vtk.js viewports and Plotly/Chart.js
+  [Margeta2022]. OHIF is a zero-footprint DICOMweb viewer [Ziegler2020]. Accessible dashboards
+  are associated with better care processes [Dowding2015].
+- **Power BI / Grafana:** evaluated in stage 8, as the posting requests. No paper compares them,
+  so the comparison will be our own.
+- **Details:** D18.
 
 ## D11 — AI assistant: tool calling over the API + RAG, with refusal/abstention (planned, stage 7)
 
@@ -227,3 +230,61 @@ says so.
 - **Consequences:** the API is the single read path for both the dashboard and the assistant, so
   every number either one shows can be traced to a run. Run lookups are per specimen (N+1 over
   specimens): fine for a handful of specimens, to revisit if the dataset grows.
+
+## D18 — Dashboard implementation: embedded Cornerstone3D, provenance on every view (accepted, stage 6)
+
+- **Decision:**
+  - **CT viewer:**
+    - We embed Cornerstone3D, the rendering library OHIF is built on [Ziegler2020], instead of
+      running the full OHIF app next to the dashboard. CT and measurements then live on one page.
+    - The volume streams over WADO-RS from Orthanc through the same-origin `/dicom-web` proxy
+      (D17).
+    - It is shown as axial, coronal and sagittal reformats of the axial series (D8).
+    - Instance metadata come from one series-level WADO-RS metadata request, not one request per
+      slice.
+    - The initial window/level is the one the scanner stored; we do not pick one.
+    - The viewer opens on demand: one series is about 220 MB of voxels. `?ct=<series>` deep-links
+      to an open viewer.
+  - **3D anatomy:**
+    - glTF meshes are fetched straight from S3 via presigned URLs and drawn in patient LPS
+      millimetres, with superior up.
+    - Selecting a critical distance draws the measured segment between its two closest points.
+      What the user sees is therefore exactly what was measured (D6).
+    - Bone and sinus dura are hidden by default (translucent when shown) because they occlude the
+      inner ear.
+  - **Provenance and missing data:**
+    - Each page shows the run id, pipeline version and QC status of the data it plots (D9).
+    - API 404 messages are displayed verbatim as "No data: …" and are not retried. The dashboard
+      states what is missing, as the assistant will (D11).
+  - **Charts:**
+    - Small custom SVG charts on one linear axis, with the published range or QC tolerance drawn
+      as a band behind the value.
+    - Volumes use a log axis, because they span four orders of magnitude (stapes 3 mm³, bone
+      35,000 mm³).
+    - Every chart sits next to a table with the same numbers.
+    - Two series colours were checked with a colour-vision-deficiency validator in light and dark
+      mode.
+    - QC state is always shown with an icon and a label, never by colour alone.
+    - QC tolerances come from the API, not from frontend constants.
+  - **Types:** TypeScript types are generated from the API's OpenAPI schema (`npm run gen:api`),
+    so a renamed API field fails the build.
+- **Basis:**
+  - CT viewer: OHIF / Cornerstone over DICOMweb [Ziegler2020, Jodogne2018].
+  - React frontend with web 3D viewports for cochlear-implant research [Margeta2022].
+  - Accessible, data-dense dashboards [Dowding2015].
+  - Abstention by showing what is missing [Lee2022].
+- **No paper:**
+  - embedding Cornerstone3D rather than OHIF;
+  - chart forms and the colour-vision checks;
+  - the on-demand CT loading;
+  - generated types.
+- **Engineering notes:**
+  - In the Vite dev server, Cornerstone's CommonJS codec wrappers must be pre-bundled.
+  - vtk.js pulls in `xmlbuilder2`, which needs the `events` package in the browser.
+- **Checks on ZETA (headless Chrome):**
+  - all four pages render live API data;
+  - the 13 meshes load from S3;
+  - the CT viewer streams the 481-slice embedded series through the proxy with no console errors;
+  - the production build succeeds.
+  - Bundle sizes: three.js loads only on the specimen page (≈1 MB) and Cornerstone only when the
+    CT viewer opens (≈3.6 MB, ≈1 MB gzip).

@@ -68,10 +68,11 @@ cochleahub upload-dicom                    # stage 4: CBCT -> DICOM Part 10 -> O
 uvicorn cochleahub.api.main:app --reload   # stage 5: http://localhost:8000/docs
 cochleahub openapi                         # API schema -> docs/api/openapi.json
 
-# frontend
+# frontend (needs the API on :8000 and Orthanc on :8042; Vite proxies /api and /dicom-web)
 cd frontend
 npm install
 npm run dev                                # http://localhost:5173
+npm run gen:api                            # regenerate API types after `cochleahub openapi`
 ```
 
 ## API
@@ -115,7 +116,7 @@ Carotis Interna.
 - [x] **3. Validation & QC** — `cochleahub validate`: against headless 3D Slicer Segment Statistics and the dataset's published meshes; QC flags with severities and published ranges → [`docs/validation/zeta.md`](docs/validation/zeta.md)
 - [x] **4. Storage (local, AWS-compatible)** — CBCT rewritten as DICOM Part 10 → Orthanc (DICOMweb); meshes → S3 API; runs, measurements, QC and validation → PostgreSQL (Alembic). AWS provisioning in stage 8
 - [x] **5. Backend API** — read-only `/api/v1`: specimens, measurements, cochlea vs. published ranges, distances, compare, runs, QC, validation, presigned mesh URLs, DICOMweb series; every result carries its run and pipeline version → [API](#api)
-- [ ] **6. Dashboard & viewer** — Overview, Specimen detail (3D + table), Compare, Operations; OHIF/Cornerstone3D slice viewer
+- [x] **6. Dashboard & viewer** — Overview, Specimen (3D anatomy with measured distances, cochlea vs. published range, CT axial/coronal/sagittal via Cornerstone3D + DICOMweb, measurement table), Compare, Operations (services, runs, QC flags, validation charts)
 - [ ] **7. AI assistant** — tool calling to the API, RAG over docs/literature, refuses clinical advice, abstains when data is missing
 - [ ] **8. Evaluation & deploy** — measurement validation table, 25-question assistant eval, AWS deploy, React vs. Power BI vs. Grafana comparison
 

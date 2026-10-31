@@ -40,7 +40,8 @@ backend/.venv/Scripts/cochleahub upload-dicom     # stage 4: CBCT -> Orthanc
 backend/.venv/Scripts/python -m pytest backend    # tests
 cd backend && .venv/Scripts/uvicorn cochleahub.api.main:app --reload   # stage 5, /api/v1
 backend/.venv/Scripts/cochleahub openapi          # docs/api/openapi.json (frontend types)
-cd frontend && npm run dev | npm run build
+cd frontend && npm run dev | npm run build   # dev proxies /api -> :8000, /dicom-web -> :8042
+cd frontend && npm run gen:api                # TS types from docs/api/openapi.json
 docker compose -f infra/docker-compose.yml --env-file .env up -d
 ```
 
@@ -56,5 +57,8 @@ docker compose -f infra/docker-compose.yml --env-file .env up -d
 - Chorda tympani branches off the facial nerve, so their minimum distance is 0 mm (D6).
 - Headless Slicer: never call CreateClosedSurfaceRepresentation up front on the full
   segmentation (hours instead of ~20 s); the stats script only falls back to it when needed.
+- Frontend: Cornerstone3D needs its CommonJS codecs pre-bundled (vite.config.ts) and the `events`
+  package (vtk.js -> xmlbuilder2); under React StrictMode the CT viewer effect runs twice, so
+  cleanup must tolerate a volume that was never cached.
 - CBCT DICOM files lack the DICM preamble (read with `force=True`); X/Y/Z folders are the same
   scan resliced sagittal/coronal/axial.
