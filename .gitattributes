@@ -1,0 +1,4 @@
+# Files executed or read on Linux (EC2, containers) must keep LF line endings
+*.sh text eol=lf
+deploy/** text eol=lf
+backend/Dockerfile text eol=lf
