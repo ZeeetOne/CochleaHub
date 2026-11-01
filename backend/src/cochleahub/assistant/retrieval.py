@@ -20,6 +20,7 @@ import math
 import re
 from collections import Counter
 from dataclasses import asdict, dataclass
+from functools import lru_cache
 from pathlib import Path
 
 import numpy as np
@@ -204,13 +205,19 @@ def corpus_hash(chunks: list[Chunk], model: str) -> str:
     return h.hexdigest()[:16]
 
 
+@lru_cache
+def shared_embedder() -> "Embedder":
+    """One embedding model per process, shared by search and document ingestion."""
+    return Embedder()
+
+
 def open_index(store: str | None = None):
     """The index the assistant searches: PostgreSQL (D24) or the in-memory one (D19)."""
     if (store or settings.rag_store) == "postgres":
         from cochleahub.assistant.store import PgIndex
         from cochleahub.db.session import SessionLocal
 
-        return PgIndex(SessionLocal, Embedder())
+        return PgIndex(SessionLocal, shared_embedder())
     return build_index()
 
 

@@ -5,8 +5,8 @@ from logging.config import fileConfig
 from sqlalchemy import create_engine
 
 from alembic import context
-from cochleahub.config import settings
 from cochleahub.assistant.store import RagBase
+from cochleahub.config import settings
 from cochleahub.db.models import Base
 
 config = context.config

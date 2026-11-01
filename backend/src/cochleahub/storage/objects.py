@@ -37,3 +37,10 @@ class ObjectStore:
         return self.client.generate_presigned_url(
             "get_object", Params={"Bucket": self.bucket, "Key": key}, ExpiresIn=expires_s
         )
+
+    def put_bytes(self, data: bytes, key: str, content_type: str) -> str:
+        self.client.put_object(Bucket=self.bucket, Key=key, Body=data, ContentType=content_type)
+        return key
+
+    def delete(self, key: str) -> None:
+        self.client.delete_object(Bucket=self.bucket, Key=key)
