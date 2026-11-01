@@ -116,9 +116,10 @@ TOOLS: list[dict[str, Any]] = [
     },
     {
         "name": "search_docs",
-        "description": "Search CochleaHub documentation: what each measurement means, the "
+        "description": "Search CochleaHub documentation and the documents users uploaded to "
+        "the library (protocols, guidelines, papers): what each measurement means, the "
         "dataset, QC flag codes, design decisions with their literature basis, validation "
-        "results, and how to use the dashboard. Use for any 'what/why/how' question.",
+        "results, how to use the dashboard. Use for any 'what/why/how' question.",
         "input_schema": {
             "type": "object",
             "properties": {"query": {"type": "string"}},

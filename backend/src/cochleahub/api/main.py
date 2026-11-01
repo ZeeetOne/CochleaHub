@@ -3,7 +3,8 @@
 All data routes live under `/api/v1` and are GET-only. Every run-derived result carries its
 provenance (run id, pipeline version, QC status) [Margeta2022]. The same routes are the tools
 of the AI assistant (stage 7), which therefore can only read versioned results; its own
-`POST /assistant/chat` writes nothing but the conversation log.
+`POST /assistant/chat` writes nothing but the conversation log. The one mutable resource is the
+document library (`/documents`, D25), which feeds the assistant's retrieval index.
 """
 
 from typing import Annotated
@@ -17,7 +18,7 @@ from sqlalchemy.orm import Session
 from cochleahub import __version__
 from cochleahub.api import API_PREFIX
 from cochleahub.api.deps import get_session, get_store
-from cochleahub.api.routers import assistant, compare, runs, specimens
+from cochleahub.api.routers import assistant, compare, documents, runs, specimens
 from cochleahub.api.schemas import Health
 from cochleahub.config import settings
 from cochleahub.storage.objects import ObjectStore
@@ -72,4 +73,5 @@ v1.include_router(specimens.router)
 v1.include_router(runs.router)
 v1.include_router(compare.router)
 v1.include_router(assistant.router)
+v1.include_router(documents.router)
 app.include_router(v1)
