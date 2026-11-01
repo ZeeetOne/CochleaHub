@@ -40,6 +40,15 @@ Keys (e.g. `[Margeta2022]`) are used in `docs/DECISIONS.md` and in code comments
 - **[Noble2008]** Noble JH, et al. Automatic segmentation of the facial nerve and chorda tympani
   in CT images using spatially dependent feature values. *Medical Physics* 35(12):5375–5384,
   2008. PMC2673604
+- **[Mayo2018]** Mayo CS, et al. American Association of Physicists in Medicine Task Group 263:
+  standardizing nomenclatures in radiation oncology. *Int J Radiat Oncol Biol Phys*
+  2018;100(4):1057–1066. doi:10.1016/j.ijrobp.2017.12.013
+- **[Fedorov2016]** Fedorov A, et al. DICOM for quantitative imaging biomarker development: a
+  standards based approach to sharing clinical data and structured PET/CT analysis results in
+  head and neck cancer research. *PeerJ* 2016;4:e2057. doi:10.7717/peerj.2057
+- **[Isensee2021]** Isensee F, Jaeger PF, Kohl SAA, Petersen J, Maier-Hein KH. nnU-Net: a
+  self-configuring method for deep learning-based biomedical image segmentation.
+  *Nat Methods* 2021;18(2):203–211. doi:10.1038/s41592-020-01008-z
 - **[Noble2011]** Noble JH, et al. Automatic segmentation of intracochlear anatomy in conventional
   CT. *IEEE Trans Biomed Eng* 58(9):2625–2632, 2011. doi:10.1109/TBME.2011.2160262
 - **[Hussain2021]** Hussain R, et al. Automatic segmentation of inner ear on CT-scan using
@@ -58,6 +67,9 @@ Keys (e.g. `[Margeta2022]`) are used in `docs/DECISIONS.md` and in code comments
 
 - **[Lorensen1987]** Lorensen WE, Cline HE. Marching cubes: a high resolution 3D surface
   construction algorithm. *Computer Graphics (SIGGRAPH '87)* 21(4):163–169, 1987.
+- **[Lewiner2003]** Lewiner T, Lopes H, Vieira AW, Tavares G. Efficient implementation of
+  marching cubes' cases with topological guarantees. *J Graphics Tools* 8(2):1–15, 2003.
+  doi:10.1080/10867651.2003.10487582 (scikit-image's default marching cubes)
 - **[Taubin1995]** Taubin G. A signal processing approach to fair surface design.
   *SIGGRAPH '95*, 351–358, 1995.
 

@@ -4,12 +4,12 @@ Research web platform that turns temporal-bone CT and segmentations into anatomi
 measurements, 3D models and cited natural-language answers, for cochlear implant research.
 
 Built on the public [OpenEar](https://doi.org/10.1038/sdata.2018.297) dataset (Sieber et al.,
-2019), starting with specimen **ZETA** (one cadaveric right temporal bone). The architecture
+2019), with specimens **ZETA** and **EPSILON** (cadaveric temporal bones). The architecture
 follows the published Nautilus platform (Margeta et al., 2022). Every design decision is traced
 to a paper in [`docs/DECISIONS.md`](docs/DECISIONS.md), and where no paper exists the entry says
 so.
 
-> **Not a clinical tool.** No medical recommendations. Data come from one cadaveric specimen and
+> **Not a clinical tool.** No medical recommendations. Data come from two cadaveric specimens and
 > do not represent population statistics.
 
 ## Architecture

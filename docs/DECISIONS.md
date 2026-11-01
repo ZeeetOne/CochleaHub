@@ -161,7 +161,10 @@ says so.
   | Code | Severity | Rule |
   | --- | --- | --- |
   | RUN_NOT_COMPLETED, STRUCTURE_FAILED | error | pipeline status / per-structure exception |
-  | MESH_NOT_WATERTIGHT | error | full-resolution mesh not closed |
+  | MESH_NOT_WATERTIGHT | error | full-resolution mesh has open edges (a hole) |
+  | MESH_NON_MANIFOLD | info | edges shared by four faces; still closed (D26) |
+  | UNMAPPED_STRUCTURE, DUPLICATE_STRUCTURE | warning, error | label not in the structure catalogue, or two labels for one structure (D26) |
+  | STRUCTURE_RENAMED, STRUCTURE_NOT_SEGMENTED | info | source label read as a canonical name; catalogue structure absent (D26) |
   | SLICER_VOXEL_MISMATCH, SLICER_VOLUME_MISMATCH | error | voxel count differs, or volume > 1% |
   | AREA_METHOD_SENSITIVE | warning | area differs from Slicer by > 10% (D7 finding) |
   | MESH_VOLUME_MISMATCH | warning | mesh vs voxel volume > 2% |
@@ -588,4 +591,86 @@ says so.
 - **Consequences:** this is the only mutable resource besides the assistant's log; measurement
   data stay read-only. The public demo has no user accounts (only basic auth at the edge), so
   anyone with the demo password can upload or delete documents.
+
+## D26 — Several specimens: one folder each, structure names mapped onto a catalogue (accepted, stage 8)
+
+- **Context:** a second OpenEar specimen, EPSILON, was added. The owner reorganised `Dataset/`
+  into one folder per specimen (`Dataset/ZETA/`, `Dataset/EPSILON/`) and removed the unused
+  micro-slicing folders. Names are free text and differ between the two specimens: files
+  (`CBCT_Embedded.nrrd` vs `CBCT_EMBEDDED.nrrd`, `01_Scala Tympani.ply` vs `Scala_Tympani.ply`),
+  segments (ZETA "Carotis Interna", "Sinus Dura", "External Auditory Canal"; EPSILON "Carotis",
+  "Sinus - Dura", "EAC", and the misspelt "Vestibulcochlear Nerve"). The terminology tag 3D
+  Slicer stores with each segment is the default "Tissue" (SRT T-D0050) for all 26 segments,
+  so it identifies nothing. Matching by name would silently split one structure into two, and
+  the Compare page would compare nothing.
+- **Decision:**
+  - One canonical list of 13 structures (`pipeline/structures.py`). Each structure has UBERON
+    ids (checked through the EBI Ontology Lookup Service), plus a SNOMED CT id where the DICOM
+    anatomic code list shipped with 3D Slicer has one (internal carotid artery, external
+    auditory canal, temporal bone). The canonical names are the ones measurements, the API and
+    the dashboard already used, so ZETA's stored results keep their meaning.
+  - Labels are normalised (case, numeric prefixes, `_` and `-`, spacing) and matched against
+    the canonical names and a list of reviewed synonyms. Nothing is guessed: an unknown label
+    keeps its own name, is not compared across specimens, and raises the QC warning
+    `UNMAPPED_STRUCTURE` with the closest canonical names as suggestions. Two labels for one
+    structure raise the error `DUPLICATE_STRUCTURE`, and neither is used under that name. Each
+    rename is recorded (`STRUCTURE_RENAMED`, info) together with the source label. A person
+    reviews a new label once by adding a synonym; after that every specimen with that label maps
+    automatically.
+  - Files are found case-insensitively in `Dataset/<SPECIMEN>/`. The ear side comes from the
+    dataset (the CBCT folder name: ZETA's says "rechts"). When the dataset does not state it,
+    the side stays unknown instead of being inferred. Neither the DICOM headers (Laterality
+    empty) nor the OpenEar paper [Sieber2019] state EPSILON's side.
+  - The deployment ships every specimen with a validated run, and its bootstrap loads each one.
+- **Paper basis:** radiation oncology met the same problem, with structure names that differ
+  between clinics and planning systems. Its answer was one standard nomenclature onto which
+  local names are mapped [Mayo2018]. DICOM Segmentation objects identify segments by coded
+  terminology rather than free text [Fedorov2016]. In a production pipeline, our own
+  segmentation model would emit a fixed label set (e.g. nnU-Net [Isensee2021]; for the cochlea
+  [Noble2011]), so mapping is needed only for external data.
+- **Verified:** ZETA's measurements and validation are identical before and after the change
+  (timestamps and the new mapping fields aside). Both specimens map all 13 segments and all 13
+  meshes, with no unmapped or duplicate labels. EPSILON has 4 renamed segments and 9 renamed
+  meshes.
+- **Finding while adding EPSILON:** QC first raised the error `MESH_NOT_WATERTIGHT` for
+  EPSILON's cochleovestibular nerve. The mesh has no open edges. 21 edges are shared by four
+  faces, where voxels of the segmentation touch only along an edge. scikit-image's marching
+  cubes defaults to Lewiner et al.'s variant [Lewiner2003], not the original
+  [Lorensen1987] cited in D13. That variant guarantees a manifold surface for general data. On
+  a binary mask at level 0.5, saddle values equal the isovalue exactly. This degenerate case is
+  our explanation, measured but not taken from the paper; the original algorithm gives a closed
+  manifold mesh here. The surface is still closed: its volume differs from the voxel volume by
+  -0.33 %. So QC now separates the two cases: open edges are a hole (error
+  `MESH_NOT_WATERTIGHT`), while edges shared by four faces only are reported as
+  `MESH_NON_MANIFOLD` (info), and the mesh volume is kept. Switching algorithms would have
+  changed every validated ZETA mesh value, so the algorithm stays. ZETA's bone mesh has the
+  same pattern (54 edges), which the old check never reported because the bone is meshed on a
+  coarse grid.
+- **Measured (latest runs):**
+
+  | | ZETA | EPSILON |
+  |---|---|---|
+  | Scala tympani volume (mm³) | 34.65 | 33.78 |
+  | Cochlea A / B / height (mm) | 8.97 / 6.81 / 4.36 | 8.97 / 7.26 / 4.46 |
+  | Facial nerve volume (mm³) | 47.43 | 64.69 |
+  | Facial nerve → scala tympani (mm) | 1.18 | 0.14 |
+  | Chorda tympani → scala tympani (mm) | 3.65 | 6.17 |
+  | Side | right | unknown |
+  | QC | pass with warnings (5) | pass with warnings (5) |
+
+  EPSILON's facial nerve lies far closer to the cochlea, and its volume and extent are larger.
+  Its Slicer segment id ("Vestibulcochlear Nerve -_1") suggests it was created from a copy of the
+  cochleovestibular nerve segment; whether that affects its boundary was not checked. These are the dataset's segmentations, used as given (D2). Two cadaveric
+  specimens are not a population: the Compare page still compares each specimen with published
+  ranges.
+- **Consequences:** the assistant's system prompt no longer names a single specimen; the 25
+  assistant evaluation cases (D12) were run before this change. Adding an OpenEar specimen now
+  needs no code: extract it to `Dataset/<NAME>/` and run `inspect`, `measure`, `validate`,
+  `load` and `upload-dicom` with `--specimen <name>`. A new label needs one reviewed synonym.
+- **Retrieval after this change** (`eval-retrieval --store postgres`, labels unchanged): the corpus
+  grew from 91 to 97 passages with D24–D26 and the two-specimen dataset text. Hybrid hit@1 went
+  from 80 % to 70 %, hit@5 from 93 % to 97 %, and MRR from 0.86 to 0.81. q07 ("how many ears or
+  donors") rose from rank 6 to 1. Six queries fell one or two ranks behind a new decision entry.
+  For q16 that entry, D24, does answer the question but is not in its labels. The labels were not
+  edited after seeing these results.
 
