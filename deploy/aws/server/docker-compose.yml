@@ -3,7 +3,7 @@
 # published port. Production would move PostgreSQL to RDS and Orthanc behind a private subnet.
 services:
   postgres:
-    image: postgres:17
+    image: pgvector/pgvector:0.8.7-pg17-trixie  # PostgreSQL 17 + pgvector (also on Amazon RDS)
     restart: unless-stopped
     environment:
       POSTGRES_USER: cochleahub

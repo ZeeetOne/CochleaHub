@@ -9,7 +9,7 @@
 #   docker compose -f infra/docker-compose.yml --env-file .env --profile local-llm up -d
 services:
   postgres:
-    image: postgres:17
+    image: pgvector/pgvector:0.8.7-pg17-trixie  # PostgreSQL 17 + pgvector (also on Amazon RDS)
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-cochleahub}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cochleahub}
