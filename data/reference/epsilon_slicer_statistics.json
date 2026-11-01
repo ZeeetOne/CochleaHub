@@ -1,0 +1,111 @@
+{
+  "tool": "3D Slicer Segment Statistics",
+  "slicer_version": "5.12.4",
+  "closed_surface_smoothing": "0.5",
+  "segments": [
+    {
+      "segment_id": "Segment_1",
+      "name": "Bone",
+      "voxel_count": 17198582,
+      "volume_mm3": 33590.98046875,
+      "surface_volume_mm3": 33656.66835173113,
+      "surface_area_mm2": 33151.52289886575
+    },
+    {
+      "segment_id": "Segment_1_2",
+      "name": "Scala Tympani",
+      "voxel_count": 17297,
+      "volume_mm3": 33.783203125,
+      "surface_volume_mm3": 33.2462806624784,
+      "surface_area_mm2": 115.49385278452176
+    },
+    {
+      "segment_id": "Segment_2",
+      "name": "Scala Vestibuli",
+      "voxel_count": 85563,
+      "volume_mm3": 167.115234375,
+      "surface_volume_mm3": 165.9514076009212,
+      "surface_area_mm2": 393.2635970549081
+    },
+    {
+      "segment_id": "Segment_3",
+      "name": "Malleus",
+      "voxel_count": 7839,
+      "volume_mm3": 15.310546875,
+      "surface_volume_mm3": 15.080460101080245,
+      "surface_area_mm2": 42.72294468477475
+    },
+    {
+      "segment_id": "Segment_4",
+      "name": "Incus",
+      "voxel_count": 9091,
+      "volume_mm3": 17.755859375,
+      "surface_volume_mm3": 17.512240871036447,
+      "surface_area_mm2": 46.708213053735314
+    },
+    {
+      "segment_id": "Segment_5",
+      "name": "Stapes",
+      "voxel_count": 1001,
+      "volume_mm3": 1.955078125,
+      "surface_volume_mm3": 1.589252647437264,
+      "surface_area_mm2": 14.146857700542792
+    },
+    {
+      "segment_id": "Segment_6",
+      "name": "Vestibulcochlear Nerve",
+      "voxel_count": 95024,
+      "volume_mm3": 185.59375,
+      "surface_volume_mm3": 184.40022911654435,
+      "surface_area_mm2": 276.1626142102746
+    },
+    {
+      "segment_id": "Vestibulcochlear Nerve -_1",
+      "name": "Facial Nerve",
+      "voxel_count": 33123,
+      "volume_mm3": 64.693359375,
+      "surface_volume_mm3": 64.03907377310163,
+      "surface_area_mm2": 171.24500745536133
+    },
+    {
+      "segment_id": "Segment_7",
+      "name": "Carotis",
+      "voxel_count": 151586,
+      "volume_mm3": 296.06640625,
+      "surface_volume_mm3": 295.8422753209873,
+      "surface_area_mm2": 264.87312635188204
+    },
+    {
+      "segment_id": "Segment_8",
+      "name": "Chorda Tympani",
+      "voxel_count": 2011,
+      "volume_mm3": 3.927734375,
+      "surface_volume_mm3": 3.5145451415498004,
+      "surface_area_mm2": 23.407490906688558
+    },
+    {
+      "segment_id": "Segment_12",
+      "name": "Tympanic Membrane",
+      "voxel_count": 12641,
+      "volume_mm3": 24.689453125,
+      "surface_volume_mm3": 23.991813058060888,
+      "surface_area_mm2": 194.59766927116493
+    },
+    {
+      "segment_id": "Segment_10",
+      "name": "Sinus - Dura",
+      "voxel_count": 22333321,
+      "volume_mm3": 43619.767578125,
+      "surface_volume_mm3": 43617.64300321316,
+      "surface_area_mm2": 9797.883959719164
+    },
+    {
+      "segment_id": "Segment_9",
+      "name": "EAC",
+      "voxel_count": 333405,
+      "volume_mm3": 651.181640625,
+      "surface_volume_mm3": 650.6843184464612,
+      "surface_area_mm2": 543.830514024747
+    }
+  ]
+}
