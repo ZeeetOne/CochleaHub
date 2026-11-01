@@ -38,7 +38,7 @@ export function SpecimenPage() {
           <div className="page-head">
             <div>
               <h1>
-                Specimen {s.id.toUpperCase()} <span className="prov">· {s.dataset} · {s.side} ear</span>
+                Specimen {s.id.toUpperCase()} <span className="prov">· {s.dataset} · {s.side ? `${s.side} ear` : 'side unknown'}</span>
               </h1>
               <p className="lede">{s.description}</p>
             </div>
