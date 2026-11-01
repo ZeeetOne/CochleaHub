@@ -10,10 +10,22 @@
 # few dollars a day and is meant to be destroyed after a demo (`terraform destroy`).
 
 terraform {
-  required_version = ">= 1.6"
+  required_version = ">= 1.11" # S3-native state locking (use_lockfile)
   required_providers {
     aws    = { source = "hashicorp/aws", version = "~> 6.0" }
     random = { source = "hashicorp/random", version = "~> 3.6" }
+  }
+
+  # State lives in S3, not on one laptop (D27). The bucket is created once outside this
+  # configuration, so the state never depends on resources it manages: private, versioned,
+  # AES-256 encrypted, TLS-only, old versions expire after 90 days. DynamoDB locking is
+  # deprecated; the lock is a file next to the state.
+  backend "s3" {
+    bucket       = "cochleahub-tfstate-16457b0b"
+    key          = "cochleahub/terraform.tfstate"
+    region       = "eu-north-1"
+    encrypt      = true
+    use_lockfile = true
   }
 }
 
