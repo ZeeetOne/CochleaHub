@@ -197,6 +197,24 @@ def step_bootstrap():
         sys.exit(1)
 
 
+def document_round_trip(c) -> bool:
+    """Upload a small reference document, wait until it is indexed, then delete it (D25)."""
+    body = f"# Smoke test\n\nDeployment check {time.time_ns()}; safe to delete.\n".encode()
+    r = c.post("/api/v1/documents", files={"file": ("smoke-test.md", body)},
+               data={"no_patient_data": "true", "title": "Smoke test"})
+    if r.status_code != 202:
+        return False
+    doc_id = r.json()["id"]
+    status = "queued"
+    for _ in range(30):
+        status = c.get(f"/api/v1/documents/{doc_id}").json()["status"]
+        if status in ("indexed", "failed"):
+            break
+        time.sleep(2)
+    deleted = c.delete(f"/api/v1/documents/{doc_id}").status_code == 204
+    return status == "indexed" and deleted
+
+
 def step_smoke():
     o = outputs()
     auth = ("cochleahub", tfvars()["basic_auth_password"])
@@ -220,6 +238,7 @@ def step_smoke():
                        c.post("/dicom-web/studies", content=b"x").status_code in (403, 405)))
         checks.append(("assistant ready",
                        c.get("/api/v1/assistant/status").json()["backends"]["claude"]["available"]))
+        checks.append(("document upload -> indexed -> deleted", document_round_trip(c)))
     for name, ok in checks:
         print(f"{'PASS' if ok else 'FAIL'}  {name}")
     print(f"\n{o['url']}  (user cochleahub, password in deploy/aws/terraform/secrets.auto.tfvars)")
