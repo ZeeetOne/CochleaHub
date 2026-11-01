@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { NavLink, Route, Routes } from 'react-router-dom'
 import { useSpecimens } from './api/client'
 import { ComparePage } from './pages/ComparePage'
+import { DocumentsPage } from './pages/DocumentsPage'
 import { OperationsPage } from './pages/OperationsPage'
 import { Overview } from './pages/Overview'
 
@@ -33,6 +34,9 @@ function Sidebar() {
       <NavLink to="/assistant" className={link}>
         Assistant
       </NavLink>
+      <NavLink to="/documents" className={link}>
+        Documents
+      </NavLink>
       <div className="sidebar-foot">Research use only. Not a medical device.</div>
     </nav>
   )
@@ -50,6 +54,7 @@ export default function App() {
             <Route path="/compare" element={<ComparePage />} />
             <Route path="/operations" element={<OperationsPage />} />
             <Route path="/assistant" element={<AssistantPage />} />
+            <Route path="/documents" element={<DocumentsPage />} />
             <Route path="*" element={<div className="notice">Page not found.</div>} />
           </Routes>
         </Suspense>

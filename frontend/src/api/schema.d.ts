@@ -339,6 +339,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Documents */
+        get: operations["list_documents_api_v1_documents_get"];
+        put?: never;
+        /** Upload */
+        post: operations["upload_api_v1_documents_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/documents/{doc_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Document */
+        get: operations["document_api_v1_documents__doc_id__get"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete Document
+         * @description Removes the document, its passages (cascade) and the stored original.
+         */
+        delete: operations["delete_document_api_v1_documents__doc_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -365,6 +404,22 @@ export interface components {
             where: string;
             /** Reason */
             reason?: string | null;
+        };
+        /** Body_upload_api_v1_documents_post */
+        Body_upload_api_v1_documents_post: {
+            /**
+             * File
+             * @description PDF, DOCX, TXT or MD, up to 20 MB
+             */
+            file: string;
+            /**
+             * No Patient Data
+             * @description Uploader attests: no patient-identifiable information in this file
+             * @default false
+             */
+            no_patient_data: boolean;
+            /** Title */
+            title?: string | null;
         };
         /** ChatRequest */
         ChatRequest: {
@@ -445,6 +500,66 @@ export interface components {
             provenance: components["schemas"]["Provenance"];
             /** Distances */
             distances: components["schemas"]["Distance"][];
+        };
+        /** Document */
+        Document: {
+            /** Id */
+            id: number;
+            /** Title */
+            title: string;
+            /** Source */
+            source: string;
+            /** Status */
+            status: string;
+            /** Error */
+            error: string | null;
+            /** Filename */
+            filename: string | null;
+            /** Content Type */
+            content_type: string | null;
+            /** Size Bytes */
+            size_bytes: number | null;
+            /** Sections */
+            sections: number | null;
+            /** Chunk Count */
+            chunk_count: number;
+            /** Uploaded At */
+            uploaded_at: string | null;
+            /** Indexed At */
+            indexed_at: string | null;
+        };
+        /** DocumentDetail */
+        DocumentDetail: {
+            /** Id */
+            id: number;
+            /** Title */
+            title: string;
+            /** Source */
+            source: string;
+            /** Status */
+            status: string;
+            /** Error */
+            error: string | null;
+            /** Filename */
+            filename: string | null;
+            /** Content Type */
+            content_type: string | null;
+            /** Size Bytes */
+            size_bytes: number | null;
+            /** Sections */
+            sections: number | null;
+            /** Chunk Count */
+            chunk_count: number;
+            /** Uploaded At */
+            uploaded_at: string | null;
+            /** Indexed At */
+            indexed_at: string | null;
+            /** Passages */
+            passages: {
+                [key: string]: unknown;
+            }[];
+            /** Download Url */
+            download_url: string | null;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -1329,6 +1444,130 @@ export interface operations {
                     "application/json": unknown;
                     "text/event-stream": unknown;
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_documents_api_v1_documents_get: {
+        parameters: {
+            query?: {
+                source?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Document"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_api_v1_documents_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_api_v1_documents_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Document"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    document_api_v1_documents__doc_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                doc_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_document_api_v1_documents__doc_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                doc_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {

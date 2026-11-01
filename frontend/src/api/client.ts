@@ -207,3 +207,47 @@ export async function askAssistant(
     }
   }
 }
+
+// --- document library (D25) -------------------------------------------------------------------
+
+export type LibraryDocument = Schemas['Document']
+
+export const useDocuments = () =>
+  useQuery({
+    queryKey: ['documents'],
+    queryFn: () => get<LibraryDocument[]>('/documents'),
+    // poll while an upload is still being processed
+    refetchInterval: (q) =>
+      q.state.data?.some((d) => d.status === 'queued' || d.status === 'processing') ? 2000 : false,
+  })
+
+async function send(path: string, init: RequestInit): Promise<Response> {
+  const res = await fetch(`${BASE}${path}`, init)
+  if (!res.ok) {
+    let detail = res.statusText
+    try {
+      detail = (await res.json()).detail ?? detail
+    } catch {
+      /* keep status text */
+    }
+    throw new ApiError(res.status, detail)
+  }
+  return res
+}
+
+export async function uploadDocument(file: File, noPatientData: boolean, title?: string) {
+  const form = new FormData()
+  form.append('file', file)
+  form.append('no_patient_data', String(noPatientData))
+  if (title) form.append('title', title)
+  return (await send('/documents', { method: 'POST', body: form }).then((r) => r.json())) as LibraryDocument
+}
+
+export async function deleteDocument(id: number) {
+  await send(`/documents/${id}`, { method: 'DELETE' })
+}
+
+export async function documentDownloadUrl(id: number) {
+  const detail = (await send(`/documents/${id}`, {}).then((r) => r.json())) as Schemas['DocumentDetail']
+  return detail.download_url
+}

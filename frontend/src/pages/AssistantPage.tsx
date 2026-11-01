@@ -1,6 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
 import { useRef, useState } from 'react'
 import Markdown from 'react-markdown'
+import { Link } from 'react-router-dom'
 import remarkGfm from 'remark-gfm'
 import {
   askAssistant,
@@ -52,7 +53,13 @@ function SourceList({ sources }: { sources: AssistantSource[] }) {
       {sources.map((s, i) => (
         <li key={s.index} id={`src-${i + 1}`}>
           <span className="source-title">{s.title}</span>
-          <div className="prov mono">{s.source.replace(/^api:/, '')}</div>
+          <div className="prov mono">
+            {s.source.startsWith('upload:') ? (
+              <Link to="/documents">uploaded document</Link>
+            ) : (
+              s.source.replace(/^api:/, '')
+            )}
+          </div>
         </li>
       ))}
     </ol>

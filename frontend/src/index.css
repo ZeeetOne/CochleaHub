@@ -509,3 +509,20 @@ button.btn:disabled {
   opacity: 0.5;
   cursor: default;
 }
+
+.text-input {
+  font: inherit;
+  color: var(--text-primary);
+  background: var(--surface-1);
+  border: 1px solid var(--axis);
+  border-radius: 8px;
+  padding: 6px 10px;
+  min-width: 320px;
+}
+
+.check {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  cursor: pointer;
+}
