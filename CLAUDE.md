@@ -23,7 +23,8 @@ in Indonesian; code, comments, commits and docs are in English.
 - `backend/src/cochleahub/pipeline` — SimpleITK pipeline (stages 1–3)
 - `backend/src/cochleahub/api` — FastAPI, read-only, results tagged with pipeline version (stage 5)
 - `backend/src/cochleahub/db` — SQLAlchemy models (stage 4)
-- `backend/src/cochleahub/assistant` — LLM tool calling + RAG (stage 7)
+- `backend/src/cochleahub/assistant` — LLM tool calling + RAG index in PostgreSQL/pgvector (stage 7, D24)
+- `backend/src/cochleahub/documents` — uploaded-document extraction and chunking (D25; no patient data)
 - `frontend/` — Vite + React + TypeScript dashboard (stage 6)
 - `backend/src/cochleahub/storage` — S3 object store, DICOM Part 10 rewrite + Orthanc upload (stage 4)
 - `backend/alembic` — schema migrations

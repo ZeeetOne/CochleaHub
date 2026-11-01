@@ -107,6 +107,12 @@ Keys (e.g. `[Margeta2022]`) are used in `docs/DECISIONS.md` and in code comments
 - **[Cormack2009]** Cormack GV, Clarke CLA, Büttcher S. Reciprocal rank fusion outperforms
   Condorcet and individual rank learning methods. *SIGIR 2009*, 758–759.
   doi:10.1145/1571941.1572114
+- **[Kresevic2024]** Kresevic S, Giuffrè M, Ajcevic M, Accardo A, Crocè LS, Shung DL.
+  Optimization of hepatological clinical guidelines interpretation by large language models: a
+  retrieval augmented generation-based framework. *npj Digit Med* 2024;7:102.
+  doi:10.1038/s41746-024-01091-y
+- **[Unlu2024]** Unlu O, et al. Retrieval-augmented generation–enabled GPT-4 for clinical trial
+  screening. *NEJM AI* 2024;1(7). doi:10.1056/AIoa2400181
 - **[Xiong2024]** Xiong G, Jin Q, Lu Z, Zhang A. Benchmarking retrieval-augmented generation for
   medicine. *Findings of ACL 2024*, 6233–6251. arXiv:2402.13178
 - **[Xiao2024]** Xiao S, et al. C-Pack: packed resources for general Chinese embeddings

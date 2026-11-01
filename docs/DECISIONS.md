@@ -555,3 +555,37 @@ says so.
   (which creates the extension) and the ingestion. Changing the embedding model's dimension
   needs a migration.
 
+## D25 — Document library: reference documents only, no patient data (accepted, stage 8)
+
+- **Context:** a clinical team using the assistant has its own reference material: protocols,
+  guidelines, papers, device manuals. These should be searchable without a code change. Patient
+  documents are a different problem.
+- **Decision:**
+  - `/documents` (API) and a Documents page let users upload PDF, DOCX, TXT or Markdown, up to
+    20 MB. The uploader must confirm that the file holds no patient-identifiable information;
+    the API refuses the upload without it. The file type is checked by content, not only by
+    extension. Identical files are detected by hash.
+  - The original goes to S3. Extraction, chunking, local embedding and indexing then run in the
+    background into the same PostgreSQL index as the built-in documentation (D24). The status
+    moves queued → processing → indexed, or failed with a reason (e.g. a scanned PDF without a
+    text layer; there is no OCR).
+  - Tables are extracted as Markdown tables. Passages follow pages (PDF) or headings (DOCX,
+    Markdown), are split at paragraph boundaries when long, and carry "document › page N" as
+    their title, so the assistant cites the page.
+  - Deleting a document removes its passages and its file. Built-in documentation is managed
+    by `cochleahub index-docs` and cannot be deleted from the UI.
+- **Paper basis:**
+  - Converting a guideline's non-text content (tables) into text was part of what raised
+    accuracy from 43 % to 99 % on clinical-guideline questions [Kresevic2024].
+  - MedRAG uses passages with their document title prepended [Xiong2024]; Almanac cites the
+    retrieved source for every claim [Zakka2024].
+  - RAG over patient notes has been done, but inside a hospital, on its record system, with
+    clinician review [Unlu2024]. That setting is what patient documents would need.
+- **Not built (by design):** patient documents. They need authentication and per-user access
+  control, de-identification, audit of who read what, guaranteed deletion, and an institutional
+  data agreement. Processing runs in the API process; at scale it would move to a queue worker
+  (e.g. SQS) so uploads survive restarts. No paper; these are engineering choices.
+- **Consequences:** this is the only mutable resource besides the assistant's log; measurement
+  data stay read-only. The public demo has no user accounts (only basic auth at the edge), so
+  anyone with the demo password can upload or delete documents.
+

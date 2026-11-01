@@ -39,7 +39,7 @@ flowchart LR
     end
 
     subgraph ui["6 Dashboard · React + TypeScript"]
-        UI["Overview · Specimen 3D + CT<br/>Compare · Operations · Assistant"]
+        UI["Overview · Specimen 3D + CT<br/>Compare · Operations<br/>Assistant · Documents"]
     end
 
     DS --> P1
@@ -227,14 +227,14 @@ Carotis Interna.
 - [x] **4. Storage (local, AWS-compatible)** — CBCT as DICOM Part 10 → Orthanc (DICOMweb); meshes → S3 API; runs, measurements, QC, validation → PostgreSQL (Alembic)
 - [x] **5. Backend API** — read-only `/api/v1` with provenance on every result → [API](#api)
 - [x] **6. Dashboard & viewer** — Overview, Specimen (3D anatomy with measured distances, cochlea vs. published range, CT via Cornerstone3D + DICOMweb), Compare, Operations
-- [x] **7. AI assistant** — agent loop over the API + hybrid RAG with native citations; Claude or a local model; refuses clinical advice, says what is missing; every turn logged
+- [x] **7. AI assistant** — agent loop over the API + hybrid RAG in PostgreSQL (pgvector + full text) with native citations; a document library for protocols and papers (no patient data, page-level citations); Claude or a local model; refuses clinical advice, says what is missing; every turn logged
 - [x] **8. Evaluation & deploy** — assistant evaluation of both backends (with a measured mitigation round for the local model), retrieval evaluation, React vs. Grafana vs. Power BI comparison, AWS deployment (Terraform; verified end to end, `deploy.py stop`/`start` between demos)
 
 ### Later
 
-- **Document upload** for the assistant's knowledge base (protocols, papers, de-identified
-  case reports), with a staged ingestion pipeline. Patient reports need access control,
-  de-identification and deletion first; they will be designed before they are built.
+- **Patient documents** in the assistant's library. Uploads are reference documents only (D25);
+  patient reports need authentication, access control, de-identification, audit and guaranteed
+  deletion first.
 - **Request gate for the local model** (v2): classify requests for patient-specific clinical
   decisions before retrieval, in the style of input guards such as Llama Guard, and answer them
   with a fixed refusal. Measure it on new held-out cases, including legitimate questions that
