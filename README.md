@@ -153,46 +153,66 @@ sequenceDiagram
 
 ## Setup
 
-Requirements: Python ≥ 3.11, Node ≥ 20, Docker.
+Requirements: Python ≥ 3.11 (developed on 3.14), Node ≥ 20, Docker, about 12 GB of free disk
+for the download. 3D Slicer is optional: without it, validation reuses the committed Slicer
+results in `data/reference/`.
+
+**1. Code and data.** The dataset is not in the repository. Download the specimens from the
+OpenEar record on Zenodo ([doi:10.5281/zenodo.1473724](https://doi.org/10.5281/zenodo.1473724),
+CC BY 4.0): `ZETA.zip` (3.9 GB) and `EPSILON.zip` (4.0 GB). Extract each into its own folder,
+so that `Dataset/ZETA/06_Segmentation/Segmentation.seg.nrrd` exists. The micro-slicing folders
+`03_*` and `04_*` (about 9 GB per specimen) are not used and can be deleted.
 
 ```bash
-cp .env.example .env                       # DATASET_ROOT holds one folder per specimen (Dataset/ZETA, ...)
+git clone https://github.com/ZeeetOne/CochleaHub.git
+cd CochleaHub
+cp .env.example .env        # then set ANTHROPIC_API_KEY (and SLICER_EXE if you have 3D Slicer)
+```
 
-# backend
-cd backend
-python -m venv .venv
-.venv/Scripts/activate                     # Windows; use .venv/bin/activate on Linux/macOS
-pip install -e ".[dev]"
-cochleahub inspect                         # stage 1: verifies the dataset, writes the manifest
-cochleahub measure                         # stage 2: metrics, meshes, distances
-cochleahub validate                        # stage 3: Slicer + dataset-mesh comparison, QC report (SLICER_EXE optional)
-pytest
-# every command takes --specimen <id> (default zeta), e.g. cochleahub measure --specimen epsilon
+**2. Backend, storage and pipeline.** All commands run from the repository root.
 
-# infra (Postgres :5432, Orthanc :8042, S3 API :8333)
-docker compose -f infra/docker-compose.yml --env-file .env up -d
-cd backend
-alembic upgrade head                       # create / migrate the schema
-cochleahub load                            # stage 4: run + QC -> PostgreSQL, meshes -> S3
-cochleahub upload-dicom                    # stage 4: CBCT -> DICOM Part 10 -> Orthanc
-uvicorn cochleahub.api.main:app --reload   # stage 5: http://localhost:8000/docs
-cochleahub openapi                         # API schema -> docs/api/openapi.json
-cochleahub index-docs                      # stage 7: docs -> PostgreSQL retrieval index (local embeddings, idempotent)
-cochleahub eval-retrieval --store postgres # stage 8: retrieval evaluation (30 labelled questions)
-cochleahub eval-assistant --backend claude # stage 8: 25-case assistant evaluation
+```bash
+python -m venv backend/.venv
+backend/.venv/Scripts/activate              # Windows; use backend/.venv/bin/activate on Linux/macOS
+pip install -e "./backend[dev]"
 
-# assistant backends: set ANTHROPIC_API_KEY for Claude, and/or run a local model with
-# Ollama Desktop (set OLLAMA_MODELS to choose the model folder) ...
-ollama pull qwen3.5:4b
-# ... or in Docker: docker compose -f infra/docker-compose.yml --env-file .env --profile local-llm up -d ollama
+docker compose -f infra/docker-compose.yml --env-file .env up -d   # Postgres :5432, Orthanc :8042, S3 :8333
+(cd backend && alembic upgrade head)        # create / migrate the schema
 
-# frontend (needs the API on :8000 and Orthanc on :8042; Vite proxies /api and /dicom-web)
+for s in zeta epsilon; do                   # stages 1-4 for every specimen
+  cochleahub inspect --specimen $s          # verify the files, write the manifest
+  cochleahub measure --specimen $s          # metrics, meshes, distances
+  cochleahub validate --specimen $s         # Slicer + dataset-mesh comparison, QC report
+  cochleahub load --specimen $s             # run + QC -> PostgreSQL, meshes -> S3
+  cochleahub upload-dicom --specimen $s     # CBCT -> DICOM Part 10 -> Orthanc
+done
+cochleahub index-docs                       # docs -> PostgreSQL retrieval index (downloads the embedding model once)
+python -m pytest backend                    # tests
+
+(cd backend && uvicorn cochleahub.api.main:app --reload)   # API: http://localhost:8000/docs
+```
+
+**3. Dashboard** (in a second terminal; needs the API on :8000 and Orthanc on :8042).
+
+```bash
 cd frontend
 npm install
-npm run dev                                # http://localhost:5173
-npm run gen:api                            # regenerate API types after `cochleahub openapi`
+npm run dev                                 # http://localhost:5173
+```
 
-# Grafana comparison prototype (stage 8): http://localhost:3000
+**Optional.**
+
+```bash
+cochleahub openapi && (cd frontend && npm run gen:api)   # after an API change: schema -> TS types
+cochleahub eval-retrieval --store postgres  # retrieval evaluation (30 labelled questions)
+cochleahub eval-assistant --backend claude  # 25-case assistant evaluation (calls the Claude API)
+
+# local LLM instead of Claude: Ollama Desktop (OLLAMA_MODELS chooses the model folder) ...
+ollama pull qwen3.5:4b
+# ... or in Docker:
+docker compose -f infra/docker-compose.yml --env-file .env --profile local-llm up -d ollama
+
+# Grafana comparison prototype: http://localhost:3000
 docker exec -i infra-postgres-1 psql -U cochleahub -d cochleahub < infra/grafana/readonly.sql
 docker compose -f infra/docker-compose.yml --env-file .env --profile grafana up -d grafana
 ```
@@ -202,9 +222,13 @@ docker compose -f infra/docker-compose.yml --env-file .env --profile grafana up 
 structure catalogue does not know are flagged in QC (`UNMAPPED_STRUCTURE`) with suggestions;
 adding one reviewed synonym in `pipeline/structures.py` maps them from then on (D26).
 
-AWS deployment: see [`deploy/aws/deploy.py`](deploy/aws/deploy.py) and
+**AWS deployment:** `deploy/aws/deploy.py` runs each step (`secrets`, `infra`, `key`, `image`,
+`frontend`, `bundle`, `bootstrap`, `smoke`; then `stop`, `start` or `destroy`); see
 [stage 8](docs/architecture/08-evaluation-deploy.md). It ships every specimen with a validated
-run.
+run, so run the pipeline first. Terraform state (`terraform.tfstate`) and the generated secrets
+(`secrets.auto.tfvars`) are kept locally and are not in the repository. A fresh clone can create
+a new deployment, but it cannot manage one created from another machine unless that state is
+restored.
 
 ## API
 
