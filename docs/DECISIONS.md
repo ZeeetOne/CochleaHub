@@ -674,3 +674,32 @@ says so.
   For q16 that entry, D24, does answer the question but is not in its labels. The labels were not
   edited after seeing these results.
 
+## D27 — Terraform state in an encrypted S3 backend (accepted, stage 8)
+
+- **Context:** Terraform's state maps each resource in the code to the real AWS resource. It
+  lived only on the developer's laptop (`terraform.tfstate`). Losing that file would leave the
+  deployment unmanageable: `deploy.py stop`, `start` and `destroy` would no longer know the
+  instance, buckets or CloudFront distribution, and a new `apply` would try to create
+  duplicates. The state can also hold sensitive values, so it must not go into git.
+- **Decision:**
+  - The S3 backend holds the state at `s3://cochleahub-tfstate-16457b0b/cochleahub/terraform.tfstate`
+    in `eu-north-1`.
+  - The bucket is created once, outside this configuration, so the state never depends on
+    resources it manages. It blocks all public access, enforces bucket-owner ownership,
+    encrypts with SSE-S3 (AES-256), and denies non-TLS requests. Versioning is on, so an earlier
+    state can be restored. Noncurrent versions expire after 90 days, keeping the last 10.
+  - Locking uses S3's own lock file (`use_lockfile = true`), as HashiCorp's backend
+    documentation recommends: DynamoDB locking is deprecated there. Terraform ≥ 1.11 is
+    required.
+  - Migration used `terraform init -migrate-state`. The previous local state was kept as a
+    git-ignored backup.
+- **No paper:** remote, versioned, encrypted state is standard practice for Terraform. It
+  follows the backend documentation and the bucket-hardening defaults AWS recommends.
+- **Verified:** `terraform state list` reads 29 entries from S3. `terraform plan -refresh=false`
+  reports "No changes"; a refreshing plan needs the instance running, because a stopped instance
+  has no public DNS name for the CloudFront origin. The state object is AES-256 encrypted, and
+  lock files are created and removed on each operation.
+- **Consequences:** a fresh clone with AWS credentials can run `terraform init` and manage the
+  existing deployment. `secrets.auto.tfvars` (the demo password and origin secret) is still local
+  and must be kept by the owner. Destroying the deployment does not delete the state bucket.
+

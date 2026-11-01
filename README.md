@@ -225,10 +225,10 @@ adding one reviewed synonym in `pipeline/structures.py` maps them from then on (
 **AWS deployment:** `deploy/aws/deploy.py` runs each step (`secrets`, `infra`, `key`, `image`,
 `frontend`, `bundle`, `bootstrap`, `smoke`; then `stop`, `start` or `destroy`); see
 [stage 8](docs/architecture/08-evaluation-deploy.md). It ships every specimen with a validated
-run, so run the pipeline first. Terraform state (`terraform.tfstate`) and the generated secrets
-(`secrets.auto.tfvars`) are kept locally and are not in the repository. A fresh clone can create
-a new deployment, but it cannot manage one created from another machine unless that state is
-restored.
+run, so run the pipeline first. Terraform state lives in a private, versioned, encrypted S3
+bucket (D27), so any machine with the AWS credentials can run `terraform init` and manage the
+deployment. The generated secrets (`secrets.auto.tfvars`: demo password, origin secret) stay local
+and are not in the repository.
 
 ## API
 
@@ -295,5 +295,5 @@ CT) codes. EPSILON writes some differently ("Carotis", "EAC", "Sinus - Dura",
 
 ## Design basis
 
-[`docs/DECISIONS.md`](docs/DECISIONS.md) (decision log, D1–D26) and
+[`docs/DECISIONS.md`](docs/DECISIONS.md) (decision log, D1–D27) and
 [`docs/REFERENCES.md`](docs/REFERENCES.md) (bibliography).
