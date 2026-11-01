@@ -13,6 +13,8 @@ data/dicom/
 # Private reference documents (job posting, personal notes)
 Cochlear_Internships_2027.pdf
 *.docx
+# Application presentation, shared by email only
+docs/presentation/
 
 # Python
 .venv/
