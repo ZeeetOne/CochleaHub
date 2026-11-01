@@ -59,7 +59,10 @@ def quality_flags(measurements: dict, validation: dict) -> list[dict]:
                 frac, FRAGMENT_THRESHOLD,
             ))
         if s["mesh_volume_mm3"] is None and s["mesh"]["step_voxels"] == 1:
-            flags.append(Flag("error", "MESH_NOT_WATERTIGHT", name, "surface mesh is not closed"))
+            holes = s["mesh"].get("open_edges")
+            detail = f": {holes} open edges" if holes else ""
+            flags.append(Flag("error", "MESH_NOT_WATERTIGHT", name,
+                              f"surface mesh is not closed{detail}"))
         elif s["mesh_volume_mm3"] is not None:
             d = abs(s["mesh_volume_mm3"] - s["volume_mm3"]) / s["volume_mm3"]
             if d > MESH_VOLUME_TOLERANCE:
@@ -79,6 +82,12 @@ def quality_flags(measurements: dict, validation: dict) -> list[dict]:
                 flags.append(Flag(
                     "error", "SLICER_VOLUME_MISMATCH", name,
                     f"volume differs from Slicer by {r['volume_rel_diff']:+.1%}",
+        if n := s["mesh"].get("nonmanifold_edges"):
+            flags.append(Flag(
+                "info", "MESH_NON_MANIFOLD", name,
+                f"{n} mesh edges are shared by four faces where voxels touch only along an edge; "
+                "the surface is closed, so its volume is valid", n,
+            ))
                     r["volume_rel_diff"], VOLUME_TOLERANCE,
                 ))
             a = r["surface_area_rel_diff"]

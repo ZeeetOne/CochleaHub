@@ -55,3 +55,20 @@ def test_min_distance_between_spheres():
     b = mask_to_mesh(ellipsoid_mask((2, 2, 2), center_mm=(3.5, 0, 0)))
     # centres 7 mm apart, radii 2 mm -> 3 mm gap, within one voxel
     assert min_distance(a, b)["distance_mm"] == pytest.approx(3.0, abs=SPACING)
+
+
+def test_voxels_touching_along_an_edge_give_a_closed_non_manifold_mesh():
+    """Voxel pattern copied from EPSILON's cochleovestibular nerve: voxels touching only along
+    edges make marching cubes share an edge between four faces. The surface stays closed."""
+    from cochleahub.pipeline.mesh import closed_volume, edge_topology
+
+    pattern = [[[0, 0, 0], [0, 1, 0], [0, 0, 0]],
+               [[0, 0, 0], [0, 1, 0], [0, 0, 0]],
+               [[0, 0, 0], [1, 0, 1], [0, 1, 0]]]
+    a = np.pad(np.array(pattern, np.uint8), 2)
+    mask = Mask("test", (1, 1, 1), a, (0, 0, 0), (SPACING,) * 3, (0.0, 0.0, 0.0), LPS_FLIP)
+    mesh = mask_to_mesh(mask)
+    topology = edge_topology(mesh)
+    assert topology["open_edges"] == 0 and topology["nonmanifold_edges"] > 0
+    assert not mesh.is_watertight
+    assert closed_volume(mesh, topology) == pytest.approx(mesh.volume) and mesh.volume > 0

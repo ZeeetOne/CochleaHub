@@ -11,7 +11,12 @@ from cochleahub import __version__
 from cochleahub.pipeline.dataset import SpecimenFiles
 from cochleahub.pipeline.distance import min_distance
 from cochleahub.pipeline.measure import cochlear_dimensions, shape_metrics
-from cochleahub.pipeline.mesh import export_display_mesh, mask_to_mesh
+from cochleahub.pipeline.mesh import (
+    closed_volume,
+    edge_topology,
+    export_display_mesh,
+    mask_to_mesh,
+)
 from cochleahub.pipeline.segmentation import Segmentation
 
 # Large structures are meshed on a coarser grid; their exact surface is not measured
@@ -53,16 +58,18 @@ def measure_specimen(files: SpecimenFiles, output_dir: Path) -> dict:
                 mesh = mask_to_mesh(mask, step=step)
                 meshes[s.name] = mesh
                 structures[s.name] = {
+                topology = edge_topology(mesh)
                     "segment_id": s.segment_id,
                     "color": list(s.color),
                     **shape_metrics(mask),
                     # surface area only on full-resolution meshes
                     "surface_area_mm2": float(mesh.area) if step == 1 else None,
-                    "mesh_volume_mm3": float(mesh.volume) if mesh.is_watertight else None,
+                    "mesh_volume_mm3": closed_volume(mesh, topology),
                     "mesh": {
                         "step_voxels": step,
                         **export_display_mesh(mesh, mesh_dir / f"{slug(s.name)}.glb"),
                     },
+                        **topology,
                 }
             except Exception as e:  # noqa: BLE001 - record and keep measuring the others
                 run["errors"].append({"structure": s.name, "error": repr(e)})

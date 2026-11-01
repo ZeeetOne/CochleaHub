@@ -31,6 +31,22 @@ def mask_to_mesh(mask: Mask, step: int = 1) -> trimesh.Trimesh:
     return mesh
 
 
+def edge_topology(mesh: trimesh.Trimesh) -> dict:
+    """Open edges (used by one face: a hole) vs non-manifold edges (used by more than two).
+
+    scikit-image's marching cubes (Lewiner et al. variant) joins two voxels that touch only
+    along an edge with an edge shared by four faces. Such a surface is still closed, so its
+    volume is valid; only open edges mean a hole."""
+    _, uses = np.unique(mesh.edges_sorted, axis=0, return_counts=True)
+    return {"open_edges": int((uses == 1).sum()), "nonmanifold_edges": int((uses > 2).sum())}
+
+
+def closed_volume(mesh: trimesh.Trimesh, topology: dict) -> float | None:
+    if mesh.is_watertight or (topology["open_edges"] == 0 and mesh.is_winding_consistent):
+        return float(mesh.volume)
+    return None
+
+
 def export_display_mesh(mesh: trimesh.Trimesh, path: Path) -> dict:
     display = mesh
     if len(display.faces) > MAX_DISPLAY_FACES:
