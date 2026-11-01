@@ -12,8 +12,9 @@ in Indonesian; code, comments, commits and docs are in English.
    a choice, say so explicitly in the entry instead of inventing a citation.
 2. **One commit per logical change**, Conventional Commits style (`feat(pipeline): ...`,
    `docs: ...`). No `Co-Authored-By` trailers or any AI attribution in commits or PRs.
-3. **Never modify, move or delete anything in `Dataset/`** (read-only source data, including
-   `ZETA.zip`, which the owner keeps locally). Never commit it.
+3. **Never modify, move or delete anything in `Dataset/`** (read-only source data, one folder per
+   specimen: `Dataset/ZETA/`, `Dataset/EPSILON/`; the owner reorganised it on 2026-11-01 and
+   keeps no zip archives). Never commit it.
 4. Not a clinical tool: the assistant must refuse medical advice and abstain when data are missing.
 5. Outdated library or method? Check current best practice online; when it gives a real
    advantage, use it and record "paper X uses A; we use B because …" in DECISIONS.md.
@@ -50,7 +51,11 @@ docker compose -f infra/docker-compose.yml --env-file .env up -d
 docker compose -f infra/docker-compose.yml --env-file .env --profile local-llm up -d ollama  # local LLM
 ```
 
-## Data notes (OpenEar ZETA)
+## Data notes (OpenEar ZETA, EPSILON)
+
+- Paths below are relative to `Dataset/<SPECIMEN>/`. File and mesh names differ between
+  specimens (EPSILON: `CBCT_EMBEDDED.nrrd`, `Scala_Tympani.ply`, `Carotis.ply`; ZETA:
+  `CBCT_Embedded.nrrd`, `01_Scala Tympani.ply`, `12_Carotis Interna.ply`).
 
 - `06_Segmentation/Segmentation.seg.nrrd`: 13-layer binary vector image (one component per
   segment), 0.125 mm isotropic, RAS header. Full read ≈ 2.3 GB RAM — process per segment and
