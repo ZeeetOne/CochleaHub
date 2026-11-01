@@ -37,8 +37,13 @@ ROOT = Path(__file__).resolve().parents[2]
 TF = ROOT / "deploy" / "aws" / "terraform"
 SERVER = ROOT / "deploy" / "aws" / "server"
 TERRAFORM = shutil.which("terraform") or str(ROOT / ".tools" / "terraform.exe")
-SPECIMEN = "zeta"
-CBCT_AXIAL = ["01_CBCT_Unembedded/DICOM_rechts_20150826_Z", "02_CBCT_Embedded/DICOM_zeta_20150917_Z"]
+SPECIMEN = "zeta"  # the specimen the smoke test reads
+
+
+def specimens() -> list[str]:
+    """Every specimen with a validated run: the ones `cochleahub load` can store."""
+    return sorted(p.name.removesuffix("_validation.json")
+                  for p in (ROOT / "data" / "outputs").glob("*_validation.json"))
 
 
 def sh(*cmd, cwd=None, capture=False):
@@ -144,15 +149,26 @@ def step_frontend():
 def step_bundle():
     o = outputs()
     s3 = boto3.client("s3", region_name=o["region"])
+    from cochleahub.pipeline.dataset import axial_series, find_specimen
+
     files: list[tuple[Path, str]] = [(p, p.name) for p in SERVER.iterdir() if p.is_file()]
-    for name in (f"{SPECIMEN}_measurements.json", f"{SPECIMEN}_validation.json",
-                 f"{SPECIMEN}_manifest.json"):
-        files.append((ROOT / "data" / "outputs" / name, f"data/outputs/{name}"))
-    files += [(p, f"data/meshes/{SPECIMEN}/{p.name}")
-              for p in sorted((ROOT / "data" / "meshes" / SPECIMEN).glob("*.glb"))]
-    for rel in CBCT_AXIAL:  # only the axial series are archived (D8)
-        files += [(p, f"data/dataset/{rel}/{p.name}")
-                  for p in sorted((ROOT / "Dataset" / rel).glob("*.dcm"))]
+    listed = specimens()
+    spec_list = ROOT / "data" / "outputs" / "specimens.txt"
+    spec_list.write_text("\n".join(listed) + "\n", encoding="utf-8", newline="\n")
+    files.append((spec_list, "specimens.txt"))  # bootstrap loads each of these
+    for sp in listed:
+        for name in (f"{sp}_measurements.json", f"{sp}_validation.json", f"{sp}_manifest.json"):
+            files.append((ROOT / "data" / "outputs" / name, f"data/outputs/{name}"))
+        files += [(p, f"data/meshes/{sp}/{p.name}")
+                  for p in sorted((ROOT / "data" / "meshes" / sp).glob("*.glb"))]
+        found = find_specimen(ROOT / "Dataset", sp)
+        for group in ("01_CBCT_Unembedded", "02_CBCT_Embedded"):  # axial series only (D8)
+            series = axial_series(found, group)
+            if series is None:
+                raise SystemExit(f"{sp}: no axial {group} series in {found.root}")
+            rel = series.relative_to(ROOT / "Dataset").as_posix()
+            files += [(p, f"data/dataset/{rel}/{p.name}") for p in sorted(series.glob("*.dcm"))]
+    print(f"specimens: {', '.join(listed)}")
     for i, (path, key) in enumerate(files, 1):
         s3.upload_file(str(path), o["deploy_bucket"], f"bundle/{key}")
         if i % 200 == 0:
@@ -225,6 +241,8 @@ def step_smoke():
             ("no auth -> 401", httpx.get(o["url"] + "/api/v1/health").status_code == 401),
             ("ready", c.get("/api/v1/health/ready").json().get("status") == "ok"),
             ("missing data -> 404", c.get("/api/v1/specimens/nope").status_code == 404),
+            ("every specimen loaded", {s["id"] for s in c.get("/api/v1/specimens").json()}
+             >= set(specimens())),
         ]
         meshes = c.get("/api/v1/specimens/zeta/meshes").json()["meshes"]
         mesh = httpx.get(meshes[0]["url"], headers={"Origin": o["url"]})

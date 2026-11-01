@@ -53,8 +53,10 @@ docker compose up -d --remove-orphans
 
 run() { docker compose exec -T api "$@"; }
 run alembic -c backend/alembic.ini upgrade head
-run cochleahub load          # run + QC -> PostgreSQL, meshes -> S3 (idempotent)
-run cochleahub upload-dicom  # CBCT -> Orthanc (idempotent per SeriesInstanceUID)
+for sp in $(cat specimens.txt); do  # every specimen in the bundle
+  run cochleahub load --specimen "$sp"          # run + QC -> PostgreSQL, meshes -> S3 (idempotent)
+  run cochleahub upload-dicom --specimen "$sp"  # CBCT -> Orthanc (idempotent per SeriesInstanceUID)
+done
 run cochleahub index-docs    # assistant retrieval index (downloads the embedding model once)
 docker compose restart api   # fresh process picks up the index
 echo "bootstrap done"
