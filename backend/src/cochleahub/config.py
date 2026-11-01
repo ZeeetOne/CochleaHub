@@ -37,6 +37,9 @@ class Settings(BaseSettings):
     assistant_max_tool_rounds: int = 8
     assistant_grounding_guard: bool = True
     embedding_model: str = "BAAI/bge-small-en-v1.5"
+    # where the retrieval index lives: "postgres" (pgvector + full-text search, D24) or "memory"
+    # (built from docs/ at startup; for comparison and tests)
+    rag_store: str = "postgres"
 
     aws_region: str = "eu-north-1"
     # Empty endpoint = Amazon S3; set it for a local S3-compatible store (infra/)

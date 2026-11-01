@@ -6,13 +6,14 @@ from sqlalchemy import create_engine
 
 from alembic import context
 from cochleahub.config import settings
+from cochleahub.assistant.store import RagBase
 from cochleahub.db.models import Base
 
 config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-target_metadata = Base.metadata
+target_metadata = [Base.metadata, RagBase.metadata]
 
 
 def run_migrations_offline() -> None:

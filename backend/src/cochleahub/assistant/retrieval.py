@@ -204,6 +204,16 @@ def corpus_hash(chunks: list[Chunk], model: str) -> str:
     return h.hexdigest()[:16]
 
 
+def open_index(store: str | None = None):
+    """The index the assistant searches: PostgreSQL (D24) or the in-memory one (D19)."""
+    if (store or settings.rag_store) == "postgres":
+        from cochleahub.assistant.store import PgIndex
+        from cochleahub.db.session import SessionLocal
+
+        return PgIndex(SessionLocal, Embedder())
+    return build_index()
+
+
 def build_index(index_dir: Path | None = None, dense: bool = True) -> Index:
     """Load the corpus and its embeddings, re-embedding only when the corpus or model changed."""
     chunks = load_corpus()

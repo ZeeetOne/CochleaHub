@@ -66,9 +66,9 @@ def get_session_factory() -> sessionmaker:
 
 @lru_cache
 def get_executor() -> ToolExecutor:
-    from cochleahub.assistant.retrieval import build_index
+    from cochleahub.assistant.retrieval import open_index
 
-    return ToolExecutor(index=build_index())
+    return ToolExecutor(index=open_index())
 
 
 def make_backend(name: str):

@@ -152,11 +152,22 @@ def cmd_openapi(args: argparse.Namespace) -> int:
 
 
 def cmd_index_docs(args: argparse.Namespace) -> int:
-    from cochleahub.assistant.retrieval import build_index
+    from cochleahub.assistant.retrieval import Embedder, build_index, load_corpus, open_index
 
-    index = build_index()
-    print(f"indexed {len(index.chunks)} passages from {len({c.path for c in index.chunks})} "
-          f"documents ({index.embedder.name})")
+    if settings.rag_store == "postgres":
+        from cochleahub.assistant.store import ingest
+        from cochleahub.db.session import SessionLocal
+
+        embedder = Embedder()
+        with SessionLocal.begin() as session:
+            r = ingest(session, load_corpus(), embedder)
+        print(f"PostgreSQL index: {r.documents} documents, {r.chunks} passages; embedded "
+              f"{r.embedded}, deleted {r.deleted_chunks} passages and {r.deleted_documents} "
+              f"documents ({embedder.name})")
+        index = open_index()
+    else:
+        index = build_index()
+        print(f"in-memory index: {len(index.chunks)} passages ({index.embedder.name})")
     for q in args.query or []:
         print(f"\n{q}")
         for h in index.search(q, k=3):
@@ -181,11 +192,12 @@ def cmd_eval_assistant(args: argparse.Namespace) -> int:
 
 
 def cmd_eval_retrieval(args: argparse.Namespace) -> int:
-    from cochleahub.assistant.retrieval import build_index
+    from cochleahub.assistant.retrieval import open_index
     from cochleahub.evaluation.retrieval_eval import evaluate, markdown, write
 
-    result = evaluate(build_index())
-    write(result, REPO_ROOT / "evaluation" / "retrieval")
+    store = args.store or settings.rag_store
+    result = evaluate(open_index(store)) | {"store": store}
+    write(result, REPO_ROOT / "evaluation" / "retrieval" / store)
     print(markdown(result))
     return 0
 
@@ -220,6 +232,7 @@ def main() -> None:
                    help="Recompute programmatic grades of a finished run (no model calls)")
     p.set_defaults(func=cmd_eval_assistant)
     p = sub.add_parser("eval-retrieval", help="Evaluate documentation retrieval (stage 8)")
+    p.add_argument("--store", choices=["postgres", "memory"], help="Default: RAG_STORE")
     p.set_defaults(func=cmd_eval_retrieval)
     p = sub.add_parser("openapi", help="Write the API schema to docs/api/openapi.json")
     p.set_defaults(func=cmd_openapi)

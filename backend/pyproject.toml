@@ -25,6 +25,7 @@ dependencies = [
     "anthropic>=2.3",
     "ollama>=0.6",
     "fastembed>=0.9",
+    "pgvector>=0.4",
 ]
 
 [project.optional-dependencies]
