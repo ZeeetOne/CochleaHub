@@ -56,6 +56,9 @@ docker compose -f infra/docker-compose.yml --env-file .env --profile local-llm u
 - Paths below are relative to `Dataset/<SPECIMEN>/`. File and mesh names differ between
   specimens (EPSILON: `CBCT_EMBEDDED.nrrd`, `Scala_Tympani.ply`, `Carotis.ply`; ZETA:
   `CBCT_Embedded.nrrd`, `01_Scala Tympani.ply`, `12_Carotis Interna.ply`).
+- Only folders 01, 02, 05, 06 and 07 are kept. The micro-slicing folders (03 raw photographs,
+  04 reconstruction; ~9 GB per specimen) were deleted on the owner's request because no stage
+  reads them; re-download them from OpenEar if ever needed.
 
 - `06_Segmentation/Segmentation.seg.nrrd`: 13-layer binary vector image (one component per
   segment), 0.125 mm isotropic, RAS header. Full read ≈ 2.3 GB RAM — process per segment and
