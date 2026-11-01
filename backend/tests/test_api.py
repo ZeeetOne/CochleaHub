@@ -85,6 +85,8 @@ def test_runs_listed_newest_first(client):
 def test_data_routes_are_read_only(client):
     paths = client.get("/openapi.json").json()["paths"]
     writes = {(p, m) for p, ops in paths.items() for m in ops if m != "get"}
-    # the assistant's chat is the only non-GET route; it writes only its conversation log
-    assert writes == {(f"{V1}/assistant/chat", "post")}
+    # measurement data are read-only; the writes are the assistant's chat (its log only) and
+    # the document library
+    assert writes == {(f"{V1}/assistant/chat", "post"), (f"{V1}/documents", "post"),
+                      (f"{V1}/documents/{{doc_id}}", "delete")}
     assert client.post(f"{V1}/specimens").status_code == 405

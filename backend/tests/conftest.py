@@ -131,3 +131,75 @@ def seeded_api(tmp_path, measurements, validation, store):
     app.dependency_overrides[get_store] = lambda: store
     yield SimpleNamespace(run_ids=ids, sessionmaker=make_session)
     app.dependency_overrides.clear()
+
+
+# --- PostgreSQL with pgvector (retrieval index, document library) -----------------------------
+
+PG_TEST_DB = "cochleahub_test"
+
+
+class FakeEmbedder:
+    """Bag-of-words hashing into 384 dimensions: similar texts get similar vectors."""
+
+    name = "fake-hash-384"
+
+    def _vec(self, text):
+        import hashlib
+
+        import numpy as np
+
+        v = np.zeros(384)
+        for word in text.lower().split():
+            v[int(hashlib.md5(word.encode()).hexdigest(), 16) % 384] += 1
+        return v / (np.linalg.norm(v) or 1)
+
+    def documents(self, texts):
+        import numpy as np
+
+        return np.array([self._vec(t) for t in texts])
+
+    def query(self, text):
+        return self._vec(text)
+
+
+@pytest.fixture(scope="session")
+def pg_engine():
+    """A throwaway database `cochleahub_test` on the server from DATABASE_URL; tests using it
+    are skipped when PostgreSQL with pgvector is not reachable."""
+    from sqlalchemy import text
+    from sqlalchemy.engine import make_url
+
+    from cochleahub.config import settings
+
+    store = pytest.importorskip("cochleahub.assistant.store")
+    url = make_url(settings.database_url)
+    try:
+        admin = create_engine(url.set(database="postgres"), isolation_level="AUTOCOMMIT")
+        with admin.connect() as c:
+            if not c.scalar(text("SELECT 1 FROM pg_database WHERE datname = :d"),
+                            {"d": PG_TEST_DB}):
+                c.execute(text(f"CREATE DATABASE {PG_TEST_DB}"))
+        admin.dispose()
+    except Exception as e:  # noqa: BLE001 - no server: skip, not fail
+        pytest.skip(f"PostgreSQL not reachable: {type(e).__name__}")
+    engine = create_engine(url.set(database=PG_TEST_DB))
+    with engine.begin() as c:
+        try:
+            c.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
+        except Exception:  # noqa: BLE001
+            pytest.skip("pgvector extension not available")
+    store.RagBase.metadata.drop_all(engine)
+    store.RagBase.metadata.create_all(engine)
+    yield engine
+    store.RagBase.metadata.drop_all(engine)
+    engine.dispose()
+
+
+@pytest.fixture
+def pg_sessions(pg_engine):
+    """Empty retrieval tables for each test."""
+    from sqlalchemy import text
+
+    with pg_engine.begin() as c:
+        c.execute(text("TRUNCATE rag_chunks, rag_documents RESTART IDENTITY CASCADE"))
+    return sessionmaker(pg_engine)
