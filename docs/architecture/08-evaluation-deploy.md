@@ -1,8 +1,8 @@
 # Stage 8 — Evaluation and deployment
 
-**Status:** in progress. Done: the baseline evaluation of both backends and the dashboard-tool
-comparison. Next: mitigations for the local backend, measured on the same cases. Prepared but not
-applied: the AWS deployment.
+**Status:** done. Both assistant backends evaluated (with one round of mitigations for the local
+model), dashboard tools compared, and the demo deployed to AWS (eu-north-1) and verified end to
+end on 2026-11-01. Further work is listed under "Later" in the README.
 
 ## Assistant evaluation
 
@@ -81,4 +81,5 @@ flowchart LR
 | **Code** | `deploy/aws/terraform/` (infrastructure), `deploy/aws/server/` (compose, nginx, bootstrap), `deploy/aws/deploy.py` (steps: secrets → infra → key → image → frontend → bundle → bootstrap → smoke → destroy) |
 | **Security** | EC2 accepts traffic from CloudFront's origin-facing addresses only, and only with the secret header. DICOMweb writes are blocked. IMDSv2 only. Secrets live in SSM Parameter Store and Terraform state, never in git. |
 | **Cost** | on an AWS free plan, drawn from the sign-up credits ($100–200), never charged; on a paid plan roughly $1.5–3/day for the instance, disk and public IPv4 (CloudFront and S3 negligible), estimated from list prices, with an optional budget alert. `deploy.py destroy` removes everything. |
+| **Verified (2026-11-01)** | `deploy.py smoke`, 9/9 passed:<br/>• site and SPA routes behind basic auth; unauthenticated request → 401<br/>• readiness of database, S3 and Orthanc<br/>• missing data → 404<br/>• mesh download through a presigned S3 URL<br/>• DICOMweb QIDO works, DICOMweb write blocked<br/>• assistant available<br/>A question through the public URL was answered by Claude Sonnet in 9 s with cited sources. On the t3.small: 0.86 of 1.9 GB RAM used (API 373 MB, Orthanc 257 MB, PostgreSQL 33 MB), disk 8.5 of 20 GB. |
 | **Production differences** | RDS instead of PostgreSQL on the instance, ECS/Fargate, Orthanc in a private subnet, Claude through Bedrock, SSO instead of basic auth |

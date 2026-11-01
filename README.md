@@ -228,7 +228,7 @@ Carotis Interna.
 - [x] **5. Backend API** — read-only `/api/v1` with provenance on every result → [API](#api)
 - [x] **6. Dashboard & viewer** — Overview, Specimen (3D anatomy with measured distances, cochlea vs. published range, CT via Cornerstone3D + DICOMweb), Compare, Operations
 - [x] **7. AI assistant** — agent loop over the API + hybrid RAG with native citations; Claude or a local model; refuses clinical advice, says what is missing; every turn logged
-- [ ] **8. Evaluation & deploy** — assistant evaluation (both backends done; local mitigations next), dashboard-tool comparison (done), AWS deployment (prepared, not yet applied)
+- [x] **8. Evaluation & deploy** — assistant evaluation of both backends (with a measured mitigation round for the local model), retrieval evaluation, React vs. Grafana vs. Power BI comparison, AWS deployment (Terraform; verified end to end, `deploy.py stop`/`start` between demos)
 
 ### Later
 

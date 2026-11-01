@@ -507,6 +507,9 @@ says so.
     CloudFront at the instance's new public address.
   - Larger free-tier types (c7i-flex.large, m7i-flex.large) are the fallback if memory runs
     short.
+- **Checks:** first deployment on 2026-11-01. Creating 22 resources took about 4 minutes; the
+  smoke test passed 9/9; an assistant question through the public URL was answered in 9 s with
+  citations. The t3.small runs with 0.86 of 1.9 GB RAM in use.
 - **Basis:** no paper; this is an engineering decision. It keeps the interfaces of the local
   stack (D8): S3 through boto3, DICOMweb, PostgreSQL. The production differences are stated in
   `docs/architecture/08-evaluation-deploy.md`: RDS, ECS/Fargate, Orthanc in a private subnet,
