@@ -37,6 +37,9 @@ class Settings(BaseSettings):
     assistant_max_tool_rounds: int = 8
     assistant_grounding_guard: bool = True
     embedding_model: str = "BAAI/bge-small-en-v1.5"
+    # passages embedded per batch: peak memory grows with it (94 passages, BGE-small:
+    # 256 -> 2.2 GB, 16 -> 0.87 GB, 4 -> 0.38 GB and fastest), and the API container has 1.2 GB
+    embed_batch_size: int = 4
     # where the retrieval index lives: "postgres" (pgvector + full-text search, D24) or "memory"
     # (built from docs/ at startup; for comparison and tests)
     rag_store: str = "postgres"

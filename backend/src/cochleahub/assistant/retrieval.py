@@ -148,7 +148,8 @@ class Embedder:
         self.model = TextEmbedding(self.name, cache_dir=str(cache))
 
     def documents(self, texts: list[str]) -> np.ndarray:
-        return normalise(np.array(list(self.model.passage_embed(texts))))
+        batches = self.model.passage_embed(texts, batch_size=settings.embed_batch_size)
+        return normalise(np.array(list(batches)))
 
     def query(self, text: str) -> np.ndarray:
         return normalise(np.array(list(self.model.query_embed(text))))[0]
