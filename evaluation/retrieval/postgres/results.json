@@ -1,50 +1,50 @@
 {
  "queries": 30,
- "corpus_passages": 91,
+ "corpus_passages": 97,
  "embedding_model": "BAAI/bge-small-en-v1.5",
  "modes": {
   "bm25": {
    "all": {
     "n": 30,
-    "hit@1": 0.6333333333333333,
-    "hit@5": 0.9333333333333333,
+    "hit@1": 0.5,
+    "hit@5": 0.8666666666666667,
     "hit@5_ci95": [
-     0.7867618227892791,
-     0.9815233646723066
+     0.7031831605558306,
+     0.9469043057578189
     ],
-    "mrr@10": 0.767
+    "mrr@10": 0.654
    },
    "code": {
     "n": 8,
-    "hit@1": 0.75,
+    "hit@1": 0.625,
     "hit@5": 0.875,
     "hit@5_ci95": [
      0.5291051942301386,
      0.9775830911367038
     ],
-    "mrr@10": 0.833
+    "mrr@10": 0.75
    },
    "paraphrase": {
     "n": 22,
-    "hit@1": 0.5909090909090909,
-    "hit@5": 0.9545454545454546,
+    "hit@1": 0.45454545454545453,
+    "hit@5": 0.8636363636363636,
     "hit@5_ci95": [
-     0.7820151050048196,
-     0.9919307806988522
+     0.6666458812053,
+     0.9525108273576373
     ],
-    "mrr@10": 0.742
+    "mrr@10": 0.619
    }
   },
   "dense": {
    "all": {
     "n": 30,
-    "hit@1": 0.7,
-    "hit@5": 0.9333333333333333,
+    "hit@1": 0.6666666666666666,
+    "hit@5": 0.9666666666666667,
     "hit@5_ci95": [
-     0.7867618227892791,
-     0.9815233646723066
+     0.8332924860304112,
+     0.9940915620051425
     ],
-    "mrr@10": 0.789
+    "mrr@10": 0.779
    },
    "code": {
     "n": 8,
@@ -58,25 +58,25 @@
    },
    "paraphrase": {
     "n": 22,
-    "hit@1": 0.6818181818181818,
-    "hit@5": 0.9090909090909091,
+    "hit@1": 0.6363636363636364,
+    "hit@5": 0.9545454545454546,
     "hit@5_ci95": [
-     0.7218461934161421,
-     0.9747051037171622
+     0.7820151050048196,
+     0.9919307806988522
     ],
-    "mrr@10": 0.765
+    "mrr@10": 0.752
    }
   },
   "hybrid": {
    "all": {
     "n": 30,
-    "hit@1": 0.8,
-    "hit@5": 0.9333333333333333,
+    "hit@1": 0.7,
+    "hit@5": 0.9666666666666667,
     "hit@5_ci95": [
-     0.7867618227892791,
-     0.9815233646723066
+     0.8332924860304112,
+     0.9940915620051425
     ],
-    "mrr@10": 0.862
+    "mrr@10": 0.809
    },
    "code": {
     "n": 8,
@@ -90,13 +90,13 @@
    },
    "paraphrase": {
     "n": 22,
-    "hit@1": 0.8181818181818182,
-    "hit@5": 0.9090909090909091,
+    "hit@1": 0.6818181818181818,
+    "hit@5": 0.9545454545454546,
     "hit@5_ci95": [
-     0.7218461934161421,
-     0.9747051037171622
+     0.7820151050048196,
+     0.9919307806988522
     ],
-    "mrr@10": 0.868
+    "mrr@10": 0.797
    }
   }
  },
@@ -106,7 +106,7 @@
    "kind": "paraphrase",
    "query": "how close does the nerve that moves the face run to the hearing organ",
    "bm25": {
-    "first_relevant_rank": 2,
+    "first_relevant_rank": 4,
     "top1": "docs/DECISIONS.md#d17-api-contract-versioned-routes-run-selection-explicit-missing-data-accepted-stage-5"
    },
    "dense": {
@@ -123,16 +123,16 @@
    "kind": "code",
    "query": "What does OUT_OF_PUBLISHED_RANGE mean?",
    "bm25": {
-    "first_relevant_rank": 1,
-    "top1": "docs/DECISIONS.md#d14-automatic-qc-flags-with-severities-accepted-stage-3"
+    "first_relevant_rank": 2,
+    "top1": "docs/knowledge/measurements.md#cochlear-dimensions-a-b-and-height"
    },
    "dense": {
     "first_relevant_rank": 3,
     "top1": "docs/architecture/03-validation.md#decisions"
    },
    "hybrid": {
-    "first_relevant_rank": 1,
-    "top1": "docs/DECISIONS.md#d14-automatic-qc-flags-with-severities-accepted-stage-3"
+    "first_relevant_rank": 2,
+    "top1": "docs/architecture/03-validation.md#decisions"
    }
   },
   {
@@ -141,7 +141,7 @@
    "query": "AREA_METHOD_SENSITIVE warning",
    "bm25": {
     "first_relevant_rank": 1,
-    "top1": "docs/DECISIONS.md#d14-automatic-qc-flags-with-severities-accepted-stage-3"
+    "top1": "docs/DECISIONS.md#d14-automatic-qc-flags-with-severities-accepted-stage-3-1"
    },
    "dense": {
     "first_relevant_rank": 1,
@@ -149,7 +149,7 @@
    },
    "hybrid": {
     "first_relevant_rank": 1,
-    "top1": "docs/knowledge/measurements.md#surface-area"
+    "top1": "docs/DECISIONS.md#d14-automatic-qc-flags-with-severities-accepted-stage-3-1"
    }
   },
   {
@@ -212,12 +212,12 @@
     "top1": "docs/knowledge/dataset.md#what-zeta-is"
    },
    "dense": {
-    "first_relevant_rank": null,
+    "first_relevant_rank": 3,
     "top1": "docs/REFERENCES.md#dataset"
    },
    "hybrid": {
-    "first_relevant_rank": 6,
-    "top1": "docs/REFERENCES.md#dataset"
+    "first_relevant_rank": 1,
+    "top1": "docs/knowledge/dataset.md#what-zeta-is"
    }
   },
   {
@@ -225,16 +225,16 @@
    "kind": "code",
    "query": "why SeaweedFS instead of MinIO",
    "bm25": {
-    "first_relevant_rank": 2,
-    "top1": "docs/DECISIONS.md#d19-assistant-retrieval-hybrid-bm25-dense-fused-with-rrf-cited-natively-accepted-stage-7-1"
+    "first_relevant_rank": 3,
+    "top1": "docs/architecture/08-evaluation-deploy.md#aws-deployment-cost-saving-demo"
    },
    "dense": {
     "first_relevant_rank": 1,
     "top1": "docs/architecture/04-storage.md#decisions"
    },
    "hybrid": {
-    "first_relevant_rank": 2,
-    "top1": "docs/DECISIONS.md#d19-assistant-retrieval-hybrid-bm25-dense-fused-with-rrf-cited-natively-accepted-stage-7-1"
+    "first_relevant_rank": 1,
+    "top1": "docs/architecture/04-storage.md#decisions"
    }
   },
   {
@@ -243,14 +243,14 @@
    "query": "were our volumes checked against another software",
    "bm25": {
     "first_relevant_rank": null,
-    "top1": "docs/knowledge/measurements.md#quality-control-flags-d14"
+    "top1": "docs/validation/zeta.md#qc-flags"
    },
    "dense": {
     "first_relevant_rank": null,
     "top1": "docs/DECISIONS.md#d17-api-contract-versioned-routes-run-selection-explicit-missing-data-accepted-stage-5"
    },
    "hybrid": {
-    "first_relevant_rank": 10,
+    "first_relevant_rank": 9,
     "top1": "docs/knowledge/measurements.md#quality-control-flags-d14"
    }
   },
@@ -259,7 +259,7 @@
    "kind": "paraphrase",
    "query": "why do thin structures have larger surface area differences",
    "bm25": {
-    "first_relevant_rank": 2,
+    "first_relevant_rank": 3,
     "top1": "docs/validation/zeta.md#qc-flags"
    },
    "dense": {
@@ -277,7 +277,7 @@
    "query": "Dhanasingh2021 scala tympani volume range",
    "bm25": {
     "first_relevant_rank": 6,
-    "top1": "docs/DECISIONS.md#d14-automatic-qc-flags-with-severities-accepted-stage-3"
+    "top1": "docs/validation/zeta.md#qc-flags"
    },
    "dense": {
     "first_relevant_rank": 2,
@@ -310,16 +310,16 @@
    "kind": "paraphrase",
    "query": "how were the ground truth labels of the specimen created",
    "bm25": {
-    "first_relevant_rank": 4,
-    "top1": "docs/DECISIONS.md#d17-api-contract-versioned-routes-run-selection-explicit-missing-data-accepted-stage-5"
+    "first_relevant_rank": 9,
+    "top1": "docs/DECISIONS.md#d26-several-specimens-one-folder-each-structure-names-mapped-onto-a-catalogue-accepted-stage-8-1"
    },
    "dense": {
     "first_relevant_rank": 2,
     "top1": "docs/architecture/01-data.md#stage-1-data-and-exploration"
    },
    "hybrid": {
-    "first_relevant_rank": 1,
-    "top1": "docs/knowledge/dataset.md#how-the-reference-segmentation-was-made"
+    "first_relevant_rank": 4,
+    "top1": "docs/DECISIONS.md#d26-several-specimens-one-folder-each-structure-names-mapped-onto-a-catalogue-accepted-stage-8-1"
    }
   },
   {
@@ -327,16 +327,16 @@
    "kind": "paraphrase",
    "query": "does the assistant send patient images to the cloud",
    "bm25": {
-    "first_relevant_rank": 2,
+    "first_relevant_rank": 3,
     "top1": "docs/REFERENCES.md#imaging-infrastructure"
    },
    "dense": {
-    "first_relevant_rank": 3,
-    "top1": "docs/knowledge/user-guide.md#the-assistant"
+    "first_relevant_rank": 4,
+    "top1": "docs/DECISIONS.md#d25-document-library-reference-documents-only-no-patient-data-accepted-stage-8"
    },
    "hybrid": {
     "first_relevant_rank": 3,
-    "top1": "docs/REFERENCES.md#imaging-infrastructure"
+    "top1": "docs/DECISIONS.md#d25-document-library-reference-documents-only-no-patient-data-accepted-stage-8"
    }
   },
   {
@@ -361,16 +361,16 @@
    "kind": "paraphrase",
    "query": "how does the search combine keyword matching and embeddings",
    "bm25": {
-    "first_relevant_rank": 1,
-    "top1": "docs/DECISIONS.md#d19-assistant-retrieval-hybrid-bm25-dense-fused-with-rrf-cited-natively-accepted-stage-7-1"
+    "first_relevant_rank": 3,
+    "top1": "docs/DECISIONS.md#d24-retrieval-index-in-postgresql-pgvector-full-text-search-accepted-stage-8-1"
    },
    "dense": {
     "first_relevant_rank": 4,
-    "top1": "docs/REFERENCES.md#information-retrieval"
+    "top1": "docs/knowledge/dataset.md#the-openear-dataset-and-specimens-zeta-and-epsilon"
    },
    "hybrid": {
-    "first_relevant_rank": 1,
-    "top1": "docs/DECISIONS.md#d19-assistant-retrieval-hybrid-bm25-dense-fused-with-rrf-cited-natively-accepted-stage-7-1"
+    "first_relevant_rank": 2,
+    "top1": "docs/DECISIONS.md#d24-retrieval-index-in-postgresql-pgvector-full-text-search-accepted-stage-8-1"
    }
   },
   {
@@ -497,8 +497,8 @@
    "kind": "paraphrase",
    "query": "what are the limitations of using one cadaveric specimen",
    "bm25": {
-    "first_relevant_rank": 1,
-    "top1": "docs/knowledge/dataset.md#limits-for-interpretation"
+    "first_relevant_rank": 3,
+    "top1": "docs/DECISIONS.md#d26-several-specimens-one-folder-each-structure-names-mapped-onto-a-catalogue-accepted-stage-8-1"
    },
    "dense": {
     "first_relevant_rank": 1,
@@ -531,15 +531,15 @@
    "kind": "paraphrase",
    "query": "stray voxels outside the main piece of a structure",
    "bm25": {
-    "first_relevant_rank": 3,
+    "first_relevant_rank": 4,
     "top1": "docs/validation/zeta.md#qc-flags"
    },
    "dense": {
-    "first_relevant_rank": 1,
-    "top1": "docs/knowledge/measurements.md#connected-components"
+    "first_relevant_rank": 2,
+    "top1": "docs/validation/zeta.md#qc-flags"
    },
    "hybrid": {
-    "first_relevant_rank": 2,
+    "first_relevant_rank": 3,
     "top1": "docs/validation/zeta.md#qc-flags"
    }
   },
@@ -557,7 +557,7 @@
    },
    "hybrid": {
     "first_relevant_rank": 1,
-    "top1": "docs/knowledge/user-guide.md#reading-the-charts"
+    "top1": "docs/DECISIONS.md#d18-dashboard-implementation-embedded-cornerstone3d-provenance-on-every-view-accepted-stage-6"
    }
   },
   {
@@ -582,7 +582,7 @@
    "kind": "paraphrase",
    "query": "which tables hold the measurements and how are they linked to a run",
    "bm25": {
-    "first_relevant_rank": 4,
+    "first_relevant_rank": 6,
     "top1": "docs/DECISIONS.md#d17-api-contract-versioned-routes-run-selection-explicit-missing-data-accepted-stage-5"
    },
    "dense": {
@@ -590,8 +590,8 @@
     "top1": "docs/DECISIONS.md#d16-run-centred-schema-with-migrations-accepted-stage-4"
    },
    "hybrid": {
-    "first_relevant_rank": 1,
-    "top1": "docs/DECISIONS.md#d16-run-centred-schema-with-migrations-accepted-stage-4"
+    "first_relevant_rank": 2,
+    "top1": "docs/DECISIONS.md#d17-api-contract-versioned-routes-run-selection-explicit-missing-data-accepted-stage-5"
    }
   },
   {
@@ -599,16 +599,16 @@
    "kind": "paraphrase",
    "query": "is the platform allowed to recommend an electrode for a patient",
    "bm25": {
-    "first_relevant_rank": 1,
-    "top1": "docs/knowledge/measurements.md#cochlear-implant-context"
+    "first_relevant_rank": 2,
+    "top1": "docs/DECISIONS.md#d25-document-library-reference-documents-only-no-patient-data-accepted-stage-8"
    },
    "dense": {
-    "first_relevant_rank": 4,
+    "first_relevant_rank": 5,
     "top1": "docs/architecture/07-assistant.md#stage-7-ai-assistant"
    },
    "hybrid": {
-    "first_relevant_rank": 1,
-    "top1": "docs/knowledge/measurements.md#cochlear-implant-context"
+    "first_relevant_rank": 2,
+    "top1": "docs/DECISIONS.md#d25-document-library-reference-documents-only-no-patient-data-accepted-stage-8"
    }
   }
  ],
