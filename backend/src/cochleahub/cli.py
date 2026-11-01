@@ -84,7 +84,7 @@ def cmd_validate(args: argparse.Namespace) -> int:
 
 
 def cmd_load(args: argparse.Namespace) -> int:
-    from cochleahub.db.load import load_run
+    from cochleahub.db.load import load_run, specimen_facts
     from cochleahub.db.session import SessionLocal
     from cochleahub.storage.objects import ObjectStore
 
@@ -100,6 +100,7 @@ def cmd_load(args: argparse.Namespace) -> int:
         run, created = load_run(
             session, args.specimen, measurements, validation,
             settings.output_path / "meshes" / args.specimen, ObjectStore(),
+            specimen_facts(args.specimen, outputs),
         )
         verb = "Loaded" if created else "Already loaded"
         print(f"{verb} run {run.id} ({len(run.structures)} structures, "
@@ -110,21 +111,23 @@ def cmd_load(args: argparse.Namespace) -> int:
 
 # Axial series uploaded by default: the viewer reslices the other planes itself
 DEFAULT_SERIES = {
-    "cbct_embedded_axial": "02_CBCT_Embedded/DICOM_*_Z",
-    "cbct_unembedded_axial": "01_CBCT_Unembedded/DICOM_*_Z",
+    "cbct_embedded_axial": "02_CBCT_Embedded",
+    "cbct_unembedded_axial": "01_CBCT_Unembedded",
 }
 
 
 def cmd_upload_dicom(args: argparse.Namespace) -> int:
     from cochleahub.db.load import record_series
     from cochleahub.db.session import SessionLocal
+    from cochleahub.pipeline.dataset import axial_series
     from cochleahub.storage.dicom import Orthanc, prepare_series
 
+    files = find_specimen(settings.dataset_path, args.specimen)
     orthanc = Orthanc(settings.orthanc_url)
-    for label, pattern in DEFAULT_SERIES.items():
-        src = next(iter(sorted(settings.dataset_path.glob(pattern))), None)
+    for label, group in DEFAULT_SERIES.items():
+        src = axial_series(files, group)
         if src is None:
-            print(f"skip {label}: nothing matches {pattern}", file=sys.stderr)
+            print(f"skip {label}: no axial series in {files.root / group}", file=sys.stderr)
             continue
         dst = settings.output_path / "dicom" / args.specimen / label
         info = prepare_series(src, dst, label)

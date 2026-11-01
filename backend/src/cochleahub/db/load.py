@@ -1,5 +1,6 @@
 """Load pipeline outputs (JSON + meshes) into PostgreSQL and S3 (stage 4)."""
 
+import json
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -19,24 +20,28 @@ from cochleahub.db.models import (
 from cochleahub.storage.dicom import SeriesInfo
 from cochleahub.storage.objects import ObjectStore
 
-# Specimen facts not contained in the pipeline outputs. ZETA's side comes from its CBCT
-# folder name "rechts" (German: right).
-SPECIMENS = {
-    "zeta": {
-        "dataset": "OpenEar",
-        "side": "right",
-        "description": "Cadaveric temporal bone; CBCT before/after embedding, micro-slicing, "
-        "13-structure segmentation [Sieber2019].",
-    }
-}
+# Every specimen comes from OpenEar; facts that differ per specimen (the ear side) come from
+# the dataset itself (the pipeline manifest), never from code. The side stays unknown when the
+# dataset does not state it: ZETA's CBCT folder says "rechts", EPSILON's says nothing.
+DATASET = "OpenEar"
+DESCRIPTION = ("Cadaveric temporal bone; CBCT before/after embedding, micro-slicing, "
+               "13-structure segmentation [Sieber2019].")
 
 
-def upsert_specimen(session: Session, specimen_id: str) -> Specimen:
+def specimen_facts(specimen_id: str, outputs: Path) -> dict:
+    manifest = outputs / f"{specimen_id}_manifest.json"
+    side = json.loads(manifest.read_text()).get("side") if manifest.exists() else None
+    return {"dataset": DATASET, "side": side, "description": DESCRIPTION}
+
+
+def upsert_specimen(session: Session, specimen_id: str, facts: dict | None = None) -> Specimen:
+    facts = facts or {"dataset": DATASET, "side": None, "description": DESCRIPTION}
     specimen = session.get(Specimen, specimen_id)
     if specimen is None:
-        facts = SPECIMENS.get(specimen_id, {"dataset": "unknown"})
         specimen = Specimen(id=specimen_id, created_at=datetime.now(UTC), **facts)
         session.add(specimen)
+    elif specimen.side is None and facts.get("side"):
+        specimen.side = facts["side"]
     return specimen
 
 
@@ -47,9 +52,10 @@ def load_run(
     validation: dict,
     mesh_dir: Path,
     store: ObjectStore,
+    facts: dict | None = None,
 ) -> tuple[PipelineRun, bool]:
     """Insert one pipeline run with all its results. Returns (run, created)."""
-    upsert_specimen(session, specimen_id)
+    upsert_specimen(session, specimen_id, facts)
     r = measurements["run"]
     started_at = datetime.fromisoformat(r["started_at"])
     existing = session.scalar(
