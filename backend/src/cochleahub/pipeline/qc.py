@@ -47,6 +47,27 @@ def quality_flags(measurements: dict, validation: dict) -> list[dict]:
     for e in run["errors"]:
         flags.append(Flag("error", "STRUCTURE_FAILED", e["structure"], e["error"]))
 
+    # structure names mapped onto the canonical catalogue (D26); runs before D26 have none
+    mapping = run.get("structure_mapping") or {}
+    for label, suggestions in mapping.get("unmapped", {}).items():
+        hint = f"; closest: {', '.join(suggestions)}" if suggestions else ""
+        flags.append(Flag(
+            "warning", "UNMAPPED_STRUCTURE", label,
+            f"label '{label}' matches no canonical structure and is not compared across "
+            f"specimens; review it and add a synonym{hint}",
+        ))
+    for name, labels in mapping.get("duplicates", {}).items():
+        flags.append(Flag(
+            "error", "DUPLICATE_STRUCTURE", name,
+            f"labels {', '.join(labels)} all map to {name}; none is used under that name",
+        ))
+    for name in mapping.get("missing", []):
+        flags.append(Flag("info", "STRUCTURE_NOT_SEGMENTED", name,
+                          f"{name} is not in this segmentation"))
+    for label, name in mapping.get("renamed", {}).items():
+        flags.append(Flag("info", "STRUCTURE_RENAMED", name,
+                          f"source label '{label}' read as {name}"))
+
     for name, s in measurements["structures"].items():
         frac = s["largest_component_fraction"]
         if s["connected_components"] > 1:
@@ -57,6 +78,12 @@ def quality_flags(measurements: dict, validation: dict) -> list[dict]:
                 f"{s['connected_components']} connected components; {stray} voxels outside the "
                 f"largest ({frac:.2%} in it)",
                 frac, FRAGMENT_THRESHOLD,
+            ))
+        if n := s["mesh"].get("nonmanifold_edges"):
+            flags.append(Flag(
+                "info", "MESH_NON_MANIFOLD", name,
+                f"{n} mesh edges are shared by four faces where voxels touch only along an edge; "
+                "the surface is closed, so its volume is valid", n,
             ))
         if s["mesh_volume_mm3"] is None and s["mesh"]["step_voxels"] == 1:
             holes = s["mesh"].get("open_edges")
@@ -82,12 +109,6 @@ def quality_flags(measurements: dict, validation: dict) -> list[dict]:
                 flags.append(Flag(
                     "error", "SLICER_VOLUME_MISMATCH", name,
                     f"volume differs from Slicer by {r['volume_rel_diff']:+.1%}",
-        if n := s["mesh"].get("nonmanifold_edges"):
-            flags.append(Flag(
-                "info", "MESH_NON_MANIFOLD", name,
-                f"{n} mesh edges are shared by four faces where voxels touch only along an edge; "
-                "the surface is closed, so its volume is valid", n,
-            ))
                     r["volume_rel_diff"], VOLUME_TOLERANCE,
                 ))
             a = r["surface_area_rel_diff"]

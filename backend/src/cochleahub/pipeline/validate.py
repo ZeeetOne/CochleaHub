@@ -17,6 +17,7 @@ import trimesh
 from scipy.spatial import cKDTree
 
 from cochleahub.pipeline.dataset import SpecimenFiles
+from cochleahub.pipeline.structures import canonical
 
 SLICER_SCRIPT = Path(__file__).resolve().parents[3] / "scripts" / "slicer_segment_statistics.py"
 RAS_TO_LPS = np.diag([-1.0, -1.0, 1.0, 1.0])
@@ -43,10 +44,11 @@ def run_slicer_statistics(slicer_exe: Path, segmentation: Path, out: Path) -> No
 def compare_with_slicer(measurements: dict, slicer: dict) -> dict:
     rows = {}
     for ref in slicer["segments"]:
-        ours = measurements["structures"].get(ref["name"])
+        name = canonical(ref["name"]) or ref["name"]  # Slicer reports the file's labels
+        ours = measurements["structures"].get(name)
         if ours is None:
             continue
-        rows[ref["name"]] = {
+        rows[name] = {
             "voxel_count_ours": ours["voxel_count"],
             "voxel_count_slicer": ref["voxel_count"],
             "volume_rel_diff": rel_diff(ours["volume_mm3"], ref["volume_mm3"]),
@@ -74,11 +76,9 @@ def surface_distance(a: trimesh.Trimesh, b: trimesh.Trimesh) -> dict:
 def compare_with_dataset_meshes(
     measurements: dict, files: SpecimenFiles, mesh_dir: Path
 ) -> dict:
-    by_name = {n.lower(): n for n in measurements["structures"]}
     rows = {}
-    for stem, ply in files.meshes.items():
-        name = by_name.get(re.sub(r"^\d+_", "", stem).lower())
-        if name is None:
+    for name, ply in files.meshes.items():  # keyed by canonical name (D26)
+        if name not in measurements["structures"]:
             continue
         ours_meta = measurements["structures"][name]
         ref = trimesh.load(ply, force="mesh")

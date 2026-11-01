@@ -50,6 +50,7 @@ def measure_specimen(files: SpecimenFiles, output_dir: Path) -> dict:
     try:
         seg = Segmentation(files.segmentation)
         run["voxel_size_mm"] = min(seg.image.GetSpacing())
+        run["structure_mapping"] = seg.resolution.as_dict()
         mesh_dir = output_dir / "meshes" / files.specimen_id
         for s in seg.segments:
             try:
@@ -57,9 +58,10 @@ def measure_specimen(files: SpecimenFiles, output_dir: Path) -> dict:
                 step = COARSE_STEP.get(s.name.lower(), 1)
                 mesh = mask_to_mesh(mask, step=step)
                 meshes[s.name] = mesh
-                structures[s.name] = {
                 topology = edge_topology(mesh)
+                structures[s.name] = {
                     "segment_id": s.segment_id,
+                    "source_label": s.label,
                     "color": list(s.color),
                     **shape_metrics(mask),
                     # surface area only on full-resolution meshes
@@ -67,14 +69,15 @@ def measure_specimen(files: SpecimenFiles, output_dir: Path) -> dict:
                     "mesh_volume_mm3": closed_volume(mesh, topology),
                     "mesh": {
                         "step_voxels": step,
+                        **topology,
                         **export_display_mesh(mesh, mesh_dir / f"{slug(s.name)}.glb"),
                     },
-                        **topology,
                 }
             except Exception as e:  # noqa: BLE001 - record and keep measuring the others
                 run["errors"].append({"structure": s.name, "error": repr(e)})
 
-        cochlea = cochlear_dimensions(seg.mask("Scala Tympani"))
+        cochlea = (cochlear_dimensions(seg.mask("Scala Tympani"))
+                   if "Scala Tympani" in structures else None)
         distances = [
             {"from": a, "to": b, "meaning": why, **min_distance(meshes[a], meshes[b])}
             for a, b, why in DISTANCE_PAIRS

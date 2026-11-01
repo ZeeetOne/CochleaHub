@@ -11,7 +11,7 @@ from pathlib import Path
 import numpy as np
 import SimpleITK as sitk
 
-from cochleahub.pipeline.dataset import Segment, read_segments
+from cochleahub.pipeline.dataset import canonical_segments, read_segments
 
 
 @dataclass
@@ -44,7 +44,8 @@ class Mask:
 
 class Segmentation:
     def __init__(self, path: Path):
-        self.segments: list[Segment] = read_segments(path)
+        # segments carry canonical structure names (D26); .label keeps the file's name
+        self.segments, self.resolution = canonical_segments(read_segments(path))
         self.image = sitk.ReadImage(str(path))
         self._voxels = sitk.GetArrayViewFromImage(self.image)  # [z, y, x, component]
 
