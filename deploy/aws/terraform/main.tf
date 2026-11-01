@@ -163,6 +163,9 @@ resource "aws_iam_role_policy" "app" {
     Statement = [
       { Sid = "Meshes", Effect = "Allow", Action = ["s3:GetObject", "s3:PutObject", "s3:ListBucket"],
       Resource = [aws_s3_bucket.meshes.arn, "${aws_s3_bucket.meshes.arn}/*"] },
+      # uploaded documents (D25) can be deleted; meshes cannot
+      { Sid = "DocumentDelete", Effect = "Allow", Action = ["s3:DeleteObject"],
+      Resource = "${aws_s3_bucket.meshes.arn}/documents/*" },
       { Sid = "Bundle", Effect = "Allow", Action = ["s3:GetObject", "s3:ListBucket"],
       Resource = [aws_s3_bucket.deploy.arn, "${aws_s3_bucket.deploy.arn}/*"] },
       { Sid = "EcrToken", Effect = "Allow", Action = ["ecr:GetAuthorizationToken"], Resource = "*" },
