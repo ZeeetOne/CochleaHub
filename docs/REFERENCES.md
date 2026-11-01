@@ -107,6 +107,8 @@ Keys (e.g. `[Margeta2022]`) are used in `docs/DECISIONS.md` and in code comments
 - **[Cormack2009]** Cormack GV, Clarke CLA, Büttcher S. Reciprocal rank fusion outperforms
   Condorcet and individual rank learning methods. *SIGIR 2009*, 758–759.
   doi:10.1145/1571941.1572114
+- **[Xiong2024]** Xiong G, Jin Q, Lu Z, Zhang A. Benchmarking retrieval-augmented generation for
+  medicine. *Findings of ACL 2024*, 6233–6251. arXiv:2402.13178
 - **[Xiao2024]** Xiao S, et al. C-Pack: packed resources for general Chinese embeddings
   (introduces the BGE embedding models). *SIGIR 2024*. arXiv:2309.07597
 

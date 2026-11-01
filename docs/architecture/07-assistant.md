@@ -12,7 +12,7 @@ flowchart TB
     end
     EX --> DATA["7 data tools<br/>→ /api/v1 in-process"]
     EX --> DOCS["search_docs"]
-    DOCS --> HY["hybrid retrieval<br/>BM25 + BGE embeddings (local)<br/>fused with RRF, 55 passages"]
+    DOCS --> HY["hybrid retrieval in PostgreSQL<br/>full-text (GIN) + pgvector (HNSW)<br/>fused with RRF"]
     LOOP --> BK{"backend"}
     BK -->|claude| CL["Claude API<br/>(prod: Bedrock EU)"]
     BK -->|local| OL["Ollama<br/>qwen3.5:4b on premises"]
@@ -41,6 +41,7 @@ flowchart TB
 |---|---|---|
 | D11 | agent loop with the API as tools, plus RAG | [Yao2023, Shi2024, Lewis2020, Zakka2024] |
 | D19 | hybrid retrieval (BM25 + dense, RRF) instead of RAG's dense-only retriever | [Robertson2009, Xiao2024, Cormack2009]; dense retrieval is weaker out of domain [Thakur2021] |
+| D24 | retrieval index in PostgreSQL: pgvector + full-text search, idempotent ingestion | RRF over lexical and dense retrievers in medical RAG [Xiong2024]; pgvector itself is an engineering choice (runs on RDS) |
 | D20 | two backends: Claude (cloud / Bedrock EU), or a local open-weight model | on-premises LLMs keep data local [Wiest2024]; the LLM sees measurements and docs only, never images or identifiers |
 
 ## Example

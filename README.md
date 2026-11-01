@@ -35,7 +35,7 @@ flowchart LR
 
     subgraph serve["Serving"]
         API["5 FastAPI /api/v1<br/>read-only, provenance<br/>on every result"]
-        AS["7 Assistant<br/>agent loop + hybrid RAG<br/>Claude or local LLM"]
+        AS["7 Assistant<br/>agent loop + hybrid RAG<br/>(pgvector + full text)<br/>Claude or local LLM"]
     end
 
     subgraph ui["6 Dashboard · React + TypeScript"]
@@ -239,8 +239,6 @@ Carotis Interna.
   decisions before retrieval, in the style of input guards such as Llama Guard, and answer them
   with a fixed refusal. Measure it on new held-out cases, including legitimate questions that
   mention patients, to check for over-refusal.
-- **RAG storage in PostgreSQL** (pgvector + full-text search) once documents can change at run
-  time. At the current 87 static passages an in-memory index is exact and fast enough (D19).
 
 ## Design basis
 

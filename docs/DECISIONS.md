@@ -515,3 +515,43 @@ says so.
   `docs/architecture/08-evaluation-deploy.md`: RDS, ECS/Fargate, Orthanc in a private subnet,
   Claude through Bedrock, SSO.
 
+## D24 — Retrieval index in PostgreSQL: pgvector + full-text search (accepted, stage 8)
+
+- **Context:** the in-memory index of D19 is built from `docs/` in each API process and cached
+  in local files. Production needs an index that persists, is shared by every API instance, is
+  backed up with the data, and can later take documents that change at run time.
+- **Decision:**
+  - The index moves into the existing PostgreSQL (`rag_documents`, `rag_chunks`). Embeddings are
+    stored in a `vector(384)` column with an HNSW index (cosine). Keywords use a generated
+    `tsvector` with a GIN index, with the title weighted above the body.
+  - Ingestion (`cochleahub index-docs`) is idempotent: unchanged passages keep their
+    embeddings, edited ones are re-embedded, and removed ones are deleted. Embeddings stay
+    local (D19).
+  - Search runs a full-text query (OR over the question's stemmed terms) and a vector query,
+    then fuses them with RRF.
+  - The in-memory index stays as `RAG_STORE=memory`, for comparison and tests.
+  - Images are pinned to `pgvector/pgvector:0.8.7-pg17-trixie`. The trixie base matches the C
+    library of the existing database, so its collation stays valid.
+- **Paper method vs. ours:** BM25 [Robertson2009] is replaced by PostgreSQL's `ts_rank_cd`, which
+  ranks by term proximity and does not weigh how rare a term is (no IDF). Fusing a lexical and a
+  dense retriever with RRF remains, as in medical RAG benchmarks, where fusing retrievers gave
+  the best accuracy [Xiong2024].
+- **Measured** (`cochleahub eval-retrieval --store memory|postgres`, 30 queries, 91 passages):
+
+  | Hybrid retrieval | in memory (BM25) | PostgreSQL (full text) |
+  |---|---|---|
+  | hit@1 | 70% | 80% |
+  | hit@5 | 100% | 93% |
+  | MRR@10 | 0.84 | 0.86 |
+
+  PostgreSQL ranks the right passage first more often, but misses the top 5 twice ("how many
+  ears or donors", "were our volumes checked against another software"). The differences lie
+  within the confidence intervals. The ranking was deliberately not tuned on these 30 queries.
+- **No paper:** pgvector and PostgreSQL full-text search are engineering choices. They need no
+  service beyond the database CochleaHub already runs, and Amazon RDS for PostgreSQL offers the
+  pgvector extension. A BM25 extension for PostgreSQL (e.g. ParadeDB pg_search) would restore
+  IDF weighting, at the cost of a non-standard extension.
+- **Consequences:** the assistant searches the database; the deploy bootstrap runs the migration
+  (which creates the extension) and the ingestion. Changing the embedding model's dimension
+  needs a migration.
+
