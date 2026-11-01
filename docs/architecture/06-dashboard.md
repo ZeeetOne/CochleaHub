@@ -12,6 +12,7 @@ flowchart TB
         CMP["Compare"]
         OPS["Operations<br/>runs · QC · validation"]
         ASP["Assistant"]
+        DOCP["Documents<br/>upload · status · delete"]
         M3["three.js<br/>(react-three-fiber)"]
         CS["Cornerstone3D<br/>axial / coronal / sagittal"]
         SPP --> M3
@@ -35,10 +36,13 @@ flowchart TB
 | D18 | Cornerstone3D embedded, not the full OHIF app | CT next to the measurements on one page; engineering |
 | D18 | selecting a distance draws the measured segment in 3D | the user sees exactly what was measured (D6) |
 | D18 | charts next to a table with the same numbers; palette checked for colour-vision deficiency; QC shown with icon + label | accessibility; no single paper |
+| D25 | Documents page: upload with a no-patient-data confirmation, live processing status, delete; assistant sources link to it | [Kresevic2024, Zakka2024] |
+| D26 | one navigation entry per loaded specimen; an unknown ear side is shown as unknown | the dataset does not state every side |
 
 ## Checks
 
-- All pages render live data in headless Chrome.
+- All pages render live data in headless Chrome, with both specimens on Overview, Compare and
+  their own specimen pages.
 - The CT viewer streams the 481-slice series through the proxy.
 - Bundles are split, so three.js loads only on the specimen page and Cornerstone only when CT is
   opened.
